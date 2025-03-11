@@ -27,6 +27,8 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Adaptive Colors (Light/Dark Mode)**  
 ✅ **WCAG Contrast Checking for Accessibility**  
 ✅ **SwiftUI Modifiers for Dynamic Colors**  
+✅ **Gradient Generation Utilities**  
+✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
 
 ---
 
@@ -62,6 +64,19 @@ Text("Theme Change")
     .onAdaptiveColorChange { newScheme in
         print("Color scheme changed to: \(newScheme)")
     }
+```
+
+### **6️⃣ Gradient Generation Utilities**  
+```swift
+let gradient = Gradient(colors: [.red, .blue])
+let linearGradient = LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom)
+```
+
+### **7️⃣ Color Blending Modes**  
+```swift
+let baseColor = Color.red
+let blendColor = Color.blue
+let blendedColor = baseColor.blended(with: blendColor, mode: .overlay)
 ```
 
 ---
