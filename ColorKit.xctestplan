@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "9C05B9C3-479D-4196-8270-F6F1EBC88819",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ColorKitTests",
+        "name" : "ColorKitTests"
+      }
+    }
+  ],
+  "version" : 1
+}
