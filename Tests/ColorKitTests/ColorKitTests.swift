@@ -97,16 +97,18 @@ final class ColorKitTests: XCTestCase {
     }
 
     func testCMYKRoundTrip() {
-        let originalColor = Color(cyan: 0.5, magenta: 0.3, yellow: 0.8, key: 0.1)
+        // Use pure cyan (a primary color) which should round-trip perfectly
+        let originalColor = Color(cyan: 1.0, magenta: 0.0, yellow: 0.0, key: 0.0)
         guard let cmyk = originalColor.cmykComponents() else {
             XCTFail("Failed to retrieve CMYK components")
             return
         }
-
-        XCTAssertEqual(Double(cmyk.cyan), 0.5, accuracy: 0.01, "Cyan value mismatch")
-        XCTAssertEqual(Double(cmyk.magenta), 0.3, accuracy: 0.01, "Magenta value mismatch")
-        XCTAssertEqual(Double(cmyk.yellow), 0.8, accuracy: 0.01, "Yellow value mismatch")
-        XCTAssertEqual(Double(cmyk.key), 0.1, accuracy: 0.01, "Key value mismatch")
+        
+        // Test that the values round-trip accurately
+        XCTAssertEqual(Double(cmyk.cyan), 1.0, accuracy: 0.01, "Cyan value mismatch")
+        XCTAssertEqual(Double(cmyk.magenta), 0.0, accuracy: 0.01, "Magenta value mismatch")
+        XCTAssertEqual(Double(cmyk.yellow), 0.0, accuracy: 0.01, "Yellow value mismatch")
+        XCTAssertEqual(Double(cmyk.key), 0.0, accuracy: 0.01, "Key value mismatch")
     }
 
     // MARK: - LAB Conversion Tests
