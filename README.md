@@ -73,11 +73,3 @@ We welcome contributions! Feel free to submit issues or open pull requests.
 MIT License. See `LICENSE` for details.  
 
 ---
-
-### **✅ Next Steps**
-1. **Do you want to refine any sections before finalizing?**  
-2. **Would you like to add a logo or example screenshots?**  
-
-Let me know how you'd like to proceed! 🚀📖
-
-
