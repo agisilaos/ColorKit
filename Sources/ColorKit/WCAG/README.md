@@ -9,6 +9,7 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 - **Live Previews**: See how your text looks with different color combinations in real-time.
 - **Color Blindness Simulation**: Preview how your content appears to users with different types of color blindness.
 - **Suggestions**: Get suggestions for colors that would meet WCAG compliance levels.
+- **Accessible Palette Generation**: Automatically generate accessible color palettes that meet WCAG guidelines.
 
 ## Usage
 
@@ -71,9 +72,80 @@ struct MyView: View {
 }
 ```
 
-### Demo View
+### Generating Accessible Color Palettes
 
-ColorKit includes a comprehensive demo view that showcases all the WCAG compliance features:
+```swift
+import SwiftUI
+import ColorKit
+
+struct MyView: View {
+    let seedColor = Color.blue
+    
+    var body: some View {
+        let palette = seedColor.generateAccessiblePalette(
+            targetLevel: .AA,
+            paletteSize: 5
+        )
+        
+        VStack {
+            Text("Accessible Color Palette")
+                .font(.headline)
+            
+            ForEach(0..<palette.count, id: \.self) { index in
+                Rectangle()
+                    .fill(palette[index])
+                    .frame(height: 50)
+                    .overlay(
+                        Text("Color \(index + 1)")
+                            .foregroundColor(
+                                palette[index].accessibleContrastingColor()
+                            )
+                    )
+            }
+        }
+    }
+}
+```
+
+### Creating Accessible Themes
+
+```swift
+import SwiftUI
+import ColorKit
+
+struct MyView: View {
+    let primaryColor = Color.purple
+    
+    var body: some View {
+        let theme = primaryColor.generateAccessibleTheme(
+            name: "Accessible Theme",
+            targetLevel: .AA
+        )
+        
+        VStack {
+            Text("Heading")
+                .foregroundColor(theme.primary.base)
+                .background(theme.background.base)
+            
+            Text("Body text")
+                .foregroundColor(theme.text.base)
+                .background(theme.background.base)
+            
+            Button("Action") {}
+                .padding()
+                .background(theme.accent.base)
+                .foregroundColor(theme.accent.base.accessibleContrastingColor())
+                .cornerRadius(8)
+        }
+        .padding()
+        .background(theme.background.base)
+    }
+}
+```
+
+### Demo Views
+
+ColorKit includes comprehensive demo views that showcase all the WCAG compliance features:
 
 ```swift
 import SwiftUI
@@ -81,13 +153,23 @@ import ColorKit
 
 struct ContentView: View {
     @State private var showWCAGDemo = false
+    @State private var showPaletteDemo = false
     
     var body: some View {
-        Button("Open WCAG Compliance Checker") {
-            showWCAGDemo = true
-        }
-        .sheet(isPresented: $showWCAGDemo) {
-            ColorKit.WCAG.demoView()
+        VStack {
+            Button("Open WCAG Compliance Checker") {
+                showWCAGDemo = true
+            }
+            .sheet(isPresented: $showWCAGDemo) {
+                ColorKit.WCAG.demoView()
+            }
+            
+            Button("Open Accessible Palette Generator") {
+                showPaletteDemo = true
+            }
+            .sheet(isPresented: $showPaletteDemo) {
+                ColorKit.WCAG.accessiblePaletteDemoView()
+            }
         }
     }
 }
@@ -110,6 +192,10 @@ The color blindness simulation supports the following types:
 - **Deuteranopia**: Green-blindness
 - **Tritanopia**: Blue-blindness
 - **Achromatopsia**: Complete color blindness (grayscale vision)
+
+## Additional Documentation
+
+- [Accessible Palette Generator](AccessiblePaletteGenerator.md): Detailed documentation on generating accessible color palettes.
 
 ## References
 

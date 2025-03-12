@@ -28,6 +28,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **LAB Color Support**  
 ✅ **Adaptive Colors (Light/Dark Mode)**  
 ✅ **WCAG Contrast Checking for Accessibility**  
+✅ **Auto-Generate Accessible Color Palettes**  
 ✅ **SwiftUI Modifiers for Dynamic Colors**  
 ✅ **Gradient Generation Utilities**  
 ✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
@@ -131,6 +132,34 @@ Button("Primary Button") {}
 // Use semantic colors
 Rectangle()
     .fill(Color.themed(.accent))
+```
+
+### **1️⃣1️⃣ Auto-Generate Accessible Color Palettes**  
+```swift
+// Generate an accessible palette from a seed color
+let seedColor = Color.blue
+let palette = seedColor.generateAccessiblePalette(
+    targetLevel: .AA,  // WCAG compliance level
+    paletteSize: 5,    // Number of colors to generate
+    includeBlackAndWhite: true
+)
+
+// Generate an accessible theme from a seed color
+let theme = seedColor.generateAccessibleTheme(
+    name: "Accessible Blue Theme",
+    targetLevel: .AA
+)
+
+// Find a contrasting color that meets accessibility standards
+let backgroundColor = Color.purple
+let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+
+// Use the demo view to experiment with palette generation
+struct ContentView: View {
+    var body: some View {
+        ColorKit.WCAG.accessiblePaletteDemoView()
+    }
+}
 ```
 
 ---

@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var selectedColor = Color.blue
     @State private var backgroundColor = Color.white
     @State private var showWCAGDemo = false
+    @State private var showPaletteDemo = false
     
     var body: some View {
         NavigationView {
@@ -52,6 +53,16 @@ struct ContentView: View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
+                .padding(.horizontal)
+                
+                // Accessible Palette Generator Demo Button
+                Button("Open Accessible Palette Generator") {
+                    showPaletteDemo = true
+                }
+                .padding()
+                .background(Color.purple)
+                .foregroundColor(.white)
+                .cornerRadius(10)
                 .padding()
                 
                 Spacer()
@@ -60,6 +71,9 @@ struct ContentView: View {
             .navigationTitle("ColorKit Demo")
             .sheet(isPresented: $showWCAGDemo) {
                 ColorKit.WCAG.demoView()
+            }
+            .sheet(isPresented: $showPaletteDemo) {
+                ColorKit.WCAG.accessiblePaletteDemoView()
             }
         }
     }
