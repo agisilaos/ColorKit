@@ -31,6 +31,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **SwiftUI Modifiers for Dynamic Colors**  
 ✅ **Gradient Generation Utilities**  
 ✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
+✅ **Comprehensive Theming System**  
 
 ---
 
@@ -88,17 +89,48 @@ Text("Theme Change")
     }
 ```
 
-### **6️⃣ Gradient Generation Utilities**  
+### **8️⃣ Gradient Generation Utilities**  
 ```swift
 let gradient = Gradient(colors: [.red, .blue])
 let linearGradient = LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom)
 ```
 
-### **7️⃣ Color Blending Modes**  
+### **9️⃣ Color Blending Modes**  
 ```swift
 let baseColor = Color.red
 let blendColor = Color.blue
 let blendedColor = baseColor.blended(with: blendColor, mode: .overlay)
+```
+
+### **🔟 Comprehensive Theming System**  
+```swift
+// Define a custom theme
+let oceanTheme = ColorTheme(
+    name: "Ocean",
+    primary: Color(hex: "#1E88E5"),
+    secondary: Color(hex: "#00ACC1"),
+    accent: Color(hex: "#7E57C2"),
+    background: Color(hex: "#ECEFF1"),
+    text: Color(hex: "#263238")
+)
+
+// Register the theme
+ThemeManager.shared.register(theme: oceanTheme)
+
+// Apply theme to a view hierarchy
+ContentView()
+    .withThemeManager()
+
+// Use themed colors in views
+Text("Themed Text")
+    .themedText(.primary)
+
+Button("Primary Button") {}
+    .themedButton(.primary)
+
+// Use semantic colors
+Rectangle()
+    .fill(Color.themed(.accent))
 ```
 
 ---
