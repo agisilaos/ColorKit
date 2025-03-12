@@ -28,6 +28,18 @@ public extension Color {
     ///   - alpha: The opacity of the blend, from 0.0 (no effect) to 1.0 (full effect).
     /// - Returns: The blended color.
     func blended(with color: Color, mode: BlendMode, alpha: CGFloat = 1.0) -> Color {
+        // If alpha is 0, return the original color (no blending)
+        if alpha <= 0 {
+            return self
+        }
+        
+        // If alpha is 1.0, check the cache for the full blend
+        if alpha >= 1.0 {
+            if let cachedColor = ColorCache.shared.getCachedBlendedColor(color1: self, color2: color, blendMode: String(describing: mode)) {
+                return cachedColor
+            }
+        }
+        
         // Extract RGB components from both colors
         guard let components1 = cgColor?.components, components1.count >= 3,
               let components2 = color.cgColor?.components, components2.count >= 3 else {
@@ -53,8 +65,15 @@ public extension Color {
         let g = g1 + (blendResult.g - g1) * clampedAlpha * a2
         let b = b1 + (blendResult.b - b1) * clampedAlpha * a2
         
-        // Preserve the original alpha
-        return Color(.sRGB, red: r, green: g, blue: b, opacity: a1)
+        // Create the result color
+        let resultColor = Color(.sRGB, red: r, green: g, blue: b, opacity: a1)
+        
+        // Cache the result if alpha is 1.0 (full blend)
+        if alpha >= 1.0 {
+            ColorCache.shared.cacheBlendedColor(color1: self, color2: color, blendMode: String(describing: mode), result: resultColor)
+        }
+        
+        return resultColor
     }
     
     /// Performs normal blending (standard alpha composition).

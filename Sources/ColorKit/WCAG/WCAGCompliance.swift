@@ -99,6 +99,11 @@ public extension Color {
     
     /// Calculate the relative luminance of a color as defined by WCAG 2.0
     func wcagRelativeLuminance() -> Double {
+        // Check cache first
+        if let cachedLuminance = ColorCache.shared.getCachedLuminance(for: self) {
+            return cachedLuminance
+        }
+        
         let rgba = self.rgbaComponents()
         
         // Convert sRGB to linear RGB
@@ -107,18 +112,33 @@ public extension Color {
         let b = rgba.blue <= 0.03928 ? rgba.blue / 12.92 : pow((rgba.blue + 0.055) / 1.055, 2.4)
         
         // Calculate relative luminance
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+        let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        
+        // Cache the result
+        ColorCache.shared.cacheLuminance(for: self, luminance: luminance)
+        
+        return luminance
     }
     
     /// Calculate the contrast ratio between this color and another color
     func wcagContrastRatio(with color: Color) -> Double {
+        // Check cache first
+        if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, and: color) {
+            return cachedRatio
+        }
+        
         let luminance1 = self.wcagRelativeLuminance()
         let luminance2 = color.wcagRelativeLuminance()
         
         let lighter = max(luminance1, luminance2)
         let darker = min(luminance1, luminance2)
         
-        return (lighter + 0.05) / (darker + 0.05)
+        let ratio = (lighter + 0.05) / (darker + 0.05)
+        
+        // Cache the result
+        ColorCache.shared.cacheContrastRatio(for: self, and: color, ratio: ratio)
+        
+        return ratio
     }
     
     /// Check WCAG compliance between this color and another color

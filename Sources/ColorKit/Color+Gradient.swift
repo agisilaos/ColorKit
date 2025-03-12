@@ -139,14 +139,37 @@ public extension Color {
     func interpolated(with color: Color, fraction: CGFloat, in colorSpace: GradientColorSpace = .rgb) -> Color {
         let clampedFraction = max(0, min(1, fraction))
         
+        // Check cache first
+        if let cachedColor = ColorCache.shared.getCachedInterpolatedColor(
+            color1: self, 
+            color2: color, 
+            fraction: clampedFraction, 
+            colorSpace: String(describing: colorSpace)
+        ) {
+            return cachedColor
+        }
+        
+        // If not in cache, perform the interpolation
+        let result: Color
         switch colorSpace {
         case .rgb:
-            return interpolateRGB(with: color, fraction: clampedFraction)
+            result = interpolateRGB(with: color, fraction: clampedFraction)
         case .hsl:
-            return interpolateHSL(with: color, fraction: clampedFraction)
+            result = interpolateHSL(with: color, fraction: clampedFraction)
         case .lab:
-            return interpolateLAB(with: color, fraction: clampedFraction)
+            result = interpolateLAB(with: color, fraction: clampedFraction)
         }
+        
+        // Cache the result
+        ColorCache.shared.cacheInterpolatedColor(
+            color1: self, 
+            color2: color, 
+            fraction: clampedFraction, 
+            colorSpace: String(describing: colorSpace), 
+            result: result
+        )
+        
+        return result
     }
     
     /// Interpolates between this color and another color in RGB space.
