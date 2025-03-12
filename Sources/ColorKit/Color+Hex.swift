@@ -66,4 +66,31 @@ public extension Color {
                       Int(b * 255),
                       Int(a * 255))
     }
+    
+    /// Returns the HEX representation of the color.
+    /// This is an alias for `hexValue()` for API consistency.
+    ///
+    /// - Returns: A HEX string in the format `#RRGGBBAA` representing the color, or `nil` if conversion fails.
+    func hexString() -> String? {
+        return hexValue()
+    }
+    
+    /// Returns the RGBA components of the color as hexadecimal values.
+    ///
+    /// - Returns: A tuple containing the red, green, blue, and alpha components as hexadecimal values,
+    ///           or `nil` if conversion fails.
+    func hexComponents() -> (red: String, green: String, blue: String, alpha: String)? {
+        guard let components = cgColor?.components, components.count >= 3 else { return nil }
+        let r = components[0]
+        let g = components[1]
+        let b = components[2]
+        let a = components.count >= 4 ? components[3] : 1.0
+        
+        return (
+            red: String(format: "%02X", Int(r * 255)),
+            green: String(format: "%02X", Int(g * 255)),
+            blue: String(format: "%02X", Int(b * 255)),
+            alpha: String(format: "%02X", Int(a * 255))
+        )
+    }
 }

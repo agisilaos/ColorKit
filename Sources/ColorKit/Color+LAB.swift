@@ -69,10 +69,15 @@ public extension Color {
     ///   - a: The a* value (-128-127), representing green to red
     ///   - b: The b* value (-128-127), representing blue to yellow
     init(L: CGFloat, a: CGFloat, b: CGFloat) {
+        // Clamp values to valid ranges
+        let clampedL = max(0, min(100, L))
+        let clampedA = max(-128, min(127, a))
+        let clampedB = max(-128, min(127, b))
+        
         // LAB to XYZ
-        let fy = (L + 16) / 116
-        let fx = a / 500 + fy
-        let fz = fy - b / 200
+        let fy = (clampedL + 16) / 116
+        let fx = clampedA / 500 + fy
+        let fz = fy - clampedB / 200
         
         func finv(_ t: CGFloat) -> CGFloat {
             let t3 = pow(t, 3.0)
@@ -103,5 +108,14 @@ public extension Color {
         let bc = max(0, min(1, delinearize(b)))
         
         self.init(red: rc, green: gc, blue: bc)
+    }
+    
+    /// Returns a string representation of the color in LAB format.
+    ///
+    /// - Returns: A string in the format "lab(L, a, b)" representing the color, or nil if conversion fails.
+    func labString() -> String? {
+        guard let lab = labComponents() else { return nil }
+        
+        return String(format: "lab(%.1f, %.1f, %.1f)", lab.L, lab.a, lab.b)
     }
 } 

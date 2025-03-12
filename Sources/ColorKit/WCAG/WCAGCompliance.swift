@@ -90,9 +90,16 @@ extension Color {
 }
 
 public extension Color {
+    /// Returns the RGBA components of a color
+    ///
+    /// - Returns: A tuple containing red, green, blue, and alpha components as Double values (0.0-1.0)
+    func rgbaComponents() -> (red: Double, green: Double, blue: Double, alpha: Double) {
+        return wcagRGBAComponents()
+    }
+    
     /// Calculate the relative luminance of a color as defined by WCAG 2.0
     func wcagRelativeLuminance() -> Double {
-        let rgba = self.wcagRGBAComponents()
+        let rgba = self.rgbaComponents()
         
         // Convert sRGB to linear RGB
         let r = rgba.red <= 0.03928 ? rgba.red / 12.92 : pow((rgba.red + 0.055) / 1.055, 2.4)

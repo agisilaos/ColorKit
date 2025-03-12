@@ -57,12 +57,17 @@ public extension Color {
     ///   - saturation: The saturation value (0.0 - 1.0), representing the intensity of the color.
     ///   - lightness: The lightness value (0.0 - 1.0), representing how bright or dark the color is.
     init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat) {
-        let c = (1 - abs(2 * lightness - 1)) * saturation
-        let x = c * (1 - abs(fmod(hue * 6, 2) - 1))
-        let m = lightness - c / 2
+        // Clamp values to valid ranges
+        let clampedHue = fmod(max(0, hue), 1.0)
+        let clampedSaturation = max(0, min(1, saturation))
+        let clampedLightness = max(0, min(1, lightness))
+        
+        let c = (1 - abs(2 * clampedLightness - 1)) * clampedSaturation
+        let x = c * (1 - abs(fmod(clampedHue * 6, 2) - 1))
+        let m = clampedLightness - c / 2
         
         let (r, g, b): (CGFloat, CGFloat, CGFloat)
-        switch hue * 6 {
+        switch clampedHue * 6 {
         case 0..<1: (r, g, b) = (c, x, 0)
         case 1..<2: (r, g, b) = (x, c, 0)
         case 2..<3: (r, g, b) = (0, c, x)
@@ -73,5 +78,18 @@ public extension Color {
         }
         
         self.init(red: r + m, green: g + m, blue: b + m)
+    }
+    
+    /// Returns a string representation of the color in HSL format.
+    ///
+    /// - Returns: A string in the format "hsl(h, s%, l%)" representing the color, or nil if conversion fails.
+    func hslString() -> String? {
+        guard let hsl = hslComponents() else { return nil }
+        
+        let h = Int(hsl.hue * 360)
+        let s = Int(hsl.saturation * 100)
+        let l = Int(hsl.lightness * 100)
+        
+        return "hsl(\(h), \(s)%, \(l)%)"
     }
 }
