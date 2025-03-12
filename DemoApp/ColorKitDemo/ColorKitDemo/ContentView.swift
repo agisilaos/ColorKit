@@ -73,7 +73,7 @@ struct ContentView: View {
                 ColorKit.WCAG.demoView()
             }
             .sheet(isPresented: $showPaletteDemo) {
-                ColorKit.WCAG.accessiblePaletteDemoView()
+                ColorKit.ColorInspector.accessiblePaletteDemoView()
             }
         }
     }
