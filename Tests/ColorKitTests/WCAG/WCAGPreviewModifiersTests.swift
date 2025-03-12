@@ -3,6 +3,7 @@ import SwiftUI
 @testable import ColorKit
 
 final class WCAGPreviewModifiersTests: XCTestCase {
+    @MainActor
     func testWCAGComplianceModifier() throws {
         let foregroundColor = Color.blue
         let backgroundColor = Color.white
@@ -26,6 +27,7 @@ final class WCAGPreviewModifiersTests: XCTestCase {
         XCTAssertNotNil(modifierWithoutDetails)
     }
     
+    @MainActor
     func testColorBlindnessPreviewModifier() throws {
         // Test each type of color blindness
         let types = ColorBlindnessPreviewModifier.ColorBlindnessType.allCases
@@ -96,6 +98,7 @@ final class WCAGPreviewModifiersTests: XCTestCase {
         XCTAssertEqual(grayscale.matrix[2], 0.114, accuracy: 0.001)
     }
     
+    @MainActor
     func testViewExtensions() throws {
         let view = Text("Test")
         

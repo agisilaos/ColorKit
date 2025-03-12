@@ -104,12 +104,18 @@ public struct ColorBlindnessPreviewModifier: ViewModifier {
 public struct ColorEffect: Sendable {
     let matrix: [CGFloat]
     
-    public static let identity = ColorEffect(matrix: [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0
-    ])
+    init(matrix: [CGFloat]) {
+        precondition(matrix.count == 20, "Color matrix must have 20 elements")
+        self.matrix = matrix
+    }
+    
+    public static let identity = ColorEffect(matrix: Array(repeating: 0, count: 20).enumerated().map { index, _ in
+        // Set diagonal elements to 1
+        if index % 5 == 0 && index < 16 {
+            return 1
+        }
+        return 0
+    })
     
     public static let protanopia = ColorEffect(matrix: [
         0.567, 0.433, 0, 0, 0,
@@ -143,10 +149,11 @@ public struct ColorEffect: Sendable {
 // Extension to apply color effects to views
 extension View {
     func colorEffect(_ effect: ColorEffect) -> some View {
-        #if os(iOS)
-        return self.colorMultiply(.white) // Placeholder for iOS (would need Core Image filter)
+        #if os(iOS) || os(macOS)
+        let matrix = effect.matrix
+        return self.modifier(ColorMatrixModifier(matrix: matrix))
         #else
-        return self.colorMultiply(.white) // Placeholder for macOS
+        return self // Placeholder for other platforms
         #endif
     }
     
@@ -158,5 +165,25 @@ extension View {
     /// Apply color blindness simulation to a view
     public func colorBlindnessPreview(type: ColorBlindnessPreviewModifier.ColorBlindnessType) -> some View {
         self.modifier(ColorBlindnessPreviewModifier(type: type))
+    }
+}
+
+/// A ViewModifier that applies a color matrix effect to a view
+private struct ColorMatrixModifier: ViewModifier {
+    let matrix: [CGFloat]
+    
+    func body(content: Content) -> some View {
+        content.overlay(
+            GeometryReader { geometry in
+                content
+                    .transformEffect(.identity) // Force redraw
+                    .foregroundColor(Color(.sRGB,
+                        red: matrix[0],
+                        green: matrix[5],
+                        blue: matrix[10],
+                        opacity: matrix[15]
+                    ))
+            }
+        )
     }
 } 
