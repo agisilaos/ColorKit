@@ -6,7 +6,7 @@ import SwiftUI
 /// ColorKit is a comprehensive color utility library for SwiftUI
 public enum ColorKit {
     /// The current version of ColorKit
-    public static let version = "1.2.0"
+    public static let version = "1.3.0"
     
     /// WCAG Compliance Checker
     public struct WCAG {
