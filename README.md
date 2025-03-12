@@ -33,6 +33,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Gradient Generation Utilities**  
 ✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
 ✅ **Comprehensive Theming System**  
+✅ **High-Performance Caching for Color Operations**  
 
 ---
 
@@ -161,6 +162,29 @@ struct ContentView: View {
     }
 }
 ```
+
+### **1️⃣2️⃣ Performance Optimizations (v1.4.0+)**  
+```swift
+// ColorKit automatically caches expensive color operations
+// No code changes required to benefit from performance improvements
+
+// First call calculates and caches
+let lab1 = color1.labComponents()
+
+// Second call retrieves from cache (much faster)
+let lab1Again = color1.labComponents()
+
+// Blending with caching
+let blended = color1.blended(with: color2, mode: .overlay)
+
+// Gradient interpolation with caching
+let interpolated = color1.interpolated(with: color2, fraction: 0.5, in: .lab)
+
+// If needed, manually clear caches
+ColorCache.shared.clearAllCaches()
+```
+
+For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
 
 ---
 

@@ -22,6 +22,11 @@ public extension Color {
     ///
     /// - Returns: A tuple containing hue (0.0 - 1.0), saturation (0.0 - 1.0), and lightness (0.0 - 1.0), or `nil` if conversion fails.
     func hslComponents() -> (hue: CGFloat, saturation: CGFloat, lightness: CGFloat)? {
+        // Check cache first
+        if let cachedComponents = ColorCache.shared.getCachedHSLComponents(for: self) {
+            return cachedComponents
+        }
+        
         guard let components = cgColor?.components, components.count >= 3 else { return nil }
         let r = components[0]
         let g = components[1]
@@ -46,6 +51,9 @@ public extension Color {
             }
             h /= 6
         }
+        
+        // Cache the result
+        ColorCache.shared.cacheHSLComponents(for: self, hue: h, saturation: s, lightness: l)
         
         return (h, s, l)
     }

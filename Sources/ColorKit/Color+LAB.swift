@@ -22,6 +22,11 @@ public extension Color {
     ///
     /// - Returns: A tuple containing L* (0-100), a* (-128-127), and b* (-128-127), or `nil` if conversion fails.
     func labComponents() -> (L: CGFloat, a: CGFloat, b: CGFloat)? {
+        // Check cache first
+        if let cachedComponents = ColorCache.shared.getCachedLABComponents(for: self) {
+            return cachedComponents
+        }
+        
         guard let components = cgColor?.components, components.count >= 3 else { return nil }
         let r = components[0]
         let g = components[1]
@@ -58,6 +63,9 @@ public extension Color {
         let L = (116.0 * fy) - 16
         let a = 500 * (fx - fy)
         let bValue = 200 * (fy - fz)
+        
+        // Cache the result
+        ColorCache.shared.cacheLABComponents(for: self, L: L, a: a, b: bValue)
         
         return (L, a, bValue)
     }
