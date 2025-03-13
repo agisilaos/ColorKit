@@ -25,6 +25,8 @@ public struct AccessiblePaletteDemoView: View {
     @State private var targetLevel: WCAGContrastLevel = .AA
     @State private var paletteSize: Int = 5
     @State private var includeBlackAndWhite: Bool = true
+    @State private var showingExportSheet = false
+    @State private var exportingTheme = false
     
     // Store the generated palette and theme in state properties
     @State private var palette: [Color] = []
@@ -211,6 +213,25 @@ public struct AccessiblePaletteDemoView: View {
                     Text("Generate a palette to see the theme preview")
                         .foregroundColor(.secondary)
                 }
+                    )
+                
+                // Export buttons
+                HStack(spacing: 20) {
+                    Button(action: {
+                        showPaletteExport()
+                    }) {
+                        Label("Export Palette", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    
+                    Button(action: {
+                        showThemeExport()
+                    }) {
+                        Label("Export Theme", systemImage: "square.and.arrow.up.on.square")
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                }
+                .padding(.top, 10)
             }
             .padding()
         }
@@ -253,5 +274,37 @@ public struct AccessiblePaletteDemoView: View {
                 isGenerating = false
             }
         }
+        .sheet(isPresented: $showingExportSheet) {
+            if exportingTheme {
+                let theme = seedColor.generateAccessibleTheme(name: "Generated Theme", targetLevel: targetLevel)
+                PaletteExportView(
+                    palette: PaletteExporter.createPalette(from: theme),
+                    paletteName: "Generated Theme"
+                )
+                .frame(minWidth: 400, minHeight: 300)
+                #if os(macOS)
+                .padding()
+                #endif
+            } else {
+                PaletteExportView(
+                    palette: PaletteExporter.createPalette(from: palette),
+                    paletteName: "Accessible Palette"
+                )
+                .frame(minWidth: 400, minHeight: 300)
+                #if os(macOS)
+                .padding()
+                #endif
+            }
+        }
+    }
+    
+    private func showPaletteExport() {
+        exportingTheme = false
+        showingExportSheet = true
+    }
+    
+    private func showThemeExport() {
+        exportingTheme = true
+        showingExportSheet = true
     }
 } 
