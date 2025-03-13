@@ -403,11 +403,8 @@ public struct PaletteExporter {
         }
         
         #if canImport(UIKit)
-        let pasteboardType: String
-        
         switch format {
         case .json, .css, .svg:
-            pasteboardType = UTType.plainText.identifier
             guard let string = String(data: data, encoding: .utf8) else { return false }
             UIPasteboard.general.string = string
             return true
