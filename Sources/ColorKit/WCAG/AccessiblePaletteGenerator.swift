@@ -77,12 +77,31 @@ public struct AccessiblePaletteGenerator {
         }
         
         // Generate additional colors to reach the desired palette size
-        while palette.count < configuration.paletteSize {
+        let maxAttempts = 100 // Prevent infinite loops
+        var attempts = 0
+        
+        while palette.count < configuration.paletteSize && attempts < maxAttempts {
+            attempts += 1
+            
             // Generate a new color that contrasts well with the seed color
             if let newColor = generateContrastingColor(for: seedColor) {
                 // Ensure the new color is distinct from existing colors
                 if !palette.contains(where: { areColorsSimilar($0, newColor) }) {
                     palette.append(newColor)
+                }
+            }
+        }
+        
+        // If we couldn't generate enough colors, fill with some default ones
+        if palette.count < configuration.paletteSize {
+            let defaultColors: [Color] = [.red, .green, .blue, .orange, .purple, .yellow, .pink]
+            
+            for color in defaultColors {
+                if palette.count >= configuration.paletteSize {
+                    break
+                }
+                if !palette.contains(where: { areColorsSimilar($0, color) }) {
+                    palette.append(color)
                 }
             }
         }
@@ -96,20 +115,33 @@ public struct AccessiblePaletteGenerator {
     ///   - name: The name for the theme
     /// - Returns: A ColorTheme with accessible color combinations
     public func generateAccessibleTheme(from seedColor: Color, name: String) -> ColorTheme {
-        // Generate a palette of colors
-        let palette = generatePalette(from: seedColor)
+        // Use simpler, more deterministic approach for theme generation
         
         // Find a good background color (usually white or a very light color)
-        let backgroundColor = findBestBackgroundColor(in: palette, for: seedColor)
+        let backgroundColor = seedColor.wcagRelativeLuminance() > 0.5 ? Color.black : Color.white
         
         // Find a good text color that contrasts with the background
-        let textColor = findBestTextColor(for: backgroundColor)
+        let textColor = backgroundColor == Color.white ? Color.black : Color.white
         
-        // Find a good accent color that contrasts with both background and primary
-        let accentColor = findBestAccentColor(in: palette, background: backgroundColor, primary: seedColor)
+        // Generate a complementary color for accent
+        guard let hsl = seedColor.hslComponents() else {
+            return ColorTheme(
+                name: name,
+                primary: seedColor,
+                secondary: .blue,
+                accent: .orange,
+                background: .white,
+                text: .black
+            )
+        }
         
-        // Generate a secondary color that complements the primary
-        let secondaryColor = generateComplementaryColor(for: seedColor)
+        // Create complementary color (opposite hue)
+        let accentHue = (hsl.hue + 0.5).truncatingRemainder(dividingBy: 1.0)
+        let accentColor = Color(hue: accentHue, saturation: min(hsl.saturation + 0.1, 1.0), lightness: hsl.lightness)
+        
+        // Create secondary color (adjacent hue)
+        let secondaryHue = (hsl.hue + 0.25).truncatingRemainder(dividingBy: 1.0)
+        let secondaryColor = Color(hue: secondaryHue, saturation: hsl.saturation, lightness: hsl.lightness)
         
         // Create the theme
         return ColorTheme(
@@ -127,23 +159,34 @@ public struct AccessiblePaletteGenerator {
     /// Generates a color that contrasts well with the given color
     private func generateContrastingColor(for color: Color) -> Color? {
         // Get the HSL components of the color
-        guard let hsl = color.hslComponents() else { return nil }
+        guard let hsl = color.hslComponents() else { 
+            return nil 
+        }
         
         // Create a contrasting color by shifting the hue and adjusting lightness
-        let newHue = (hsl.hue + 0.5).truncatingRemainder(dividingBy: 1.0)
-        let newLightness = hsl.lightness < 0.5 ? min(hsl.lightness + 0.3, 0.9) : max(hsl.lightness - 0.3, 0.1)
+        // Use a more deterministic approach instead of small adjustments
+        let hueShift = Double.random(in: 0.2...0.8) // More randomness
+        let newHue = (hsl.hue + hueShift).truncatingRemainder(dividingBy: 1.0)
         
-        let contrastingColor = Color(hue: newHue, saturation: hsl.saturation, lightness: newLightness)
+        // Make lightness adjustment more dramatic
+        let lightnessShift = hsl.lightness < 0.5 ? 0.4 : -0.4
+        let newLightness = max(0.1, min(0.9, hsl.lightness + lightnessShift))
+        
+        // Increase saturation slightly for more vibrant colors
+        let newSaturation = min(1.0, hsl.saturation + 0.1)
+        
+        let contrastingColor = Color(hue: newHue, saturation: newSaturation, lightness: newLightness)
         
         // Verify the contrast ratio meets our requirements
         let ratio = color.wcagContrastRatio(with: contrastingColor)
+        
         if ratio >= configuration.minimumContrastRatio {
             return contrastingColor
         }
         
-        // If contrast is insufficient, adjust lightness further
-        let adjustedLightness = hsl.lightness < 0.5 ? 0.9 : 0.1
-        return Color(hue: newHue, saturation: hsl.saturation, lightness: adjustedLightness)
+        // If contrast is insufficient, create a more extreme version
+        let extremeLightness = hsl.lightness < 0.5 ? 0.9 : 0.1
+        return Color(hue: newHue, saturation: newSaturation, lightness: extremeLightness)
     }
     
     /// Generates a complementary color for the given color
@@ -225,10 +268,10 @@ public struct AccessiblePaletteGenerator {
         let saturationDiff = abs(hsl1.saturation - hsl2.saturation)
         let lightnessDiff = abs(hsl1.lightness - hsl2.lightness)
         
-        // Define thresholds for similarity
-        let hueThreshold = 0.08 // About 30 degrees in the color wheel
-        let saturationThreshold = 0.15
-        let lightnessThreshold = 0.15
+        // Define thresholds for similarity - more lenient to prevent freezing
+        let hueThreshold = 0.15
+        let saturationThreshold = 0.25
+        let lightnessThreshold = 0.25
         
         return hueDiff < hueThreshold && 
                saturationDiff < saturationThreshold && 
