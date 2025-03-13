@@ -2,6 +2,23 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [1.4.2] - 2025-03-13
+
+### Fixed
+- Critical issue where the Accessible Palette Generator would freeze the app
+- Performance issues in color palette generation algorithms
+
+### Added
+- Loading indicators during palette generation for better user feedback
+- Timeout mechanisms to prevent potential infinite loops
+- Fallback mechanisms to ensure palette generation always completes
+
+### Changed
+- Moved palette and theme generation to background threads
+- Optimized color generation to be more efficient and deterministic
+- Made color similarity detection more lenient to improve palette variety
+- Simplified theme generation for better performance
+
 ## [1.4.1] - 2025-03-15
 
 ### Changed
