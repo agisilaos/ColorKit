@@ -18,6 +18,7 @@
 
 import SwiftUI
 import Foundation
+import UniformTypeIdentifiers
 #if canImport(UIKit)
 import UIKit
 #elseif canImport(AppKit)
