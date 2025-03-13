@@ -2,6 +2,12 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [1.4.1] - 2025-03-15
+
+### Changed
+- Improved thread safety in ColorCache by changing NSCache variable declarations to constants
+- Enhanced documentation regarding thread safety
+
 ## [1.4.0] - 2025-03-12
 
 ### Added

@@ -29,24 +29,24 @@ public final class ColorCache: @unchecked Sendable {
     private let maxCacheSize = 100
     
     /// Cache for LAB color components
-    private var labCache = NSCache<NSString, NSArray>()
+    private let labCache = NSCache<NSString, NSArray>()
     
     /// Cache for HSL color components
-    private var hslCache = NSCache<NSString, NSArray>()
+    private let hslCache = NSCache<NSString, NSArray>()
     
     /// Cache for WCAG luminance values
-    private var luminanceCache = NSCache<NSString, NSNumber>()
+    private let luminanceCache = NSCache<NSString, NSNumber>()
     
     /// Cache for WCAG contrast ratios
-    private var contrastRatioCache = NSCache<NSString, NSNumber>()
+    private let contrastRatioCache = NSCache<NSString, NSNumber>()
     
     /// Cache for blended colors
     #if canImport(AppKit)
-    private var blendedColorCache = NSCache<NSString, NSColor>()
-    private var interpolatedColorCache = NSCache<NSString, NSColor>()
+    private let blendedColorCache = NSCache<NSString, NSColor>()
+    private let interpolatedColorCache = NSCache<NSString, NSColor>()
     #elseif canImport(UIKit)
-    private var blendedColorCache = NSCache<NSString, UIColor>()
-    private var interpolatedColorCache = NSCache<NSString, UIColor>()
+    private let blendedColorCache = NSCache<NSString, UIColor>()
+    private let interpolatedColorCache = NSCache<NSString, UIColor>()
     #endif
     
     /// Private initializer to enforce singleton pattern
