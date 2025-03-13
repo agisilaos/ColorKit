@@ -132,22 +132,31 @@ public struct PaletteExportView: View {
         HStack {
             Button(action: copyToClipboard) {
                 Label("Copy", systemImage: "doc.on.clipboard")
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.accentColor.opacity(0.1))
+                    .cornerRadius(8)
             }
-            .buttonStyle(BorderedButtonStyle())
             
             Spacer()
             
             Button(action: exportToFile) {
                 Label("Export", systemImage: "square.and.arrow.down")
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.accentColor.opacity(0.1))
+                    .cornerRadius(8)
             }
-            .buttonStyle(BorderedButtonStyle())
             
             Spacer()
             
             Button(action: share) {
                 Label("Share", systemImage: "square.and.arrow.up")
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.accentColor.opacity(0.1))
+                    .cornerRadius(8)
             }
-            .buttonStyle(BorderedButtonStyle())
         }
     }
     

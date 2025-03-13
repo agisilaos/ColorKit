@@ -221,15 +221,21 @@ public struct AccessiblePaletteDemoView: View {
                         showPaletteExport()
                     }) {
                         Label("Export Palette", systemImage: "square.and.arrow.up")
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.accentColor.opacity(0.1))
+                            .cornerRadius(8)
                     }
-                    .buttonStyle(BorderedButtonStyle())
                     
                     Button(action: {
                         showThemeExport()
                     }) {
                         Label("Export Theme", systemImage: "square.and.arrow.up.on.square")
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.accentColor.opacity(0.1))
+                            .cornerRadius(8)
                     }
-                    .buttonStyle(BorderedButtonStyle())
                 }
                 .padding(.top, 10)
             }
