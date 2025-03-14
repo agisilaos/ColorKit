@@ -22,7 +22,7 @@ final class ThemeTests: XCTestCase {
         // Test creating a theme with color sets
         let primarySet = ThemeColorSet(base: Color.red, light: Color.pink, dark: Color.purple)
         let secondarySet = ThemeColorSet(base: Color.blue, light: Color.gray, dark: Color.purple)
-        let accentSet = ThemeColorSet(base: Color.green, light: Color.yellow, dark: Color.orange)
+        let accentSet = ThemeColorSet(base: Color.green, light: Color.purple, dark: Color.gray)
         let backgroundSet = ThemeColorSet(base: Color.white, light: Color.white, dark: Color.gray)
         let textSet = ThemeColorSet(base: Color.black, light: Color.gray, dark: Color.black)
         let statusSet = StatusColorSet(success: Color.green, warning: Color.yellow, error: Color.red)
