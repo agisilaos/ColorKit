@@ -32,8 +32,10 @@ public struct WCAGComplianceModifier: ViewModifier {
                             let passes = compliance.contrastRatio >= level.minimumRatio
                             
                             HStack(spacing: 4) {
-                                Image(systemName: passes ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                    .foregroundColor(passes ? .green : .red)
+                                if #available(macOS 11.0, *) {
+                                    Image(systemName: passes ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                        .foregroundColor(passes ? .green : .red)
+                                }
                                 
                                 Text(level.rawValue)
                                     .font(.caption)
