@@ -2,6 +2,16 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [1.4.3] - 2024-03-14
+
+### Fixed
+- Added proper availability check for SF Symbols on macOS to fix compilation issues
+- Despite having macOS 11.0 as minimum deployment target, explicit availability checks are required for certain APIs
+
+### Compatibility
+- Requires iOS 14.0 or later
+- Requires macOS 11.0 or later
+
 ## [1.4.2] - 2025-03-13
 
 ### Fixed
