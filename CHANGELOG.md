@@ -2,7 +2,17 @@
 
 All notable changes to ColorKit will be documented in this file.
 
-## [1.5.0] - TBR
+## [1.5.0] - 2024-03-14
+
+### Changed
+- Standardized parameter naming across the library for better consistency:
+  - Changed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
+  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
+  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
+  - Changed `enhanced(against:targetLevel:strategy:)` to `enhanced(with:targetLevel:strategy:)`
+  - Changed `suggestAccessibleVariants(against:targetLevel:count:)` to `suggestAccessibleVariants(with:targetLevel:count:)`
+  - Standardized all blending and interpolation methods to use `amount` parameter consistently
+  - Standardized all gradient methods to use `amount` parameter consistently
 
 ### Added
 - Palette export and sharing functionality
@@ -17,12 +27,10 @@ All notable changes to ColorKit will be documented in this file.
 - Perceptually uniform color adjustments using LAB color space
 - Accessible color variant suggestions that maintain harmony with original colors
 - Interactive demo view for testing accessibility enhancements
+- Added comprehensive migration guide for users updating to version 1.5.0
+- Added detailed documentation for parameter naming conventions
 
 ### Changed
-- Standardized parameter naming across the library for better consistency:
-  - Renamed `alpha` to `amount` in blending methods
-  - Renamed `fraction` to `amount` in interpolation methods
-  - Updated documentation to reflect parameter name changes
 - Improved type usage consistency:
   - Using `CGFloat` for UI components and SwiftUI interfaces
   - Using `Double` for color space calculations and WCAG compliance
@@ -121,6 +129,17 @@ All notable changes to ColorKit will be documented in this file.
 ### Changed
 - Enhanced HEX <-> RGB conversion
 - Improved color component extraction
+
+## [1.1.0] - 2024-03-15
+
+### Changed
+- Standardized parameter naming across the library for better consistency:
+  - Renamed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
+  - Renamed `getCachedContrastRatio(for:and:)` to `getCachedContrastRatio(for:with:)`
+  - Renamed `cacheContrastRatio(for:and:ratio:)` to `cacheContrastRatio(for:with:ratio:)`
+
+### Added
+- Added migration guide for users updating to version 1.1.0
 
 ## [1.0.0] - 2025-02-01
 

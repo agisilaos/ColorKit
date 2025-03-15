@@ -118,8 +118,8 @@ public extension Color {
         var colors: [Color] = []
         
         for step in 0..<steps {
-            let fraction = CGFloat(step) / CGFloat(steps - 1)
-            let lightness = lightnessRange.lowerBound + fraction * (lightnessRange.upperBound - lightnessRange.lowerBound)
+            let amount = CGFloat(step) / CGFloat(steps - 1)
+            let lightness = lightnessRange.lowerBound + amount * (lightnessRange.upperBound - lightnessRange.lowerBound)
             colors.append(Color(hue: hsl.hue, saturation: hsl.saturation, lightness: lightness))
         }
         
@@ -143,7 +143,7 @@ public extension Color {
         if let cachedColor = ColorCache.shared.getCachedInterpolatedColor(
             color1: self, 
             color2: color, 
-            fraction: clampedAmount, 
+            amount: clampedAmount, 
             colorSpace: String(describing: colorSpace)
         ) {
             return cachedColor
@@ -164,7 +164,7 @@ public extension Color {
         ColorCache.shared.cacheInterpolatedColor(
             color1: self, 
             color2: color, 
-            fraction: clampedAmount, 
+            amount: clampedAmount, 
             colorSpace: String(describing: colorSpace), 
             result: result
         )

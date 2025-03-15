@@ -152,10 +152,10 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached contrast ratio between two colors
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
+    ///   - with: The second color
     /// - Returns: The cached contrast ratio if available, nil otherwise
-    public func getCachedContrastRatio(for color1: Color, and color2: Color) -> Double? {
-        let key = contrastCacheKey(for: color1, and: color2)
+    public func getCachedContrastRatio(for color1: Color, with color2: Color) -> Double? {
+        let key = contrastCacheKey(for: color1, with: color2)
         if let cachedValue = contrastRatioCache.object(forKey: key) {
             return cachedValue.doubleValue
         }
@@ -165,10 +165,10 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache contrast ratio between two colors
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
+    ///   - with: The second color
     ///   - ratio: The contrast ratio to cache
-    public func cacheContrastRatio(for color1: Color, and color2: Color, ratio: Double) {
-        let key = contrastCacheKey(for: color1, and: color2)
+    public func cacheContrastRatio(for color1: Color, with color2: Color, ratio: Double) {
+        let key = contrastCacheKey(for: color1, with: color2)
         contrastRatioCache.setObject(NSNumber(value: ratio), forKey: key)
     }
 
@@ -203,7 +203,7 @@ public final class ColorCache: @unchecked Sendable {
     }
 
     /// Generates a contrast cache key for two colors
-    private func contrastCacheKey(for color1: Color, and color2: Color) -> NSString {
+    private func contrastCacheKey(for color1: Color, with color2: Color) -> NSString {
         let key1 = cacheKey(for: color1)
         let key2 = cacheKey(for: color2)
         // Create a consistent key regardless of color order
@@ -216,11 +216,11 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached blended color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
+    ///   - with: The second color
     ///   - blendMode: The blend mode used
     /// - Returns: The cached blended color if available, nil otherwise
-    public func getCachedBlendedColor(color1: Color, color2: Color, blendMode: String) -> Color? {
-        let key = blendCacheKey(for: color1, and: color2, blendMode: blendMode)
+    public func getCachedBlendedColor(color1: Color, with color2: Color, blendMode: String) -> Color? {
+        let key = blendCacheKey(for: color1, with: color2, blendMode: blendMode)
 #if canImport(AppKit)
         if let nsColor = blendedColorCache.object(forKey: key) {
             return Color(nsColor)
@@ -239,11 +239,11 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache blended color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
+    ///   - with: The second color
     ///   - blendMode: The blend mode used
     ///   - result: The resulting blended color
-    public func cacheBlendedColor(color1: Color, color2: Color, blendMode: String, result: Color) {
-        let key = blendCacheKey(for: color1, and: color2, blendMode: blendMode)
+    public func cacheBlendedColor(color1: Color, with color2: Color, blendMode: String, result: Color) {
+        let key = blendCacheKey(for: color1, with: color2, blendMode: blendMode)
 #if canImport(AppKit)
         if let cgColor = result.cgColor, let nsColor = NSColor(cgColor: cgColor) {
             blendedColorCache.setObject(nsColor, forKey: key)
@@ -265,12 +265,12 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached interpolated color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
-    ///   - fraction: The interpolation fraction
+    ///   - with: The second color
+    ///   - amount: The interpolation amount
     ///   - colorSpace: The color space used for interpolation
     /// - Returns: The cached interpolated color if available, nil otherwise
-    public func getCachedInterpolatedColor(color1: Color, color2: Color, fraction: CGFloat, colorSpace: String) -> Color? {
-        let key = interpolationCacheKey(for: color1, and: color2, fraction: fraction, colorSpace: colorSpace)
+    public func getCachedInterpolatedColor(color1: Color, with color2: Color, amount: CGFloat, colorSpace: String) -> Color? {
+        let key = interpolationCacheKey(for: color1, with: color2, amount: amount, colorSpace: colorSpace)
 #if canImport(AppKit)
         if let nsColor = interpolatedColorCache.object(forKey: key) {
             return Color(nsColor)
@@ -286,12 +286,12 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache interpolated color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - color2: The second color
-    ///   - fraction: The interpolation fraction
+    ///   - with: The second color
+    ///   - amount: The interpolation amount
     ///   - colorSpace: The color space used for interpolation
     ///   - result: The resulting interpolated color
-    public func cacheInterpolatedColor(color1: Color, color2: Color, fraction: CGFloat, colorSpace: String, result: Color) {
-        let key = interpolationCacheKey(for: color1, and: color2, fraction: fraction, colorSpace: colorSpace)
+    public func cacheInterpolatedColor(color1: Color, with color2: Color, amount: CGFloat, colorSpace: String, result: Color) {
+        let key = interpolationCacheKey(for: color1, with: color2, amount: amount, colorSpace: colorSpace)
 #if canImport(AppKit)
         if let cgColor = result.cgColor, let nsColor = NSColor(cgColor: cgColor) {
             interpolatedColorCache.setObject(nsColor, forKey: key)
@@ -310,18 +310,18 @@ public final class ColorCache: @unchecked Sendable {
 
     // MARK: - Helper Methods
 
-    private func blendCacheKey(for color1: Color, and color2: Color, blendMode: String) -> NSString {
+    private func blendCacheKey(for color1: Color, with color2: Color, blendMode: String) -> NSString {
         let key1 = cacheKey(for: color1)
         let key2 = cacheKey(for: color2)
         return "\(key1):\(key2):\(blendMode)" as NSString
     }
 
-    private func interpolationCacheKey(for color1: Color, and color2: Color, fraction: CGFloat, colorSpace: String) -> NSString {
+    private func interpolationCacheKey(for color1: Color, with color2: Color, amount: CGFloat, colorSpace: String) -> NSString {
         let key1 = cacheKey(for: color1)
         let key2 = cacheKey(for: color2)
-        // Round fraction to 3 decimal places to avoid too many cache entries
-        let roundedFraction = round(fraction * 1000) / 1000
-        return "\(key1):\(key2):\(roundedFraction):\(colorSpace)" as NSString
+        // Round amount to 3 decimal places to avoid too many cache entries
+        let roundedAmount = round(amount * 1000) / 1000
+        return "\(key1):\(key2):\(roundedAmount):\(colorSpace)" as NSString
     }
 }
 
