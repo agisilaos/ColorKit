@@ -48,13 +48,11 @@ ColorCache.shared.cacheInterpolatedColor(color1: color1, with: color2, amount: 0
 color1.blend(color2, mode: .normal, alpha: 0.5)
 color1.interpolate(to: color2, fraction: 0.5)
 color1.blended(color2, mode: .normal, alpha: 0.5)
-color1.adjustBrightness(by: 0.5)
 
 // New
 color1.blend(color2, mode: .normal, amount: 0.5)
 color1.interpolate(to: color2, amount: 0.5)
 color1.blended(with: color2, mode: .normal, amount: 0.5)
-color1.adjustBrightness(by: 0.5) // Note: 'by' is kept as it's a standard Swift convention
 ```
 
 #### Gradient Methods
@@ -91,7 +89,11 @@ color.monochromaticGradient(amount: 0.5)
 
 4. **Run Tests**
    - Run your test suite to catch any missed parameter name updates
-   - Pay special attention to tests involving color blending, interpolation, and accessibility checks
+   - Pay special attention to tests involving:
+     - Color accessibility checks
+     - Color caching operations
+     - Color blending and interpolation
+     - Gradient generation
 
 ## Benefits
 
