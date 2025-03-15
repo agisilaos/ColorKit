@@ -132,17 +132,6 @@ All notable changes to ColorKit will be documented in this file.
 - Enhanced HEX <-> RGB conversion
 - Improved color component extraction
 
-## [1.1.0] - 2024-03-15
-
-### Changed
-- Standardized parameter naming across the library for better consistency:
-  - Renamed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
-  - Renamed `getCachedContrastRatio(for:and:)` to `getCachedContrastRatio(for:with:)`
-  - Renamed `cacheContrastRatio(for:and:ratio:)` to `cacheContrastRatio(for:with:ratio:)`
-
-### Added
-- Added migration guide for users updating to version 1.1.0
-
 ## [1.0.0] - 2025-02-01
 
 ### Added
