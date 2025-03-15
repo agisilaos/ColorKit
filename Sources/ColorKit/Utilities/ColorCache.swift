@@ -173,13 +173,33 @@ public final class ColorCache: @unchecked Sendable {
     }
 
     /// Clears all caches
-    public func clearAllCaches() {
+    public func clearCache() {
         labCache.removeAllObjects()
         hslCache.removeAllObjects()
         luminanceCache.removeAllObjects()
         contrastRatioCache.removeAllObjects()
         blendedColorCache.removeAllObjects()
         interpolatedColorCache.removeAllObjects()
+    }
+    
+    /// Clears the LAB components cache
+    public func clearLABCache() {
+        labCache.removeAllObjects()
+    }
+    
+    /// Clears the HSL components cache
+    public func clearHSLCache() {
+        hslCache.removeAllObjects()
+    }
+    
+    /// Clears the luminance cache
+    public func clearLuminanceCache() {
+        luminanceCache.removeAllObjects()
+    }
+    
+    /// Clears the contrast ratio cache
+    public func clearContrastCache() {
+        contrastRatioCache.removeAllObjects()
     }
 
     /// Generates a contrast cache key for two colors

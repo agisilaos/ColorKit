@@ -13,6 +13,8 @@ struct ContentView: View {
     @State private var backgroundColor = Color.white
     @State private var showWCAGDemo = false
     @State private var showPaletteDemo = false
+    @State private var showAccessibilityEnhancerDemo = false
+    @State private var showThemeTransitionDemo = false
     
     var body: some View {
         NavigationView {
@@ -45,25 +47,49 @@ struct ContentView: View {
                         print("Color scheme changed to: \(newScheme)")
                     }
                 
-                // WCAG Compliance Demo Button
-                Button("Open WCAG Compliance Checker") {
-                    showWCAGDemo = true
+                // Demo Buttons Section
+                VStack(spacing: 12) {
+                    // WCAG Compliance Demo Button
+                    Button("Open WCAG Compliance Checker") {
+                        showWCAGDemo = true
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .frame(maxWidth: .infinity)
+                    
+                    // Accessible Palette Generator Demo Button
+                    Button("Open Accessible Palette Generator") {
+                        showPaletteDemo = true
+                    }
+                    .padding()
+                    .background(Color.purple)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .frame(maxWidth: .infinity)
+                    
+                    // Accessibility Enhancer Demo Button
+                    Button("Open Accessibility Enhancer") {
+                        showAccessibilityEnhancerDemo = true
+                    }
+                    .padding()
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .frame(maxWidth: .infinity)
+                    
+                    // Theme Transition Demo Button
+                    Button("Open Theme Transition Demo") {
+                        showThemeTransitionDemo = true
+                    }
+                    .padding()
+                    .background(Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .frame(maxWidth: .infinity)
                 }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
                 .padding(.horizontal)
-                
-                // Accessible Palette Generator Demo Button
-                Button("Open Accessible Palette Generator") {
-                    showPaletteDemo = true
-                }
-                .padding()
-                .background(Color.purple)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                .padding()
                 
                 Spacer()
             }
@@ -74,6 +100,12 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showPaletteDemo) {
                 ColorKit.ColorInspector.accessiblePaletteDemoView()
+            }
+            .sheet(isPresented: $showAccessibilityEnhancerDemo) {
+                AccessibilityEnhancerDemoView()
+            }
+            .sheet(isPresented: $showThemeTransitionDemo) {
+                ThemeTransitionDemoView()
             }
         }
     }

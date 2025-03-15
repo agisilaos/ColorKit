@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Represents the WCAG contrast ratio levels
-public enum WCAGContrastLevel: String, CaseIterable, Identifiable {
+public enum WCAGContrastLevel: String, CaseIterable, Identifiable, Sendable {
     case AALarge = "AA Large"
     case AA = "AA"
     case AAALarge = "AAA Large"
