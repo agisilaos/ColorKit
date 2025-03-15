@@ -18,6 +18,21 @@ All notable changes to ColorKit will be documented in this file.
 - Accessible color variant suggestions that maintain harmony with original colors
 - Interactive demo view for testing accessibility enhancements
 
+### Changed
+- Standardized parameter naming across the library for better consistency:
+  - Renamed `alpha` to `amount` in blending methods
+  - Renamed `fraction` to `amount` in interpolation methods
+  - Updated documentation to reflect parameter name changes
+- Improved type usage consistency:
+  - Using `CGFloat` for UI components and SwiftUI interfaces
+  - Using `Double` for color space calculations and WCAG compliance
+- Enhanced documentation clarity and examples
+
+### Documentation
+- Updated all method documentation to reflect parameter name changes
+- Added more comprehensive examples in README
+- Improved parameter descriptions for clarity
+
 ## [1.4.3] - 2024-03-14
 
 ### Fixed
