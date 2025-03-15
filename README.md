@@ -29,6 +29,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Adaptive Colors (Light/Dark Mode)**  
 ✅ **WCAG Contrast Checking for Accessibility**  
 ✅ **Auto-Generate Accessible Color Palettes**  
+✅ **Export & Share Color Palettes**  
 ✅ **SwiftUI Modifiers for Dynamic Colors**  
 ✅ **Gradient Generation Utilities**  
 ✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
@@ -163,7 +164,48 @@ struct ContentView: View {
 }
 ```
 
-### **1️⃣2️⃣ Performance Optimizations (v1.4.0+)**  
+### **1️⃣2️⃣ Export & Share Color Palettes**  
+```swift
+// Create a palette from colors
+let colors: [Color] = [.red, .green, .blue]
+let palette = PaletteExporter.createPalette(from: colors)
+
+// Create a palette from a theme
+let theme = ThemeManager.shared.currentTheme
+let themePalette = PaletteExporter.createPalette(from: theme)
+
+// Export to various formats
+if let jsonData = PaletteExporter.export(
+    palette: palette,
+    to: .json,
+    paletteName: "My Palette"
+) {
+    // Use the data (save to file, share, etc.)
+}
+
+// Copy to clipboard
+PaletteExporter.copyToClipboard(
+    palette: palette,
+    format: .css,
+    paletteName: "My Palette"
+)
+
+// Export accessible palette
+let accessiblePaletteData = seedColor.exportAccessiblePalette(
+    targetLevel: .AA,
+    to: .svg,
+    paletteName: "Accessible Palette"
+)
+
+// Add export functionality to any view
+myView.paletteExport(colors: colors, paletteName: "RGB Palette")
+myView.paletteExport(theme: theme)
+
+// Use the export UI directly
+PaletteExportView(palette: palette, paletteName: "My Palette")
+```
+
+### **1️⃣3️⃣ Performance Optimizations (v1.4.0+)**  
 ```swift
 // ColorKit automatically caches expensive color operations
 // No code changes required to benefit from performance improvements

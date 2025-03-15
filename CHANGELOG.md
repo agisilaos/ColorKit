@@ -2,6 +2,17 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [1.5.0] - TBR
+
+### Added
+- Palette export and sharing functionality
+- Support for exporting palettes in JSON, CSS, SVG, Adobe ASE, and PNG formats
+- UI components for exporting and sharing palettes
+- Integration with system share sheet
+- Clipboard support for quick copying
+- View modifiers for adding export functionality to any view
+- Documentation for palette export feature
+
 ## [1.4.3] - 2024-03-14
 
 ### Fixed
