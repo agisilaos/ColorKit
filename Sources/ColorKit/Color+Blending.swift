@@ -35,7 +35,7 @@ public extension Color {
         
         // If amount is 1.0, check the cache for the full blend
         if amount >= 1.0 {
-            if let cachedColor = ColorCache.shared.getCachedBlendedColor(color1: self, color2: color, blendMode: String(describing: mode)) {
+            if let cachedColor = ColorCache.shared.getCachedBlendedColor(color1: self, with: color, blendMode: String(describing: mode)) {
                 return cachedColor
             }
         }
@@ -70,7 +70,7 @@ public extension Color {
         
         // Cache the result if amount is 1.0 (full blend)
         if amount >= 1.0 {
-            ColorCache.shared.cacheBlendedColor(color1: self, color2: color, blendMode: String(describing: mode), result: resultColor)
+            ColorCache.shared.cacheBlendedColor(color1: self, with: color, blendMode: String(describing: mode), result: resultColor)
         }
         
         return resultColor

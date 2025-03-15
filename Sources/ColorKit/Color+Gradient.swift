@@ -142,7 +142,7 @@ public extension Color {
         // Check cache first
         if let cachedColor = ColorCache.shared.getCachedInterpolatedColor(
             color1: self, 
-            color2: color, 
+            with: color, 
             amount: clampedAmount, 
             colorSpace: String(describing: colorSpace)
         ) {
@@ -163,7 +163,7 @@ public extension Color {
         // Cache the result
         ColorCache.shared.cacheInterpolatedColor(
             color1: self, 
-            color2: color, 
+            with: color, 
             amount: clampedAmount, 
             colorSpace: String(describing: colorSpace), 
             result: result

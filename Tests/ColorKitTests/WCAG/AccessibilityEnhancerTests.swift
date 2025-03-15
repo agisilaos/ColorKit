@@ -204,7 +204,7 @@ final class AccessibilityEnhancerTests: XCTestCase {
         let color = SwiftUI.Color.orange
         let backgroundColor = SwiftUI.Color.black
         
-        let enhancedColor = color.enhanced(against: backgroundColor)
+        let enhancedColor = color.enhanced(with: backgroundColor)
         
         // Check that the enhanced color meets accessibility requirements
         let contrastRatio = enhancedColor.wcagContrastRatio(with: backgroundColor)
@@ -216,7 +216,7 @@ final class AccessibilityEnhancerTests: XCTestCase {
         let color = SwiftUI.Color.green
         let backgroundColor = SwiftUI.Color.black
         
-        let variants = color.suggestAccessibleVariants(against: backgroundColor, count: 2)
+        let variants = color.suggestAccessibleVariants(with: backgroundColor, count: 2)
         
         // Check that we got the requested number of variants
         XCTAssertEqual(variants.count, 2)

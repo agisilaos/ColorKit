@@ -199,8 +199,8 @@ struct PerformanceBenchmark: View {
         // First run (no cache)
         let startTime1 = CFAbsoluteTimeGetCurrent()
         for i in 0..<colors.count/2 {
-            for fraction in stride(from: 0.0, through: 1.0, by: 0.1) {
-                _ = colors[i].interpolated(with: colors[i + colors.count/2], fraction: fraction, in: .lab)
+            for amount in stride(from: 0.0, through: 1.0, by: 0.1) {
+                _ = colors[i].interpolated(with: colors[i + colors.count/2], amount: amount, in: .lab)
             }
         }
         let endTime1 = CFAbsoluteTimeGetCurrent()
@@ -211,8 +211,8 @@ struct PerformanceBenchmark: View {
         // Second run (with cache)
         let startTime2 = CFAbsoluteTimeGetCurrent()
         for i in 0..<colors.count/2 {
-            for fraction in stride(from: 0.0, through: 1.0, by: 0.1) {
-                _ = colors[i].interpolated(with: colors[i + colors.count/2], fraction: fraction, in: .lab)
+            for amount in stride(from: 0.0, through: 1.0, by: 0.1) {
+                _ = colors[i].interpolated(with: colors[i + colors.count/2], amount: amount, in: .lab)
             }
         }
         let endTime2 = CFAbsoluteTimeGetCurrent()
