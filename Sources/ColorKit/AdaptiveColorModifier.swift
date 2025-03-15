@@ -74,7 +74,7 @@ private struct HighContrastColorModifier: ViewModifier {
     var minimumRatio: CGFloat
     
     func body(content: Content) -> some View {
-        let adjustedColor = base.adjustedForAccessibility(against: background, minimumRatio: minimumRatio)
+        let adjustedColor = base.adjustedForAccessibility(with: background, minimumRatio: minimumRatio)
         return content.foregroundColor(adjustedColor)
     }
 }

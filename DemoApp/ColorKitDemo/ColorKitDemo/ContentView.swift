@@ -14,7 +14,6 @@ struct ContentView: View {
     @State private var showWCAGDemo = false
     @State private var showPaletteDemo = false
     @State private var showAccessibilityEnhancerDemo = false
-    @State private var showThemeTransitionDemo = false
     
     var body: some View {
         NavigationView {
@@ -78,16 +77,6 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
                     .frame(maxWidth: .infinity)
-                    
-                    // Theme Transition Demo Button
-                    Button("Open Theme Transition Demo") {
-                        showThemeTransitionDemo = true
-                    }
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal)
                 
@@ -103,9 +92,6 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showAccessibilityEnhancerDemo) {
                 AccessibilityEnhancerDemoView()
-            }
-            .sheet(isPresented: $showThemeTransitionDemo) {
-                ThemeTransitionDemoView()
             }
         }
     }

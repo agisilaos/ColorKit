@@ -111,7 +111,7 @@ final class ColorKitTests: XCTestCase {
         let contrastBefore = color.contrastRatio(with: background)
         XCTAssertLessThan(contrastBefore, 4.5, "Initial contrast should be less than 4.5")
 
-        let adjustedColor = color.adjustedForAccessibility(against: background, minimumRatio: 4.5)
+        let adjustedColor = color.adjustedForAccessibility(with: background, minimumRatio: 4.5)
         let contrastAfter = adjustedColor.contrastRatio(with: background)
 
         XCTAssertGreaterThan(contrastAfter, 4.5, "Adjusted color should meet accessibility contrast")

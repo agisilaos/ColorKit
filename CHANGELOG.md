@@ -2,7 +2,7 @@
 
 All notable changes to ColorKit will be documented in this file.
 
-## [1.5.0] - TBR
+## [1.5.0] - 2024-03-14
 
 ### Added
 - Palette export and sharing functionality
@@ -17,6 +17,31 @@ All notable changes to ColorKit will be documented in this file.
 - Perceptually uniform color adjustments using LAB color space
 - Accessible color variant suggestions that maintain harmony with original colors
 - Interactive demo view for testing accessibility enhancements
+- Added comprehensive migration guide for users updating to version 1.5.0
+- Added detailed documentation for parameter naming conventions
+
+### Changed
+- Improved type usage consistency:
+  - Using `CGFloat` for UI components and SwiftUI interfaces
+  - Using `Double` for color space calculations and WCAG compliance
+- Enhanced documentation clarity and examples
+- Standardized parameter naming across the library for better consistency:
+  - Changed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
+  - Changed `enhanced(against:targetLevel:strategy:)` to `enhanced(with:targetLevel:strategy:)`
+  - Changed `suggestAccessibleVariants(against:targetLevel:count:)` to `suggestAccessibleVariants(with:targetLevel:count:)`
+  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
+  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
+  - Changed `ColorCache.getCachedBlendedColor(color1:and:)` to `ColorCache.getCachedBlendedColor(color1:with:)`
+  - Changed `ColorCache.cacheBlendedColor(color1:and:)` to `ColorCache.cacheBlendedColor(color1:with:)`
+  - Changed `ColorCache.getCachedInterpolatedColor(color1:and:)` to `ColorCache.getCachedInterpolatedColor(color1:with:)`
+  - Changed `ColorCache.cacheInterpolatedColor(color1:and:)` to `ColorCache.cacheInterpolatedColor(color1:with:)`
+  - Standardized all blending and interpolation methods to use `amount` parameter consistently
+  - Standardized all gradient methods to use `amount` parameter consistently
+
+### Documentation
+- Updated all method documentation to reflect parameter name changes
+- Added more comprehensive examples in README
+- Improved parameter descriptions for clarity
 
 ## [1.4.3] - 2024-03-14
 

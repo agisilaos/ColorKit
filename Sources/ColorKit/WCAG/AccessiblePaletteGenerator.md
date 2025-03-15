@@ -55,7 +55,7 @@ Text("Body text")
 ```swift
 // Find a color that contrasts well with a background color
 let backgroundColor = Color.blue
-let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+let textColor = backgroundColor.accessibleContrastingColor(with: backgroundColor, targetLevel: .AA)
 
 // Use the colors in your UI
 Text("This text is readable")

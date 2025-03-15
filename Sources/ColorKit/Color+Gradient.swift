@@ -34,8 +34,8 @@ public extension Color {
         var colors: [Color] = []
         
         for step in 0..<steps {
-            let fraction = CGFloat(step) / CGFloat(steps - 1)
-            colors.append(interpolated(with: to, fraction: fraction, in: colorSpace))
+            let amount = CGFloat(step) / CGFloat(steps - 1)
+            colors.append(interpolated(with: to, amount: amount, in: colorSpace))
         }
         
         return colors
@@ -118,8 +118,8 @@ public extension Color {
         var colors: [Color] = []
         
         for step in 0..<steps {
-            let fraction = CGFloat(step) / CGFloat(steps - 1)
-            let lightness = lightnessRange.lowerBound + fraction * (lightnessRange.upperBound - lightnessRange.lowerBound)
+            let amount = CGFloat(step) / CGFloat(steps - 1)
+            let lightness = lightnessRange.lowerBound + amount * (lightnessRange.upperBound - lightnessRange.lowerBound)
             colors.append(Color(hue: hsl.hue, saturation: hsl.saturation, lightness: lightness))
         }
         
@@ -133,17 +133,17 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The destination color.
-    ///   - fraction: The interpolation fraction (0.0 = this color, 1.0 = destination color).
+    ///   - amount: The interpolation amount (0.0 = this color, 1.0 = destination color).
     ///   - colorSpace: The color space in which to perform the interpolation.
     /// - Returns: The interpolated color.
-    func interpolated(with color: Color, fraction: CGFloat, in colorSpace: GradientColorSpace = .rgb) -> Color {
-        let clampedFraction = max(0, min(1, fraction))
+    func interpolated(with color: Color, amount: CGFloat, in colorSpace: GradientColorSpace = .rgb) -> Color {
+        let clampedAmount = max(0, min(1, amount))
         
         // Check cache first
         if let cachedColor = ColorCache.shared.getCachedInterpolatedColor(
             color1: self, 
-            color2: color, 
-            fraction: clampedFraction, 
+            with: color, 
+            amount: clampedAmount, 
             colorSpace: String(describing: colorSpace)
         ) {
             return cachedColor
@@ -153,18 +153,18 @@ public extension Color {
         let result: Color
         switch colorSpace {
         case .rgb:
-            result = interpolateRGB(with: color, fraction: clampedFraction)
+            result = interpolateRGB(with: color, amount: clampedAmount)
         case .hsl:
-            result = interpolateHSL(with: color, fraction: clampedFraction)
+            result = interpolateHSL(with: color, amount: clampedAmount)
         case .lab:
-            result = interpolateLAB(with: color, fraction: clampedFraction)
+            result = interpolateLAB(with: color, amount: clampedAmount)
         }
         
         // Cache the result
         ColorCache.shared.cacheInterpolatedColor(
             color1: self, 
-            color2: color, 
-            fraction: clampedFraction, 
+            with: color, 
+            amount: clampedAmount, 
             colorSpace: String(describing: colorSpace), 
             result: result
         )
@@ -173,7 +173,7 @@ public extension Color {
     }
     
     /// Interpolates between this color and another color in RGB space.
-    private func interpolateRGB(with color: Color, fraction: CGFloat) -> Color {
+    private func interpolateRGB(with color: Color, amount: CGFloat) -> Color {
         guard let components1 = cgColor?.components, components1.count >= 3,
               let components2 = color.cgColor?.components, components2.count >= 3 else {
             return self
@@ -189,19 +189,19 @@ public extension Color {
         let b2 = components2[2]
         let a2 = components2.count >= 4 ? components2[3] : 1.0
         
-        let r = r1 + (r2 - r1) * fraction
-        let g = g1 + (g2 - g1) * fraction
-        let b = b1 + (b2 - b1) * fraction
-        let a = a1 + (a2 - a1) * fraction
+        let r = r1 + (r2 - r1) * amount
+        let g = g1 + (g2 - g1) * amount
+        let b = b1 + (b2 - b1) * amount
+        let a = a1 + (a2 - a1) * amount
         
         return Color(.sRGB, red: r, green: g, blue: b, opacity: a)
     }
     
     /// Interpolates between this color and another color in HSL space.
-    private func interpolateHSL(with color: Color, fraction: CGFloat) -> Color {
+    private func interpolateHSL(with color: Color, amount: CGFloat) -> Color {
         guard let hsl1 = self.hslComponents(),
               let hsl2 = color.hslComponents() else {
-            return interpolateRGB(with: color, fraction: fraction)
+            return interpolateRGB(with: color, amount: amount)
         }
         
         // Handle hue interpolation specially to ensure we go the shortest way around the color wheel
@@ -217,23 +217,23 @@ public extension Color {
             }
         }
         
-        let h = fmod(hue1 + (hue2 - hue1) * fraction, 1.0)
-        let s = hsl1.saturation + (hsl2.saturation - hsl1.saturation) * fraction
-        let l = hsl1.lightness + (hsl2.lightness - hsl1.lightness) * fraction
+        let h = fmod(hue1 + (hue2 - hue1) * amount, 1.0)
+        let s = hsl1.saturation + (hsl2.saturation - hsl1.saturation) * amount
+        let l = hsl1.lightness + (hsl2.lightness - hsl1.lightness) * amount
         
         return Color(hue: h, saturation: s, lightness: l)
     }
     
     /// Interpolates between this color and another color in LAB space.
-    private func interpolateLAB(with color: Color, fraction: CGFloat) -> Color {
+    private func interpolateLAB(with color: Color, amount: CGFloat) -> Color {
         guard let lab1 = self.labComponents(),
               let lab2 = color.labComponents() else {
-            return interpolateRGB(with: color, fraction: fraction)
+            return interpolateRGB(with: color, amount: amount)
         }
         
-        let L = lab1.L + (lab2.L - lab1.L) * fraction
-        let a = lab1.a + (lab2.a - lab1.a) * fraction
-        let b = lab1.b + (lab2.b - lab1.b) * fraction
+        let L = lab1.L + (lab2.L - lab1.L) * amount
+        let a = lab1.a + (lab2.a - lab1.a) * amount
+        let b = lab1.b + (lab2.b - lab1.b) * amount
         
         return Color(L: L, a: a, b: b)
     }

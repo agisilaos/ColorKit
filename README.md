@@ -155,7 +155,7 @@ let theme = seedColor.generateAccessibleTheme(
 
 // Find a contrasting color that meets accessibility standards
 let backgroundColor = Color.purple
-let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+let textColor = backgroundColor.accessibleContrastingColor(with: backgroundColor, targetLevel: .AA)
 
 // Use the demo view to experiment with palette generation
 struct ContentView: View {
@@ -218,13 +218,21 @@ let lab1 = color1.labComponents()
 let lab1Again = color1.labComponents()
 
 // Blending with caching
-let blended = color1.blended(with: color2, mode: .overlay)
+let blended = color1.blended(with: color2, mode: .overlay, amount: 0.5)
 
 // Gradient interpolation with caching
-let interpolated = color1.interpolated(with: color2, fraction: 0.5, in: .lab)
+let interpolated = color1.interpolated(with: color2, amount: 0.5, in: .lab)
+
+// Get cached contrast ratio
+if let ratio = ColorCache.shared.getCachedContrastRatio(for: color1, with: color2) {
+    print("Cached contrast ratio: \(ratio)")
+}
+
+// Cache a contrast ratio
+ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
 
 // If needed, manually clear caches
-ColorCache.shared.clearAllCaches()
+ColorCache.shared.clearCache()
 ```
 
 For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
@@ -237,18 +245,18 @@ let backgroundColor = Color.white
 let targetLevel = WCAGContrastLevel.AA
 
 // Simple enhancement with default settings (preserves hue)
-let enhancedColor = originalColor.enhanced(against: backgroundColor)
+let enhancedColor = originalColor.enhanced(with: backgroundColor)
 
 // Choose a specific enhancement strategy
 let enhancedWithStrategy = originalColor.enhanced(
-    against: backgroundColor,
+    with: backgroundColor,
     targetLevel: .AAA,
     strategy: .preserveSaturation
 )
 
 // Get multiple accessible color variants that maintain harmony
 let variants = originalColor.suggestAccessibleVariants(
-    against: backgroundColor,
+    with: backgroundColor,
     targetLevel: .AA,
     count: 3
 )
@@ -261,7 +269,7 @@ let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Config
     preferDarker: true
 ))
 
-let customEnhancedColor = enhancer.enhanceColor(originalColor, against: backgroundColor)
+let customEnhancedColor = enhancer.enhanceColor(originalColor, with: backgroundColor)
 
 // Use the demo view to experiment with enhancement strategies
 struct ContentView: View {
