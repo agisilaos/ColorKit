@@ -12,6 +12,11 @@ All notable changes to ColorKit will be documented in this file.
 - Clipboard support for quick copying
 - View modifiers for adding export functionality to any view
 - Documentation for palette export feature
+- AccessibilityEnhancer for intelligent color adjustments that preserve brand identity
+- Multiple adjustment strategies (preserve hue, preserve saturation, preserve lightness, minimum change)
+- Perceptually uniform color adjustments using LAB color space
+- Accessible color variant suggestions that maintain harmony with original colors
+- Interactive demo view for testing accessibility enhancements
 
 ## [1.4.3] - 2024-03-14
 

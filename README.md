@@ -35,6 +35,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Color Blending Modes (Overlay, Multiply, Screen, etc.)**  
 ✅ **Comprehensive Theming System**  
 ✅ **High-Performance Caching for Color Operations**  
+✅ **AccessibilityEnhancer for Intelligent Color Adjustments**  
 
 ---
 
@@ -227,6 +228,48 @@ ColorCache.shared.clearAllCaches()
 ```
 
 For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
+
+### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
+```swift
+// Enhance a color to meet accessibility requirements while preserving brand identity
+let originalColor = Color.blue
+let backgroundColor = Color.white
+let targetLevel = WCAGContrastLevel.AA
+
+// Simple enhancement with default settings (preserves hue)
+let enhancedColor = originalColor.enhanced(against: backgroundColor)
+
+// Choose a specific enhancement strategy
+let enhancedWithStrategy = originalColor.enhanced(
+    against: backgroundColor,
+    targetLevel: .AAA,
+    strategy: .preserveSaturation
+)
+
+// Get multiple accessible color variants that maintain harmony
+let variants = originalColor.suggestAccessibleVariants(
+    against: backgroundColor,
+    targetLevel: .AA,
+    count: 3
+)
+
+// Use the AccessibilityEnhancer directly for more control
+let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
+    targetLevel: .AA,
+    strategy: .minimumChange,
+    maxPerceptualDistance: 25,
+    preferDarker: true
+))
+
+let customEnhancedColor = enhancer.enhanceColor(originalColor, against: backgroundColor)
+
+// Use the demo view to experiment with enhancement strategies
+struct ContentView: View {
+    var body: some View {
+        AccessibilityEnhancerDemoView()
+    }
+}
+```
 
 ---
 
