@@ -12,11 +12,15 @@ This guide helps you migrate your code from ColorKit 1.4.x to version 1.5.0. The
 color.adjustedForAccessibility(against: background, minimumRatio: 4.5)
 color.enhanced(against: background, targetLevel: .AA)
 color.suggestAccessibleVariants(against: background, count: 3)
+color.wcagContrastRatio(against: background)
+color.wcagRelativeLuminance(against: background)
 
 // New
 color.adjustedForAccessibility(with: background, minimumRatio: 4.5)
 color.enhanced(with: background, targetLevel: .AA)
 color.suggestAccessibleVariants(with: background, count: 3)
+color.wcagContrastRatio(with: background)
+color.wcagRelativeLuminance(with: background)
 ```
 
 #### Color Cache Methods
@@ -35,10 +39,14 @@ ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
 // Old
 color1.blend(color2, mode: .normal, alpha: 0.5)
 color1.interpolate(to: color2, fraction: 0.5)
+color1.blended(color2, mode: .normal, alpha: 0.5)
+color1.adjustBrightness(by: 0.5)
 
 // New
 color1.blend(color2, mode: .normal, amount: 0.5)
 color1.interpolate(to: color2, amount: 0.5)
+color1.blended(with: color2, mode: .normal, amount: 0.5)
+color1.adjustBrightness(by: 0.5) // Note: 'by' is kept as it's a standard Swift convention
 ```
 
 #### Gradient Methods
@@ -67,6 +75,7 @@ color.monochromaticGradient(amount: 0.5)
    - Search for `and:` and replace with `with:`
    - Search for `alpha:` and replace with `amount:`
    - Search for `fraction:` and replace with `amount:`
+   - Search for `blended(color:` and replace with `blended(with:`
 
 3. **Update Documentation**
    - Update any internal documentation or comments that reference the old parameter names
