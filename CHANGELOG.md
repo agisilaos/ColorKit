@@ -4,16 +4,6 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [1.5.0] - 2024-03-14
 
-### Changed
-- Standardized parameter naming across the library for better consistency:
-  - Changed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
-  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
-  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
-  - Changed `enhanced(against:targetLevel:strategy:)` to `enhanced(with:targetLevel:strategy:)`
-  - Changed `suggestAccessibleVariants(against:targetLevel:count:)` to `suggestAccessibleVariants(with:targetLevel:count:)`
-  - Standardized all blending and interpolation methods to use `amount` parameter consistently
-  - Standardized all gradient methods to use `amount` parameter consistently
-
 ### Added
 - Palette export and sharing functionality
 - Support for exporting palettes in JSON, CSS, SVG, Adobe ASE, and PNG formats
@@ -35,6 +25,14 @@ All notable changes to ColorKit will be documented in this file.
   - Using `CGFloat` for UI components and SwiftUI interfaces
   - Using `Double` for color space calculations and WCAG compliance
 - Enhanced documentation clarity and examples
+- Standardized parameter naming across the library for better consistency:
+  - Changed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
+  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
+  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
+  - Changed `enhanced(against:targetLevel:strategy:)` to `enhanced(with:targetLevel:strategy:)`
+  - Changed `suggestAccessibleVariants(against:targetLevel:count:)` to `suggestAccessibleVariants(with:targetLevel:count:)`
+  - Standardized all blending and interpolation methods to use `amount` parameter consistently
+  - Standardized all gradient methods to use `amount` parameter consistently
 
 ### Documentation
 - Updated all method documentation to reflect parameter name changes
