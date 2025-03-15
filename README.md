@@ -223,8 +223,16 @@ let blended = color1.blended(with: color2, mode: .overlay, amount: 0.5)
 // Gradient interpolation with caching
 let interpolated = color1.interpolated(with: color2, amount: 0.5, in: .lab)
 
+// Get cached contrast ratio
+if let ratio = ColorCache.shared.getCachedContrastRatio(for: color1, with: color2) {
+    print("Cached contrast ratio: \(ratio)")
+}
+
+// Cache a contrast ratio
+ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
+
 // If needed, manually clear caches
-ColorCache.shared.clearAllCaches()
+ColorCache.shared.clearCache()
 ```
 
 For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).

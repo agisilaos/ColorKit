@@ -27,10 +27,14 @@ All notable changes to ColorKit will be documented in this file.
 - Enhanced documentation clarity and examples
 - Standardized parameter naming across the library for better consistency:
   - Changed `adjustedForAccessibility(against:minimumRatio:)` to `adjustedForAccessibility(with:minimumRatio:)`
-  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
-  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
   - Changed `enhanced(against:targetLevel:strategy:)` to `enhanced(with:targetLevel:strategy:)`
   - Changed `suggestAccessibleVariants(against:targetLevel:count:)` to `suggestAccessibleVariants(with:targetLevel:count:)`
+  - Changed `ColorCache.getCachedContrastRatio(for:and:)` to `ColorCache.getCachedContrastRatio(for:with:)`
+  - Changed `ColorCache.cacheContrastRatio(for:and:ratio:)` to `ColorCache.cacheContrastRatio(for:with:ratio:)`
+  - Changed `ColorCache.getCachedBlendedColor(color1:and:)` to `ColorCache.getCachedBlendedColor(color1:with:)`
+  - Changed `ColorCache.cacheBlendedColor(color1:and:)` to `ColorCache.cacheBlendedColor(color1:with:)`
+  - Changed `ColorCache.getCachedInterpolatedColor(color1:and:)` to `ColorCache.getCachedInterpolatedColor(color1:with:)`
+  - Changed `ColorCache.cacheInterpolatedColor(color1:and:)` to `ColorCache.cacheInterpolatedColor(color1:with:)`
   - Standardized all blending and interpolation methods to use `amount` parameter consistently
   - Standardized all gradient methods to use `amount` parameter consistently
 

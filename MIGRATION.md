@@ -28,10 +28,18 @@ color.wcagRelativeLuminance(with: background)
 // Old
 ColorCache.shared.getCachedContrastRatio(for: color1, and: color2)
 ColorCache.shared.cacheContrastRatio(for: color1, and: color2, ratio: 4.5)
+ColorCache.shared.getCachedBlendedColor(color1: color1, and: color2, blendMode: mode)
+ColorCache.shared.cacheBlendedColor(color1: color1, and: color2, blendMode: mode)
+ColorCache.shared.getCachedInterpolatedColor(color1: color1, and: color2, amount: 0.5)
+ColorCache.shared.cacheInterpolatedColor(color1: color1, and: color2, amount: 0.5)
 
 // New
 ColorCache.shared.getCachedContrastRatio(for: color1, with: color2)
 ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
+ColorCache.shared.getCachedBlendedColor(color1: color1, with: color2, blendMode: mode)
+ColorCache.shared.cacheBlendedColor(color1: color1, with: color2, blendMode: mode)
+ColorCache.shared.getCachedInterpolatedColor(color1: color1, with: color2, amount: 0.5)
+ColorCache.shared.cacheInterpolatedColor(color1: color1, with: color2, amount: 0.5)
 ```
 
 #### Blending and Interpolation Methods
