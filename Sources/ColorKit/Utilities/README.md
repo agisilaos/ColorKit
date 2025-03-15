@@ -47,6 +47,14 @@ ColorCache.shared.clearLABCache()
 ColorCache.shared.clearHSLCache()
 ColorCache.shared.clearLuminanceCache()
 ColorCache.shared.clearContrastCache()
+
+// Get cached contrast ratio between two colors
+if let ratio = ColorCache.shared.getCachedContrastRatio(for: color1, with: color2) {
+    print("Cached contrast ratio: \(ratio)")
+}
+
+// Cache a contrast ratio
+ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
 ```
 
 ### When to Clear the Cache

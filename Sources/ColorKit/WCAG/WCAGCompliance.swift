@@ -123,7 +123,7 @@ public extension Color {
     /// Calculate the contrast ratio between this color and another color
     func wcagContrastRatio(with color: Color) -> Double {
         // Check cache first
-        if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, and: color) {
+        if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, with: color) {
             return cachedRatio
         }
         
@@ -136,7 +136,7 @@ public extension Color {
         let ratio = (lighter + 0.05) / (darker + 0.05)
         
         // Cache the result
-        ColorCache.shared.cacheContrastRatio(for: self, and: color, ratio: ratio)
+        ColorCache.shared.cacheContrastRatio(for: self, with: color, ratio: ratio)
         
         return ratio
     }

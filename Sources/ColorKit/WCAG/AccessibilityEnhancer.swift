@@ -365,11 +365,11 @@ public class AccessibilityEnhancer {
 public extension Color {
     /// Enhances this color to meet accessibility requirements against a background color
     /// - Parameters:
-    ///   - backgroundColor: The background color to check against
+    ///   - with: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
     /// - Returns: An enhanced color that meets accessibility requirements
-    func enhanced(against backgroundColor: Color, 
+    func enhanced(with backgroundColor: Color, 
                  targetLevel: WCAGContrastLevel = .AA,
                  strategy: AdjustmentStrategy = .preserveHue) -> Color {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
@@ -381,11 +381,11 @@ public extension Color {
     
     /// Suggests accessible color variants that maintain harmony with this color
     /// - Parameters:
-    ///   - backgroundColor: The background color to check against
+    ///   - with: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - count: The number of variants to suggest (default: 3)
     /// - Returns: An array of accessible color variants
-    func suggestAccessibleVariants(against backgroundColor: Color,
+    func suggestAccessibleVariants(with backgroundColor: Color,
                                   targetLevel: WCAGContrastLevel = .AA,
                                   count: Int = 3) -> [Color] {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(

@@ -40,6 +40,42 @@ if let jsonData = PaletteExporter.export(
     // Use the data
     // e.g., save to file, share, etc.
 }
+
+// Export to CSS
+if let cssData = PaletteExporter.export(
+    palette: palette,
+    to: .css,
+    paletteName: "My Palette"
+) {
+    // Use the data
+}
+
+// Export to SVG
+if let svgData = PaletteExporter.export(
+    palette: palette,
+    to: .svg,
+    paletteName: "My Palette"
+) {
+    // Use the data
+}
+
+// Export to Adobe ASE
+if let aseData = PaletteExporter.export(
+    palette: palette,
+    to: .ase,
+    paletteName: "My Palette"
+) {
+    // Use the data
+}
+
+// Export to PNG
+if let pngData = PaletteExporter.export(
+    palette: palette,
+    to: .png,
+    paletteName: "My Palette"
+) {
+    // Use the data
+}
 ```
 
 ### Export from Theme

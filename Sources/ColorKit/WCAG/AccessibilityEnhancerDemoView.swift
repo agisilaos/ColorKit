@@ -137,7 +137,7 @@ public struct AccessibilityEnhancerDemoView: View {
                                 .font(.subheadline)
                             
                             let enhancedColor = originalColor.enhanced(
-                                against: backgroundColor,
+                                with: backgroundColor,
                                 targetLevel: targetLevel,
                                 strategy: strategy
                             )
@@ -192,7 +192,7 @@ public struct AccessibilityEnhancerDemoView: View {
                     
                     if showVariants {
                         let variants = originalColor.suggestAccessibleVariants(
-                            against: backgroundColor,
+                            with: backgroundColor,
                             targetLevel: targetLevel,
                             count: 4
                         )

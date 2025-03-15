@@ -25,17 +25,17 @@ public extension Color {
     /// - Parameters:
     ///   - color: The color to blend with.
     ///   - mode: The blending mode to use.
-    ///   - alpha: The opacity of the blend, from 0.0 (no effect) to 1.0 (full effect).
+    ///   - amount: The opacity of the blend, from 0.0 (no effect) to 1.0 (full effect).
     /// - Returns: The blended color.
-    func blended(with color: Color, mode: BlendMode, alpha: CGFloat = 1.0) -> Color {
-        // If alpha is 0, return the original color (no blending)
-        if alpha <= 0 {
+    func blended(with color: Color, mode: BlendMode, amount: CGFloat = 1.0) -> Color {
+        // If amount is 0, return the original color (no blending)
+        if amount <= 0 {
             return self
         }
         
-        // If alpha is 1.0, check the cache for the full blend
-        if alpha >= 1.0 {
-            if let cachedColor = ColorCache.shared.getCachedBlendedColor(color1: self, color2: color, blendMode: String(describing: mode)) {
+        // If amount is 1.0, check the cache for the full blend
+        if amount >= 1.0 {
+            if let cachedColor = ColorCache.shared.getCachedBlendedColor(color1: self, with: color, blendMode: String(describing: mode)) {
                 return cachedColor
             }
         }
@@ -56,21 +56,21 @@ public extension Color {
         let b2 = components2[2]
         let a2 = components2.count >= 4 ? components2[3] : 1.0
         
-        // Apply the blending function with alpha
+        // Apply the blending function with amount
         let blendResult = mode.blend(base: (r1, g1, b1), blend: (r2, g2, b2))
         
-        // Apply the alpha blending
-        let clampedAlpha = max(0, min(1, alpha))
-        let r = r1 + (blendResult.r - r1) * clampedAlpha * a2
-        let g = g1 + (blendResult.g - g1) * clampedAlpha * a2
-        let b = b1 + (blendResult.b - b1) * clampedAlpha * a2
+        // Apply the amount blending
+        let clampedAmount = max(0, min(1, amount))
+        let r = r1 + (blendResult.r - r1) * clampedAmount * a2
+        let g = g1 + (blendResult.g - g1) * clampedAmount * a2
+        let b = b1 + (blendResult.b - b1) * clampedAmount * a2
         
         // Create the result color
         let resultColor = Color(.sRGB, red: r, green: g, blue: b, opacity: a1)
         
-        // Cache the result if alpha is 1.0 (full blend)
-        if alpha >= 1.0 {
-            ColorCache.shared.cacheBlendedColor(color1: self, color2: color, blendMode: String(describing: mode), result: resultColor)
+        // Cache the result if amount is 1.0 (full blend)
+        if amount >= 1.0 {
+            ColorCache.shared.cacheBlendedColor(color1: self, with: color, blendMode: String(describing: mode), result: resultColor)
         }
         
         return resultColor
@@ -80,120 +80,120 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend on top of this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func normal(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .normal, alpha: alpha)
+    func normal(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .normal, amount: amount)
     }
     
     /// Performs multiply blending, which darkens the image by multiplying color values.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func multiply(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .multiply, alpha: alpha)
+    func multiply(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .multiply, amount: amount)
     }
     
     /// Performs screen blending, which lightens by multiplying inverse values.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func screen(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .screen, alpha: alpha)
+    func screen(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .screen, amount: amount)
     }
     
     /// Performs overlay blending, which combines multiply and screen effects.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func overlay(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .overlay, alpha: alpha)
+    func overlay(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .overlay, amount: amount)
     }
     
     /// Performs darken blending, which keeps the darker value for each channel.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func darken(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .darken, alpha: alpha)
+    func darken(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .darken, amount: amount)
     }
     
     /// Performs lighten blending, which keeps the lighter value for each channel.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func lighten(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .lighten, alpha: alpha)
+    func lighten(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .lighten, amount: amount)
     }
     
     /// Performs color dodge blending, which brightens the base color by decreasing contrast.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func colorDodge(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .colorDodge, alpha: alpha)
+    func colorDodge(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .colorDodge, amount: amount)
     }
     
     /// Performs color burn blending, which darkens the base color by increasing contrast.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func colorBurn(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .colorBurn, alpha: alpha)
+    func colorBurn(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .colorBurn, amount: amount)
     }
     
     /// Performs hard light blending, similar to overlay but with the layers swapped.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func hardLight(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .hardLight, alpha: alpha)
+    func hardLight(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .hardLight, amount: amount)
     }
     
     /// Performs soft light blending, a softer version of hard light.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func softLight(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .softLight, alpha: alpha)
+    func softLight(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .softLight, amount: amount)
     }
     
     /// Performs difference blending, which subtracts the darker from the lighter value.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func difference(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .difference, alpha: alpha)
+    func difference(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .difference, amount: amount)
     }
     
     /// Performs exclusion blending, similar to difference but with lower contrast.
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color.
-    ///   - alpha: The opacity of the blend (0.0 to 1.0).
+    ///   - amount: The opacity of the blend (0.0 to 1.0).
     /// - Returns: The blended color.
-    func exclusion(with color: Color, alpha: CGFloat = 1.0) -> Color {
-        return blended(with: color, mode: .exclusion, alpha: alpha)
+    func exclusion(with color: Color, amount: CGFloat = 1.0) -> Color {
+        return blended(with: color, mode: .exclusion, amount: amount)
     }
 }
 

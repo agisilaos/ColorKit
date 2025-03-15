@@ -134,7 +134,7 @@ struct MyView: View {
             Button("Action") {}
                 .padding()
                 .background(theme.accent.base)
-                .foregroundColor(theme.accent.base.accessibleContrastingColor())
+                .foregroundColor(theme.accent.base.accessibleContrastingColor(with: theme.background.base))
                 .cornerRadius(8)
         }
         .padding()
