@@ -2,7 +2,7 @@
 
 All notable changes to ColorKit will be documented in this file.
 
-## [1.5.0] - 2025-03-20
+## [1.5.0] - TBR
 
 ### Added
 - Palette export and sharing functionality
