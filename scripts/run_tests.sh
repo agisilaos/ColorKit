@@ -29,7 +29,7 @@ run_tests() {
 
 # Run iOS tests
 ios_result=0
-run_tests "iOS" "platform=iOS Simulator,name=iPhone 15 Pro" || ios_result=$?
+run_tests "iOS" "platform=iOS Simulator,name=iPhone 16 Pro" || ios_result=$?
 
 # Run macOS tests
 macos_result=0
