@@ -43,24 +43,11 @@ jobs:
 
     - name: Setup iOS Simulator
       run: |
-        # Get runtime identifier
-        RUNTIME_ID=$(xcrun simctl list runtimes iOS -j | jq -r '.runtimes[0].identifier')
-        echo "Using runtime: $RUNTIME_ID"
-        
-        # Create and boot simulator
-        DEVICE_ID=$(xcrun simctl create "iPhone 16 Pro" com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro $RUNTIME_ID)
-        xcrun simctl boot $DEVICE_ID
-        
-        # Wait for simulator to be ready
-        xcrun simctl list devices | grep "iPhone 16 Pro"
-        
-        echo "SIMULATOR_DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
-
     - name: Build and Test iOS
       run: |
         xcodebuild test \
           -scheme ColorKit \
-          -destination "id=$SIMULATOR_DEVICE_ID" \
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
           -parallel-testing-enabled YES \
           -parallel-testing-worker-count 4 \
           -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
