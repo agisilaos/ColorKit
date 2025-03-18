@@ -17,6 +17,9 @@ run_tests() {
     if xcodebuild test \
         -scheme ColorKit \
         -destination "$destination" \
+        -parallel-testing-enabled YES \
+        -parallel-testing-worker-count 4 \
+        -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
         -enableCodeCoverage YES \
         | xcpretty; then
         echo -e "${GREEN}✅ $platform tests passed${NC}"
