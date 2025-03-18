@@ -41,8 +41,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-derived-data-
 
-    - name: Setup iOS Simulator
-      run: |
     - name: Build and Test iOS
       run: |
         xcodebuild test \
