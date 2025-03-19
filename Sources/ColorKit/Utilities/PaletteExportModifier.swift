@@ -43,18 +43,24 @@ public struct PaletteExportModifier: ViewModifier {
         content
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button(action: { isExportSheetPresented = true }) {
-                        Label("Export", systemImage: "square.and.arrow.up")
-                    }
+                    Button(
+                        action: { isExportSheetPresented = true },
+                        label: {
+                            Label("Export", systemImage: "square.and.arrow.up")
+                        }
+                    )
                 }
             }
-            .sheet(isPresented: $isExportSheetPresented) {
-                PaletteExportView(palette: palette, paletteName: paletteName)
-                    .frame(minWidth: 400, minHeight: 300)
-                    #if os(macOS)
-                    .padding()
-                    #endif
-            }
+            .sheet(
+                isPresented: $isExportSheetPresented,
+                content: {
+                    PaletteExportView(palette: palette, paletteName: paletteName)
+                        .frame(minWidth: 400, minHeight: 300)
+                        #if os(macOS)
+                        .padding()
+                        #endif
+                }
+            )
     }
 }
 

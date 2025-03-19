@@ -344,14 +344,14 @@ public struct AccessiblePaletteDemoView: View {
                                 Text("Background with Text")
                                     .foregroundColor(theme.text.base)
 
-                                Button(action: {}) {
-                                    Text("Primary Button")
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(theme.primary.base)
-                                        .foregroundColor(theme.primary.base.accessibleContrastingColor(for: targetLevel))
-                                        .cornerRadius(8)
-                                }
+                        Button(action: {}, label: {
+                            Text("Primary Button")
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(theme.primary.base)
+                                .foregroundColor(theme.primary.base.accessibleContrastingColor(for: targetLevel))
+                                .cornerRadius(8)
+                        })
                             }
                         )
                 }

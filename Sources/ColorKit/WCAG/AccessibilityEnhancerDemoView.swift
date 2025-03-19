@@ -177,18 +177,19 @@ public struct AccessibilityEnhancerDemoView: View {
 
                 // Variants
                 VStack(alignment: .leading, spacing: 10) {
-                    Button(action: {
-                        showVariants.toggle()
-                    }) {
-                        HStack {
-                            Text(showVariants ? "Hide Variants" : "Show Suggested Variants")
-                            Image(systemName: showVariants ? "chevron.up" : "chevron.down")
+                    Button(
+                        action: { showVariants.toggle() },
+                        label: {
+                            HStack {
+                                Text(showVariants ? "Hide Variants" : "Show Suggested Variants")
+                                Image(systemName: showVariants ? "chevron.up" : "chevron.down")
+                            }
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1)))
                         }
-                        .font(.headline)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.1)))
-                    }
+                    )
 
                     if showVariants {
                         let variants = originalColor.suggestAccessibleVariants(
