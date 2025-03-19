@@ -36,6 +36,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Comprehensive Theming System**  
 ✅ **High-Performance Caching for Color Operations**  
 ✅ **AccessibilityEnhancer for Intelligent Color Adjustments**  
+✅ **New: Advanced Color Debugging Tools**  
 
 ---
 
@@ -278,6 +279,53 @@ struct ContentView: View {
     }
 }
 ```
+
+## **🎨 Debugging Tools**  
+
+ColorKit now includes advanced debugging tools to help developers inspect colors, validate accessibility compliance, and ensure correct implementation. These tools include:
+
+### **Color Inspection**  
+
+Inspect colors in multiple color spaces (RGB, HSL, HSB, CMYK, LAB, XYZ):
+
+```swift
+// Get color components in all color spaces
+let components = myColor.colorSpaceComponents()
+print(components.description)
+
+// Display visual color inspector in SwiftUI
+ColorSpaceInspectorView(color: myColor)
+```
+
+### **Color Comparison**  
+
+Compare two colors across different color spaces and see their differences:
+
+```swift
+// Get detailed comparison between two colors
+let difference = color1.compare(with: color2)
+print(difference.description)
+
+// Visual comparison view
+ColorComparisonView(color1: color1, color2: color2)
+```
+
+### **WCAG Accessibility Debugging**  
+
+Validate and improve color accessibility:
+
+```swift
+// Check WCAG compliance
+let compliance = backgroundColor.wcagCompliance(with: textColor)
+
+// Get suggested accessible alternatives
+let suggestions = backgroundColor.suggestedAccessibleColors(
+    for: textColor, 
+    level: .AA
+)
+```
+
+See [Color Debugging Documentation](Sources/ColorKit/Utilities/DOCUMENTATION.md) for more details.
 
 ---
 
