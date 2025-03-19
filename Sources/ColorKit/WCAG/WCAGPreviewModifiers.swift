@@ -179,12 +179,15 @@ private struct ColorMatrixModifier: ViewModifier {
             GeometryReader { _ in
                 content
                     .transformEffect(.identity) // Force redraw
-                    .foregroundColor(Color(.sRGB,
-                        red: matrix[0],
-                        green: matrix[5],
-                        blue: matrix[10],
-                        opacity: matrix[15]
-                    ))
+                    .foregroundColor(
+                        Color(
+                            .sRGB,
+                            red: matrix[0],
+                            green: matrix[5],
+                            blue: matrix[10],
+                            opacity: matrix[15]
+                        )
+                    )
             }
         )
     }
