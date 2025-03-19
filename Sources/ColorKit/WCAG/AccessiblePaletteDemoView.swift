@@ -100,10 +100,17 @@ public struct AccessiblePaletteDemoView: View {
 
             VStack(alignment: .leading) {
                 Text("Palette Size: \(paletteSize)")
-                Slider(value: Binding(
-                    get: { Double(paletteSize) },
-                    set: { paletteSize = max(2, min(10, Int($0))) }
-                ), in: 2...10, step: 1)
+                Slider(
+                    value: Binding<Double>(
+                        get: { Double(paletteSize) },
+                        set: { paletteSize = max(2, min(10, Int($0))) }
+                    ),
+                    in: 2...10,
+                    step: 1,
+                    label: {
+                        Text("Palette Size: \(paletteSize)")
+                    }
+                )
             }
             .padding(.horizontal)
 
