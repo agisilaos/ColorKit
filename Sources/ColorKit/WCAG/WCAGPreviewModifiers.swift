@@ -111,7 +111,7 @@ public struct ColorEffect: Sendable {
         self.matrix = matrix
     }
 
-    public static let identity = ColorEffect(matrix: Array(repeating: 0, count: 20).enumerated().map { index, _ in
+    public static let identity = ColorEffect(matrix: Array(repeating: 0, count: 20).indices.map { index in
         // Set diagonal elements to 1
         if index % 5 == 0 && index < 16 {
             return 1
