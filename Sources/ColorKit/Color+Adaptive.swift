@@ -36,7 +36,7 @@ public extension Color {
     func isDarkColor() -> Bool {
         return relativeLuminance() < 0.5
     }
-    
+
     /// Adjusts color brightness to ensure it contrasts well with Light/Dark mode backgrounds.
     ///
     /// - Parameter isDarkMode: A Boolean indicating whether the current mode is dark.
@@ -45,7 +45,7 @@ public extension Color {
         let adjustment: CGFloat = isDarkMode ? 0.3 : -0.3
         return self.adjustBrightness(by: adjustment)
     }
-    
+
     /// Computes the contrast ratio between two colors based on WCAG guidelines.
     /// Contrast ratio is calculated using relative luminance values.
     ///
@@ -56,7 +56,7 @@ public extension Color {
         let l2 = other.relativeLuminance() + 0.05
         return max(l1, l2) / min(l1, l2)
     }
-    
+
     /// Returns an improved color that meets a minimum contrast ratio requirement.
     /// Adjusts the color brightness to ensure accessibility compliance.
     ///
@@ -81,7 +81,6 @@ public extension Color {
             let lightenContrast = lightenColor.contrastRatio(with: background)
             let darkenContrast = darkenColor.contrastRatio(with: background)
 
-
             if lightenContrast >= minimumRatio {
                 return lightenColor
             } else if darkenContrast >= minimumRatio {
@@ -96,7 +95,6 @@ public extension Color {
                 adjustedLightness = darkenAttempt
                 contrastRatio = darkenContrast
             }
-
 
             // Stop if no improvement possible
             if adjustedLightness == 0.0 || adjustedLightness == 1.0 {

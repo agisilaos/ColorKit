@@ -5,38 +5,38 @@ public struct WCAGComplianceModifier: ViewModifier {
     private let foregroundColor: Color
     private let backgroundColor: Color
     private let showDetails: Bool
-    
+
     public init(foreground: Color, background: Color, showDetails: Bool = true) {
         self.foregroundColor = foreground
         self.backgroundColor = background
         self.showDetails = showDetails
     }
-    
+
     public func body(content: Content) -> some View {
         let compliance = foregroundColor.wcagCompliance(with: backgroundColor)
-        
+
         return VStack(alignment: .leading, spacing: 8) {
             content
                 .foregroundColor(foregroundColor)
                 .padding()
                 .background(backgroundColor)
                 .cornerRadius(8)
-            
+
             if showDetails {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Contrast Ratio: \(String(format: "%.2f", compliance.contrastRatio)):1")
                         .font(.subheadline)
-                    
+
                     HStack {
                         ForEach(WCAGContrastLevel.allCases) { level in
                             let passes = compliance.contrastRatio >= level.minimumRatio
-                            
+
                             HStack(spacing: 4) {
                                 if #available(macOS 11.0, *) {
                                     Image(systemName: passes ? "checkmark.circle.fill" : "xmark.circle.fill")
                                         .foregroundColor(passes ? .green : .red)
                                 }
-                                
+
                                 Text(level.rawValue)
                                     .font(.caption)
                             }
@@ -61,16 +61,16 @@ public struct ColorBlindnessPreviewModifier: ViewModifier {
         case deuteranopia = "Deuteranopia (Green-Blind)"
         case tritanopia = "Tritanopia (Blue-Blind)"
         case achromatopsia = "Achromatopsia (No Color)"
-        
+
         public var id: String { rawValue }
     }
-    
+
     private let type: ColorBlindnessType
-    
+
     public init(type: ColorBlindnessType) {
         self.type = type
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .colorEffect(colorBlindnessEffect())
@@ -85,7 +85,7 @@ public struct ColorBlindnessPreviewModifier: ViewModifier {
                 alignment: .topLeading
             )
     }
-    
+
     private func colorBlindnessEffect() -> ColorEffect {
         switch type {
         case .normal:
@@ -105,12 +105,12 @@ public struct ColorBlindnessPreviewModifier: ViewModifier {
 /// A color effect for simulating different types of color blindness
 public struct ColorEffect: Sendable {
     let matrix: [CGFloat]
-    
+
     init(matrix: [CGFloat]) {
         precondition(matrix.count == 20, "Color matrix must have 20 elements")
         self.matrix = matrix
     }
-    
+
     public static let identity = ColorEffect(matrix: Array(repeating: 0, count: 20).enumerated().map { index, _ in
         // Set diagonal elements to 1
         if index % 5 == 0 && index < 16 {
@@ -118,28 +118,28 @@ public struct ColorEffect: Sendable {
         }
         return 0
     })
-    
+
     public static let protanopia = ColorEffect(matrix: [
         0.567, 0.433, 0, 0, 0,
         0.558, 0.442, 0, 0, 0,
         0, 0.242, 0.758, 0, 0,
         0, 0, 0, 1, 0
     ])
-    
+
     public static let deuteranopia = ColorEffect(matrix: [
         0.625, 0.375, 0, 0, 0,
         0.7, 0.3, 0, 0, 0,
         0, 0.3, 0.7, 0, 0,
         0, 0, 0, 1, 0
     ])
-    
+
     public static let tritanopia = ColorEffect(matrix: [
         0.95, 0.05, 0, 0, 0,
         0, 0.433, 0.567, 0, 0,
         0, 0.475, 0.525, 0, 0,
         0, 0, 0, 1, 0
     ])
-    
+
     public static let grayscale = ColorEffect(matrix: [
         0.299, 0.587, 0.114, 0, 0,
         0.299, 0.587, 0.114, 0, 0,
@@ -158,12 +158,12 @@ extension View {
         return self // Placeholder for other platforms
         #endif
     }
-    
+
     /// Apply WCAG compliance checking to a view
     public func wcagCompliance(foreground: Color, background: Color, showDetails: Bool = true) -> some View {
         self.modifier(WCAGComplianceModifier(foreground: foreground, background: background, showDetails: showDetails))
     }
-    
+
     /// Apply color blindness simulation to a view
     public func colorBlindnessPreview(type: ColorBlindnessPreviewModifier.ColorBlindnessType) -> some View {
         self.modifier(ColorBlindnessPreviewModifier(type: type))
@@ -173,10 +173,10 @@ extension View {
 /// A ViewModifier that applies a color matrix effect to a view
 private struct ColorMatrixModifier: ViewModifier {
     let matrix: [CGFloat]
-    
+
     func body(content: Content) -> some View {
         content.overlay(
-            GeometryReader { geometry in
+            GeometryReader { _ in
                 content
                     .transformEffect(.identity) // Force redraw
                     .foregroundColor(Color(.sRGB,
@@ -188,4 +188,4 @@ private struct ColorMatrixModifier: ViewModifier {
             }
         )
     }
-} 
+}

@@ -29,16 +29,16 @@ public struct ThemedTextModifier: ViewModifier {
         case secondary
         case tertiary
     }
-    
+
     private let type: TextType
     @Environment(\.colorTheme) private var theme
-    
+
     /// Creates a new themed text modifier
     /// - Parameter type: The type of text
     public init(_ type: TextType = .primary) {
         self.type = type
     }
-    
+
     public func body(content: Content) -> some View {
         switch type {
         case .primary:
@@ -62,16 +62,16 @@ public struct ThemedButtonModifier: ViewModifier {
         case secondary
         case accent
     }
-    
+
     private let type: ButtonType
     @Environment(\.colorTheme) private var theme
-    
+
     /// Creates a new themed button modifier
     /// - Parameter type: The type of button
     public init(_ type: ButtonType = .primary) {
         self.type = type
     }
-    
+
     public func body(content: Content) -> some View {
         switch type {
         case .primary:
@@ -108,13 +108,13 @@ public enum BackgroundElevation {
 public struct ThemedBackgroundModifier: ViewModifier {
     private let elevation: BackgroundElevation
     @Environment(\.colorTheme) private var theme
-    
+
     /// Creates a new themed background modifier
     /// - Parameter elevation: The elevation level of the background
     public init(_ elevation: BackgroundElevation = .base) {
         self.elevation = elevation
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .background(
@@ -142,18 +142,18 @@ public extension View {
     func themedText(_ type: ThemedTextModifier.TextType = .primary) -> some View {
         modifier(ThemedTextModifier(type))
     }
-    
+
     /// Applies themed button styling
     /// - Parameter type: The type of button
     /// - Returns: A view with themed button styling
     func themedButton(_ type: ThemedButtonModifier.ButtonType = .primary) -> some View {
         modifier(ThemedButtonModifier(type))
     }
-    
+
     /// Applies a themed background
     /// - Parameter elevation: The elevation level of the background
     /// - Returns: A view with a themed background
     func themedBackground(_ elevation: BackgroundElevation = .base) -> some View {
         modifier(ThemedBackgroundModifier(elevation))
     }
-} 
+}

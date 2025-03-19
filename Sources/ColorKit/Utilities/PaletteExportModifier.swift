@@ -23,13 +23,13 @@ import SwiftUI
 public struct PaletteExportModifier: ViewModifier {
     /// The palette to export
     private let palette: [PaletteExporter.PaletteEntry]
-    
+
     /// The name of the palette
     private let paletteName: String
-    
+
     /// Whether the export sheet is presented
     @State private var isExportSheetPresented = false
-    
+
     /// Creates a new palette export modifier
     /// - Parameters:
     ///   - palette: The palette to export
@@ -38,7 +38,7 @@ public struct PaletteExportModifier: ViewModifier {
         self.palette = palette
         self.paletteName = paletteName
     }
-    
+
     public func body(content: Content) -> some View {
         content
             .toolbar {
@@ -68,7 +68,7 @@ public extension View {
     func paletteExport(palette: [PaletteExporter.PaletteEntry], paletteName: String) -> some View {
         modifier(PaletteExportModifier(palette: palette, paletteName: paletteName))
     }
-    
+
     /// Adds export functionality to a view
     /// - Parameters:
     ///   - colors: The colors to export
@@ -78,7 +78,7 @@ public extension View {
         let palette = PaletteExporter.createPalette(from: colors)
         return modifier(PaletteExportModifier(palette: palette, paletteName: paletteName))
     }
-    
+
     /// Adds export functionality to a view
     /// - Parameter theme: The theme to export
     /// - Returns: A view with export functionality
@@ -86,4 +86,4 @@ public extension View {
         let palette = PaletteExporter.createPalette(from: theme)
         return modifier(PaletteExportModifier(palette: palette, paletteName: theme.name))
     }
-} 
+}

@@ -21,7 +21,7 @@ import SwiftUI
 @available(iOS 14.0, macOS 11.0, *)
 private struct ThemeKey: EnvironmentKey {
     // Using a default theme instead of accessing ThemeManager directly
-    static let defaultValue: ColorTheme = ColorTheme(
+    static let defaultValue = ColorTheme(
         name: "Default",
         primary: Color.blue,
         secondary: Color.purple.opacity(0.8),
@@ -45,7 +45,7 @@ public extension EnvironmentValues {
         get { self[ThemeKey.self] }
         set { self[ThemeKey.self] = newValue }
     }
-    
+
     /// The theme manager
     var themeManager: ThemeManager? {
         get { self[ThemeManagerKey.self] }
@@ -62,7 +62,7 @@ public extension View {
     func applyTheme(_ theme: ColorTheme) -> some View {
         environment(\.colorTheme, theme)
     }
-    
+
     /// Uses the theme manager to dynamically update the theme
     /// - Parameter manager: The theme manager to use
     /// - Returns: A view that updates when the theme changes
@@ -71,4 +71,4 @@ public extension View {
             .environment(\.colorTheme, manager.currentTheme)
             .environment(\.themeManager, manager)
     }
-} 
+}

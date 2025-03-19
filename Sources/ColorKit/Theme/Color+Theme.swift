@@ -52,7 +52,7 @@ public extension Color {
         // The actual implementation will use the environment
         // This is just a fallback for static contexts
         let theme = ThemeManager.shared.currentTheme
-        
+
         switch role {
         case .primary:
             return theme.primary.base
@@ -110,11 +110,11 @@ public extension View {
 struct ThemedColorModifier: ViewModifier {
     let role: ThemeColorRole
     @Environment(\.colorTheme) private var theme
-    
+
     func body(content: Content) -> some View {
         content.foregroundColor(colorForRole(role))
     }
-    
+
     private func colorForRole(_ role: ThemeColorRole) -> Color {
         switch role {
         case .primary:
@@ -155,4 +155,4 @@ struct ThemedColorModifier: ViewModifier {
             return theme.status.error
         }
     }
-} 
+}
