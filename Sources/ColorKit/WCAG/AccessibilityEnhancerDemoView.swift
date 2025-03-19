@@ -239,7 +239,6 @@ public struct AccessibilityEnhancerDemoView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("How It Works")
                         .font(.headline)
-
                     Text("The AccessibilityEnhancer intelligently adjusts colors to meet WCAG contrast requirements while preserving brand identity. It uses perceptual color models to make the smallest possible changes needed to meet accessibility standards.")
                         .font(.caption)
                         .foregroundColor(.secondary)

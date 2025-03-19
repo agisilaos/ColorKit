@@ -1,10 +1,10 @@
-import XCTest
 import SwiftUI
+import XCTest
+
 @testable import ColorKit
 
 #if canImport(SwiftUI) && (os(iOS) && !(targetEnvironment(macCatalyst)) && swift(>=5.5))
 final class ThemeTests: XCTestCase {
-
     @MainActor
     func testThemeCreation() {
         // Test creating a theme with individual colors
