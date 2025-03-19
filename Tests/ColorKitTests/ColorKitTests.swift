@@ -3,7 +3,6 @@ import XCTest
 
 @testable import ColorKit
 
-
 final class ColorKitTests: XCTestCase {
     // MARK: - HEX Conversion Tests
     func testHexToColor() {

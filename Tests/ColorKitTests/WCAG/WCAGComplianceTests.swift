@@ -3,7 +3,6 @@ import XCTest
 
 @testable import ColorKit
 
-
 final class WCAGComplianceTests: XCTestCase {
     // Test colors
     let white = Color.white

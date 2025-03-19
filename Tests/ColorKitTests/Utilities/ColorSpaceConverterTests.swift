@@ -3,7 +3,6 @@ import XCTest
 
 @testable import ColorKit
 
-
 final class ColorSpaceConverterTests: XCTestCase {
     func testColorSpaceComponentsConversion() {
         // Create specific colors with known RGB values instead of using system colors
