@@ -31,7 +31,8 @@ public struct ThemedTextModifier: ViewModifier {
     }
 
     private let type: TextType
-    @Environment(\.colorTheme) private var theme
+    @Environment(\.colorTheme)
+    private var theme
 
     /// Creates a new themed text modifier
     /// - Parameter type: The type of text
@@ -64,7 +65,8 @@ public struct ThemedButtonModifier: ViewModifier {
     }
 
     private let type: ButtonType
-    @Environment(\.colorTheme) private var theme
+    @Environment(\.colorTheme)
+    private var theme
 
     /// Creates a new themed button modifier
     /// - Parameter type: The type of button
@@ -107,7 +109,8 @@ public enum BackgroundElevation {
 @available(iOS 14.0, macOS 11.0, *)
 public struct ThemedBackgroundModifier: ViewModifier {
     private let elevation: BackgroundElevation
-    @Environment(\.colorTheme) private var theme
+    @Environment(\.colorTheme)
+    private var theme
 
     /// Creates a new themed background modifier
     /// - Parameter elevation: The elevation level of the background

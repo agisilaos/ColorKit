@@ -53,7 +53,9 @@ public extension View {
 
 /// A ViewModifier that applies adaptive color adjustments for Light/Dark mode.
 private struct AdaptiveColorModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme)
+    private var colorScheme
+
     var light: Color
     var dark: Color
     var brightnessAdjustment: CGFloat
@@ -83,7 +85,9 @@ private struct HighContrastColorModifier: ViewModifier {
 
 /// A ViewModifier that triggers a closure when the system color scheme changes.
 private struct AdaptiveColorChangeModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme)
+    private var colorScheme
+
     var action: (ColorScheme) -> Void
 
     func body(content: Content) -> some View {

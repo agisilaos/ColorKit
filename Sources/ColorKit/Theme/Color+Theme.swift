@@ -109,7 +109,8 @@ public extension View {
 @available(iOS 14.0, macOS 11.0, *)
 struct ThemedColorModifier: ViewModifier {
     let role: ThemeColorRole
-    @Environment(\.colorTheme) private var theme
+    @Environment(\.colorTheme)
+    private var theme
 
     func body(content: Content) -> some View {
         content.foregroundColor(colorForRole(role))
