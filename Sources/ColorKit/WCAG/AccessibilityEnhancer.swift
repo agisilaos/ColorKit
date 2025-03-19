@@ -369,9 +369,11 @@ public extension Color {
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
     /// - Returns: An enhanced color that meets accessibility requirements
-    func enhanced(with backgroundColor: Color,
-                 targetLevel: WCAGContrastLevel = .AA,
-                 strategy: AdjustmentStrategy = .preserveHue) -> Color {
+    func enhanced(
+        with backgroundColor: Color,
+        targetLevel: WCAGContrastLevel = .AA,
+        strategy: AdjustmentStrategy = .preserveHue
+    ) -> Color {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
             targetLevel: targetLevel,
             strategy: strategy
@@ -385,9 +387,11 @@ public extension Color {
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - count: The number of variants to suggest (default: 3)
     /// - Returns: An array of accessible color variants
-    func suggestAccessibleVariants(with backgroundColor: Color,
-                                  targetLevel: WCAGContrastLevel = .AA,
-                                  count: Int = 3) -> [Color] {
+    func suggestAccessibleVariants(
+        with backgroundColor: Color,
+        targetLevel: WCAGContrastLevel = .AA,
+        count: Int = 3
+    ) -> [Color] {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
             targetLevel: targetLevel
         ))
