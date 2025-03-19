@@ -2,6 +2,26 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [1.6.0] - TBR
+
+### Added
+- **Color Debugging Utilities**: Comprehensive tools for inspecting and comparing colors across different color spaces.
+  - `ColorSpaceConverter`: Converts colors between RGB, HSL, HSB, CMYK, LAB, and XYZ.
+  - `ColorComponents`: Structured representation of color components.
+  - `colorSpaceComponents()`: Extension on Color for easy access to all color space components.
+  - `ColorSpaceInspectorView`: SwiftUI view for visual inspection of color properties.
+- **Color Comparison Tool**: Analyze differences between colors with perceptual difference calculations and WCAG contrast ratio analysis.
+  - `ColorDifference`: Structure representing differences between colors.
+  - `compare(with:)`: Method to analyze color differences.
+  - `ColorComparisonView`: Visual comparison view.
+- **Enhanced WCAG Compliance Debugging**: Advanced color suggestion algorithms that preserve brand identity.
+  - `WCAGColorSuggestions`: Generate accessible color alternatives.
+  - `suggestedAccessibleColors()`: Improved method with hue preservation option.
+- **Documentation**: Detailed documentation with examples for all new features.
+
+### Fixed
+- Platform-specific test issues for proper macOS compatibility. 
+
 ## [1.5.0] - 2024-03-14
 
 ### Added
@@ -138,4 +158,4 @@ All notable changes to ColorKit will be documented in this file.
 - Initial release
 - Basic color manipulation
 - HEX <-> RGB conversion
-- Adaptive colors (Light/Dark mode) 
+- Adaptive colors (Light/Dark mode)
