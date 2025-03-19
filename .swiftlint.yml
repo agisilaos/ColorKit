@@ -1,0 +1,104 @@
+disabled_rules:
+  - force_cast
+  - force_unwrapping
+  - identifier_name
+  - type_name
+  - function_body_length
+  - file_length
+  - cyclomatic_complexity
+  - function_parameter_count
+  - type_body_length
+  - nesting
+  - no_extension_access_modifier
+
+opt_in_rules:
+  - trailing_whitespace
+  - line_length
+  - empty_count
+  - missing_docs
+  - force_unwrapping
+  - force_cast
+  - empty_string
+  - closure_spacing
+  - overridden_super_call
+  - redundant_nil_coalescing
+  - private_outlet
+  - nimble_operator
+  - attributes
+  - operator_usage_whitespace
+  - closure_end_indentation
+  - first_where
+  - sorted_imports
+  - legacy_random
+  - legacy_constructor
+  - literal_expression_end_indentation
+  - unowned_variable_capture
+  - vertical_parameter_alignment_on_call
+  - yoda_condition
+  - contains_over_filter_count
+  - pattern_matching_keywords
+  - untyped_error_in_catch
+  - fatal_error_message
+  - file_header
+  - empty_enum_arguments
+  - prefixed_toplevel_constant
+  - literal_expression_end_indentation
+  - multiline_arguments
+  - multiline_function_chains
+  - number_separator
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - pattern_matching_keywords
+  - prefer_self_type_over_type_of_self
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - strict_fileprivate
+  - toggle_bool
+  - unowned_variable_capture
+  - vertical_parameter_alignment_on_call
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+  - yoda_condition
+
+included:
+  - Sources
+  - Tests
+
+excluded:
+  - Package.swift
+  - Package.resolved
+  - .build
+  - .swiftpm
+
+line_length:
+  warning: 120
+  error: 200
+
+type_body_length:
+  warning: 300
+  error: 400
+
+file_length:
+  warning: 500
+  error: 1000
+
+function_body_length:
+  warning: 50
+  error: 100
+
+cyclomatic_complexity:
+  warning: 10
+  error: 20
+
+function_parameter_count:
+  warning: 6
+  error: 8
+
+nesting:
+  type_level:
+    warning: 3
+    error: 4
+  statement_level:
+    warning: 5
+    error: 6

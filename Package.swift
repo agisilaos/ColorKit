@@ -10,19 +10,23 @@ let package = Package(
         .macOS(.v11)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "ColorKit",
-            targets: ["ColorKit"]),
+            targets: ["ColorKit"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/realm/SwiftLint.git", from: "0.58.2")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ColorKit"),
+            name: "ColorKit",
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+        ),
         .testTarget(
             name: "ColorKitTests",
-            dependencies: ["ColorKit"]
+            dependencies: ["ColorKit"],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
         ),
     ]
 )
