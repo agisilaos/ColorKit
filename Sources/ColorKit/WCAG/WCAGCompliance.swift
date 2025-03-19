@@ -38,14 +38,26 @@ public enum WCAGContrastLevel: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// Result of a WCAG compliance check
+/// Represents the result of a WCAG compliance check between two colors.
+/// This struct stores the contrast ratio and whether the colors pass various WCAG compliance levels.
 public struct WCAGComplianceResult {
+    /// The calculated contrast ratio between two colors.
     public let contrastRatio: Double
+
+    /// Whether the colors pass the AA compliance level for normal text.
     public let passesAA: Bool
+
+    /// Whether the colors pass the AA compliance level for large text (18pt+).
     public let passesAALarge: Bool
+
+    /// Whether the colors pass the AAA compliance level for normal text.
     public let passesAAA: Bool
+
+    /// Whether the colors pass the AAA compliance level for large text (18pt+).
     public let passesAAALarge: Bool
 
+    /// Returns the highest WCAG compliance level that the colors pass.
+    /// If none are met, it returns `nil`.
     public var highestLevel: WCAGContrastLevel? {
         if passesAAA {
             return .AAA
@@ -60,6 +72,7 @@ public struct WCAGComplianceResult {
         }
     }
 
+    /// Returns a list of all WCAG compliance levels that the colors pass.
     public var passes: [WCAGContrastLevel] {
         var result: [WCAGContrastLevel] = []
         if passesAALarge { result.append(.AALarge) }
@@ -205,7 +218,6 @@ public struct WCAGColorSuggestions {
         }
 
         let baseLuminance = baseColor.wcagRelativeLuminance()
-        let targetMinimumRatio = targetLevel.minimumRatio
 
         // Determine if we need to lighten or darken
         let needsDarkening = baseLuminance > 0.5

@@ -20,13 +20,16 @@ import SwiftUI
 
 // MARK: - Text Modifiers
 
-/// A modifier that applies themed text styling
+/// A modifier that applies themed text styling based on a predefined type.
 @available(iOS 14.0, macOS 11.0, *)
 public struct ThemedTextModifier: ViewModifier {
-    /// The type of text
+    /// Represents different types of themed text styles.
     public enum TextType {
+        /// Primary text style, used for main content.
         case primary
+        /// Secondary text style, used for supporting content.
         case secondary
+        /// Tertiary text style, used for less prominent text.
         case tertiary
     }
 
@@ -34,8 +37,8 @@ public struct ThemedTextModifier: ViewModifier {
     @Environment(\.colorTheme)
     private var theme
 
-    /// Creates a new themed text modifier
-    /// - Parameter type: The type of text
+    /// Initializes a themed text modifier.
+    /// - Parameter type: The type of text style to apply.
     public init(_ type: TextType = .primary) {
         self.type = type
     }
@@ -54,13 +57,16 @@ public struct ThemedTextModifier: ViewModifier {
 
 // MARK: - Button Modifiers
 
-/// A modifier that applies themed button styling
+/// A modifier that applies themed button styling based on a predefined type.
 @available(iOS 14.0, macOS 11.0, *)
 public struct ThemedButtonModifier: ViewModifier {
-    /// The type of button
+    /// Represents different types of themed button styles.
     public enum ButtonType {
+        /// Primary button style, used for main actions.
         case primary
+        /// Secondary button style, used for alternative actions.
         case secondary
+        /// Accent button style, used for highlighting actions.
         case accent
     }
 
@@ -68,8 +74,8 @@ public struct ThemedButtonModifier: ViewModifier {
     @Environment(\.colorTheme)
     private var theme
 
-    /// Creates a new themed button modifier
-    /// - Parameter type: The type of button
+    /// Initializes a themed button modifier.
+    /// - Parameter type: The type of button style to apply.
     public init(_ type: ButtonType = .primary) {
         self.type = type
     }
@@ -97,23 +103,27 @@ public struct ThemedButtonModifier: ViewModifier {
 
 // MARK: - Background Modifiers
 
-/// Background elevation levels
+/// Represents different elevation levels for themed backgrounds.
+/// Elevation determines the background color used for UI elements.
 @available(iOS 14.0, macOS 11.0, *)
 public enum BackgroundElevation {
+    /// Default background level, typically used as the base layer.
     case base
+    /// Elevated background, used for containers, cards, or popovers.
     case elevated
+    /// Lowered background, often used for contrast or overlays.
     case lowered
 }
 
-/// A modifier that applies a themed background
+/// A modifier that applies a themed background based on an elevation level.
 @available(iOS 14.0, macOS 11.0, *)
 public struct ThemedBackgroundModifier: ViewModifier {
     private let elevation: BackgroundElevation
     @Environment(\.colorTheme)
     private var theme
 
-    /// Creates a new themed background modifier
-    /// - Parameter elevation: The elevation level of the background
+    /// Initializes a themed background modifier.
+    /// - Parameter elevation: The elevation level of the background.
     public init(_ elevation: BackgroundElevation = .base) {
         self.elevation = elevation
     }
@@ -139,23 +149,23 @@ public struct ThemedBackgroundModifier: ViewModifier {
 
 @available(iOS 14.0, macOS 11.0, *)
 public extension View {
-    /// Applies themed text styling
-    /// - Parameter type: The type of text
-    /// - Returns: A view with themed text styling
+    /// Applies themed text styling to a view.
+    /// - Parameter type: The type of text styling to apply.
+    /// - Returns: A view with the applied text styling.
     func themedText(_ type: ThemedTextModifier.TextType = .primary) -> some View {
         modifier(ThemedTextModifier(type))
     }
 
-    /// Applies themed button styling
-    /// - Parameter type: The type of button
-    /// - Returns: A view with themed button styling
+    /// Applies themed button styling to a view.
+    /// - Parameter type: The type of button styling to apply.
+    /// - Returns: A view with the applied button styling.
     func themedButton(_ type: ThemedButtonModifier.ButtonType = .primary) -> some View {
         modifier(ThemedButtonModifier(type))
     }
 
-    /// Applies a themed background
-    /// - Parameter elevation: The elevation level of the background
-    /// - Returns: A view with a themed background
+    /// Applies a themed background to a view.
+    /// - Parameter elevation: The elevation level of the background.
+    /// - Returns: A view with the applied background styling.
     func themedBackground(_ elevation: BackgroundElevation = .base) -> some View {
         modifier(ThemedBackgroundModifier(elevation))
     }
