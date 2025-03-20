@@ -36,11 +36,11 @@ public extension Color {
             paletteSize: paletteSize,
             includeBlackAndWhite: includeBlackAndWhite
         )
-        
+
         let generator = AccessiblePaletteGenerator(configuration: configuration)
         return generator.generatePalette(from: self)
     }
-    
+
     /// Generates an accessible theme based on this color
     /// - Parameters:
     ///   - name: The name for the theme
@@ -55,41 +55,41 @@ public extension Color {
             paletteSize: 7, // Larger palette for theme generation
             includeBlackAndWhite: true
         )
-        
+
         let generator = AccessiblePaletteGenerator(configuration: configuration)
         return generator.generateAccessibleTheme(from: self, name: name)
     }
-    
+
     /// Finds a color that contrasts well with this color and meets the specified WCAG level
     /// - Parameter level: The WCAG level to target
     /// - Returns: A color that contrasts well with this color
     func accessibleContrastingColor(for level: WCAGContrastLevel = .AA) -> Color {
         // Get the luminance of this color
         let luminance = self.wcagRelativeLuminance()
-        
+
         // Start with black or white based on luminance
         let contrastingColor: Color = luminance < 0.5 ? .white : .black
-        
+
         // Check if the contrast is sufficient
         let ratio = self.wcagContrastRatio(with: contrastingColor)
         if ratio >= level.minimumRatio {
             return contrastingColor
         }
-        
+
         // If not, try to find a color with sufficient contrast
         // Extract HSL components
         guard let hsl = self.hslComponents() else {
             // Fallback to black or white if HSL conversion fails
             return luminance < 0.5 ? .white : .black
         }
-        
+
         // Adjust lightness to ensure sufficient contrast
         let targetLightness = luminance < 0.5 ? 0.9 : 0.1
-        
+
         return Color(
             hue: hsl.hue,
             saturation: hsl.saturation,
             lightness: targetLightness
         )
     }
-} 
+}

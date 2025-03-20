@@ -23,7 +23,7 @@ public struct ColorInspectorModifier: ViewModifier {
     private let backgroundColor: Color
     private let position: Position
     private let showContrastInfo: Bool
-    
+
     /// The position of the color inspector
     public enum Position: Sendable {
         case topLeading
@@ -31,7 +31,7 @@ public struct ColorInspectorModifier: ViewModifier {
         case bottomLeading
         case bottomTrailing
     }
-    
+
     /// Creates a new color inspector modifier
     /// - Parameters:
     ///   - color: The color to inspect
@@ -44,7 +44,7 @@ public struct ColorInspectorModifier: ViewModifier {
         self.position = position
         self.showContrastInfo = showContrastInfo
     }
-    
+
     public func body(content: Content) -> some View {
         let pos = position // Capture position in a local variable
         content
@@ -64,7 +64,7 @@ public struct ColorInspectorModifier: ViewModifier {
                 alignment: positionAlignment
             )
     }
-    
+
     private var positionAlignment: Alignment {
         switch position {
         case .topLeading:
@@ -102,4 +102,4 @@ public extension View {
             )
         )
     }
-} 
+}

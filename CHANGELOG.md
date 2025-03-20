@@ -18,6 +18,12 @@ All notable changes to ColorKit will be documented in this file.
   - `WCAGColorSuggestions`: Generate accessible color alternatives.
   - `suggestedAccessibleColors()`: Improved method with hue preservation option.
 - **Documentation**: Detailed documentation with examples for all new features.
+- **SwiftLint Integration**: Added SwiftLint for consistent code style and quality.
+  - Enforces consistent code formatting and best practices
+  - Helps catch potential issues early in development
+  - Improves code readability and maintainability
+  - Integrated with GitHub Actions for automated checks
+  - Custom configuration to balance strictness with practicality
 
 ### Fixed
 - Platform-specific test issues for proper macOS compatibility. 

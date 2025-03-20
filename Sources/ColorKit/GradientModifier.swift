@@ -44,7 +44,7 @@ public extension View {
             steps: steps
         ))
     }
-    
+
     /// Applies a complementary gradient background.
     ///
     /// - Parameters:
@@ -66,7 +66,7 @@ public extension View {
             steps: steps
         ))
     }
-    
+
     /// Applies an analogous gradient background.
     ///
     /// - Parameters:
@@ -91,7 +91,7 @@ public extension View {
             steps: steps
         ))
     }
-    
+
     /// Applies a triadic gradient background.
     ///
     /// - Parameters:
@@ -113,7 +113,7 @@ public extension View {
             steps: steps
         ))
     }
-    
+
     /// Applies a monochromatic gradient background.
     ///
     /// - Parameters:
@@ -142,28 +142,28 @@ public extension View {
 public enum GradientDirection {
     /// Top to bottom gradient.
     case topToBottom
-    
+
     /// Bottom to top gradient.
     case bottomToTop
-    
+
     /// Leading to trailing gradient (left to right in LTR languages).
     case leadingToTrailing
-    
+
     /// Trailing to leading gradient (right to left in LTR languages).
     case trailingToLeading
-    
+
     /// Top leading to bottom trailing gradient (diagonal).
     case topLeadingToBottomTrailing
-    
+
     /// Bottom trailing to top leading gradient (diagonal).
     case bottomTrailingToTopLeading
-    
+
     /// Top trailing to bottom leading gradient (diagonal).
     case topTrailingToBottomLeading
-    
+
     /// Bottom leading to top trailing gradient (diagonal).
     case bottomLeadingToTopTrailing
-    
+
     /// Returns the start and end points for the gradient.
     var points: (start: UnitPoint, end: UnitPoint) {
         switch self {
@@ -195,11 +195,11 @@ private struct LinearGradientModifier: ViewModifier {
     var direction: GradientDirection
     var colorSpace: GradientColorSpace
     var steps: Int
-    
+
     func body(content: Content) -> some View {
         let colors = startColor.linearGradient(to: endColor, steps: steps, in: colorSpace)
         let points = direction.points
-        
+
         return content
             .background(
                 LinearGradient(
@@ -217,11 +217,11 @@ private struct ComplementaryGradientModifier: ViewModifier {
     var direction: GradientDirection
     var colorSpace: GradientColorSpace
     var steps: Int
-    
+
     func body(content: Content) -> some View {
         let colors = baseColor.complementaryGradient(steps: steps, in: colorSpace)
         let points = direction.points
-        
+
         return content
             .background(
                 LinearGradient(
@@ -240,11 +240,11 @@ private struct AnalogousGradientModifier: ViewModifier {
     var angle: CGFloat
     var colorSpace: GradientColorSpace
     var steps: Int
-    
+
     func body(content: Content) -> some View {
         let colors = baseColor.analogousGradient(steps: steps, angle: angle, in: colorSpace)
         let points = direction.points
-        
+
         return content
             .background(
                 LinearGradient(
@@ -262,11 +262,11 @@ private struct TriadicGradientModifier: ViewModifier {
     var direction: GradientDirection
     var colorSpace: GradientColorSpace
     var steps: Int
-    
+
     func body(content: Content) -> some View {
         let colors = baseColor.triadicGradient(steps: steps, in: colorSpace)
         let points = direction.points
-        
+
         return content
             .background(
                 LinearGradient(
@@ -284,11 +284,11 @@ private struct MonochromaticGradientModifier: ViewModifier {
     var direction: GradientDirection
     var lightnessRange: ClosedRange<CGFloat>
     var steps: Int
-    
+
     func body(content: Content) -> some View {
         let colors = baseColor.monochromaticGradient(steps: steps, lightnessRange: lightnessRange)
         let points = direction.points
-        
+
         return content
             .background(
                 LinearGradient(
@@ -298,4 +298,4 @@ private struct MonochromaticGradientModifier: ViewModifier {
                 )
             )
     }
-} 
+}

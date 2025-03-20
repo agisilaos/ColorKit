@@ -7,22 +7,26 @@ let package = Package(
     name: "ColorKit",
     platforms: [
         .iOS(.v14),
-        .macOS(.v11)
+        .macOS(.v12)
     ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "ColorKit",
-            targets: ["ColorKit"]),
+            targets: ["ColorKit"]
+        ),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", from: "0.58.2")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ColorKit"),
+            name: "ColorKit",
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+        ),
         .testTarget(
             name: "ColorKitTests",
-            dependencies: ["ColorKit"]
+            dependencies: ["ColorKit"],
+            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
     ]
 )

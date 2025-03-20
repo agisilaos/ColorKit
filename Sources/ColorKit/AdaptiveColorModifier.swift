@@ -28,7 +28,7 @@ public extension View {
     func adaptiveColor(light: Color, dark: Color, brightnessAdjustment: CGFloat = 0.0) -> some View {
         self.modifier(AdaptiveColorModifier(light: light, dark: dark, brightnessAdjustment: brightnessAdjustment))
     }
-    
+
     /// Ensures a color meets a minimum contrast ratio against the background.
     ///
     /// - Parameters:
@@ -39,7 +39,7 @@ public extension View {
     func highContrastColor(base: Color, background: Color, minimumRatio: CGFloat = 4.5) -> some View {
         self.modifier(HighContrastColorModifier(base: base, background: background, minimumRatio: minimumRatio))
     }
-    
+
     /// Executes a closure when the system color scheme changes.
     ///
     /// - Parameter action: A closure that receives the new `ColorScheme` value when it changes.
@@ -53,11 +53,13 @@ public extension View {
 
 /// A ViewModifier that applies adaptive color adjustments for Light/Dark mode.
 private struct AdaptiveColorModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme)
+    private var colorScheme
+
     var light: Color
     var dark: Color
     var brightnessAdjustment: CGFloat
-    
+
     func body(content: Content) -> some View {
         let baseColor = colorScheme == .dark ? dark : light
         let adjustedColor = baseColor.adjustBrightness(by: brightnessAdjustment)
@@ -72,7 +74,7 @@ private struct HighContrastColorModifier: ViewModifier {
     var base: Color
     var background: Color
     var minimumRatio: CGFloat
-    
+
     func body(content: Content) -> some View {
         let adjustedColor = base.adjustedForAccessibility(with: background, minimumRatio: minimumRatio)
         return content.foregroundColor(adjustedColor)
@@ -83,9 +85,11 @@ private struct HighContrastColorModifier: ViewModifier {
 
 /// A ViewModifier that triggers a closure when the system color scheme changes.
 private struct AdaptiveColorChangeModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorScheme)
+    private var colorScheme
+
     var action: (ColorScheme) -> Void
-    
+
     func body(content: Content) -> some View {
         content.onAppear {
             action(colorScheme)

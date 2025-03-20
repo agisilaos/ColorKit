@@ -1,9 +1,16 @@
-import XCTest
-@testable import ColorKit
+//
+//  ColorKitTests.swift
+//  ColorKitTests
+//
+//  Created by Agisilaos Tsaraboulidis on 10.03.2024.
+//
+
 import SwiftUI
+import XCTest
+
+@testable import ColorKit
 
 final class ColorKitTests: XCTestCase {
-
     // MARK: - HEX Conversion Tests
     func testHexToColor() {
         let color = Color(hex: "#FF5733")
@@ -20,23 +27,23 @@ final class ColorKitTests: XCTestCase {
     func testHexConversion() {
         // Create a color with explicit RGB values
         let color = Color(.sRGB, red: 1.0, green: 0.0, blue: 0.0, opacity: 1.0)
-        
+
         // Get the hex value
         let hexString = color.hexValue()
         XCTAssertNotNil(hexString, "Hex value should not be nil")
-        
+
         // Test the hexString alias
         let hexStringAlias = color.hexString()
         XCTAssertEqual(hexString, hexStringAlias, "hexString should be an alias for hexValue")
-        
+
         // Test the hexComponents method
         let hexComponents = color.hexComponents()
         XCTAssertNotNil(hexComponents, "hexComponents should return a valid tuple")
-        
+
         // Verify the hex string format is correct
         XCTAssertTrue(hexString!.hasPrefix("#"), "Hex string should start with #")
         XCTAssertEqual(hexString!.count, 9, "Hex string should be 9 characters long (#RRGGBBAA)")
-        
+
         // For pure red, we know the exact values
         XCTAssertEqual(hexComponents?.red, "FF", "Red component should be FF")
         XCTAssertEqual(hexComponents?.green, "00", "Green component should be 00")
@@ -71,16 +78,16 @@ final class ColorKitTests: XCTestCase {
 
     func testHSLConversion() {
         let color = Color(hue: 0.5, saturation: 0.8, lightness: 0.6)
-        
+
         guard let hsl = color.hslComponents() else {
             XCTFail("Failed to get HSL components")
             return
         }
-        
+
         XCTAssertEqual(Double(hsl.hue), 0.5, accuracy: 0.01, "Hue should be approximately 0.5")
         XCTAssertEqual(Double(hsl.saturation), 0.8, accuracy: 0.01, "Saturation should be approximately 0.8")
         XCTAssertEqual(Double(hsl.lightness), 0.6, accuracy: 0.01, "Lightness should be approximately 0.6")
-        
+
         // Test the new hslString method
         let hslString = color.hslString()
         XCTAssertNotNil(hslString, "hslString should return a valid string")
@@ -129,7 +136,7 @@ final class ColorKitTests: XCTestCase {
         XCTAssertEqual(Double(cmyk.magenta), 1.0, accuracy: 0.01, "Magenta value incorrect")
         XCTAssertEqual(Double(cmyk.yellow), 1.0, accuracy: 0.01, "Yellow value incorrect")
         XCTAssertEqual(Double(cmyk.key), 0.0, accuracy: 0.01, "Key value incorrect")
-        
+
         // Test the new cmykString method
         let cmykString = color.cmykString()
         XCTAssertNotNil(cmykString, "cmykString should return a valid string")
@@ -155,7 +162,7 @@ final class ColorKitTests: XCTestCase {
             XCTFail("Failed to retrieve CMYK components")
             return
         }
-        
+
         // Test that the values round-trip accurately
         XCTAssertEqual(Double(cmyk.cyan), 1.0, accuracy: 0.01, "Cyan value mismatch")
         XCTAssertEqual(Double(cmyk.magenta), 0.0, accuracy: 0.01, "Magenta value mismatch")
@@ -175,7 +182,7 @@ final class ColorKitTests: XCTestCase {
         XCTAssertEqual(Double(lab.L), 53.24, accuracy: 0.1, "L* value incorrect")
         XCTAssertEqual(Double(lab.a), 80.09, accuracy: 0.1, "a* value incorrect")
         XCTAssertEqual(Double(lab.b), 67.20, accuracy: 0.1, "b* value incorrect")
-        
+
         // Test the new labString method
         let labString = color.labString()
         XCTAssertNotNil(labString, "labString should return a valid string")
@@ -229,7 +236,7 @@ final class ColorKitTests: XCTestCase {
     func testRGBAComponents() {
         let color = Color(red: 0.5, green: 0.6, blue: 0.7, opacity: 0.8)
         let rgba = color.rgbaComponents()
-        
+
         XCTAssertEqual(rgba.red, 0.5, accuracy: 0.01, "Red component should be 0.5")
         XCTAssertEqual(rgba.green, 0.6, accuracy: 0.01, "Green component should be 0.6")
         XCTAssertEqual(rgba.blue, 0.7, accuracy: 0.01, "Blue component should be 0.7")

@@ -30,28 +30,28 @@ import UniformTypeIdentifiers
 public struct PaletteExportView: View {
     /// The palette to export
     private let palette: [PaletteExporter.PaletteEntry]
-    
+
     /// The name of the palette
     private let paletteName: String
-    
+
     /// The selected export format
     @State private var selectedFormat: PaletteExportFormat = .json
-    
+
     /// Whether the export sheet is presented
     @State private var isExportSheetPresented = false
-    
+
     /// Whether the share sheet is presented
     @State private var isShareSheetPresented = false
-    
+
     /// The exported data
     @State private var exportedData: Data?
-    
+
     /// The export action result message
     @State private var resultMessage: String?
-    
+
     /// Whether to show the result message
     @State private var showResultMessage = false
-    
+
     /// Creates a new palette export view
     /// - Parameters:
     ///   - palette: The palette to export
@@ -60,15 +60,15 @@ public struct PaletteExportView: View {
         self.palette = palette
         self.paletteName = paletteName
     }
-    
+
     public var body: some View {
         VStack(spacing: 20) {
             // Preview of the palette
             palettePreview
-            
+
             // Format selection
             formatSelector
-            
+
             // Action buttons
             actionButtons
         }
@@ -89,7 +89,7 @@ public struct PaletteExportView: View {
             )
         }
     }
-    
+
     /// Preview of the palette
     private var palettePreview: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -99,7 +99,7 @@ public struct PaletteExportView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(entry.color)
                             .frame(width: 60, height: 60)
-                        
+
                         Text(entry.name)
                             .font(.caption)
                             .lineLimit(1)
@@ -111,13 +111,13 @@ public struct PaletteExportView: View {
         }
         .frame(height: 100)
     }
-    
+
     /// Format selector
     private var formatSelector: some View {
         VStack(alignment: .leading) {
             Text("Export Format")
                 .font(.headline)
-            
+
             Picker("Format", selection: $selectedFormat) {
                 ForEach(PaletteExportFormat.allCases) { format in
                     Text(format.rawValue).tag(format)
@@ -126,7 +126,7 @@ public struct PaletteExportView: View {
             .pickerStyle(SegmentedPickerStyle())
         }
     }
-    
+
     /// Action buttons
     private var actionButtons: some View {
         HStack {
@@ -137,9 +137,9 @@ public struct PaletteExportView: View {
                     .background(Color.accentColor.opacity(0.1))
                     .cornerRadius(8)
             }
-            
+
             Spacer()
-            
+
             Button(action: exportToFile) {
                 Label("Export", systemImage: "square.and.arrow.down")
                     .padding(.horizontal, 12)
@@ -147,9 +147,9 @@ public struct PaletteExportView: View {
                     .background(Color.accentColor.opacity(0.1))
                     .cornerRadius(8)
             }
-            
+
             Spacer()
-            
+
             Button(action: share) {
                 Label("Share", systemImage: "square.and.arrow.up")
                     .padding(.horizontal, 12)
@@ -159,7 +159,7 @@ public struct PaletteExportView: View {
             }
         }
     }
-    
+
     /// Copy the palette to the clipboard
     private func copyToClipboard() {
         let success = PaletteExporter.copyToClipboard(
@@ -167,11 +167,11 @@ public struct PaletteExportView: View {
             format: selectedFormat,
             paletteName: paletteName
         )
-        
+
         resultMessage = success ? "Copied to clipboard" : "Failed to copy to clipboard"
         showResultMessage = true
     }
-    
+
     /// Export the palette to a file
     private func exportToFile() {
         guard let data = PaletteExporter.export(
@@ -183,15 +183,15 @@ public struct PaletteExportView: View {
             showResultMessage = true
             return
         }
-        
+
         exportedData = data
         isExportSheetPresented = true
-        
+
         #if os(macOS)
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [UTType(filenameExtension: selectedFormat.fileExtension) ?? .data]
         savePanel.nameFieldStringValue = "\(paletteName).\(selectedFormat.fileExtension)"
-        
+
         savePanel.begin { response in
             if response == .OK, let url = savePanel.url {
                 do {
@@ -205,7 +205,7 @@ public struct PaletteExportView: View {
         }
         #endif
     }
-    
+
     /// Share the palette
     private func share() {
         guard let data = PaletteExporter.export(
@@ -217,7 +217,7 @@ public struct PaletteExportView: View {
             showResultMessage = true
             return
         }
-        
+
         exportedData = data
         isShareSheetPresented = true
     }
@@ -228,7 +228,7 @@ public struct PaletteExportView: View {
 @available(iOS 14.0, *)
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
-    
+
     func makeUIViewController(context: Context) -> UIActivityViewController {
         let controller = UIActivityViewController(
             activityItems: items,
@@ -236,7 +236,7 @@ struct ShareSheet: UIViewControllerRepresentable {
         )
         return controller
     }
-    
+
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
         // Nothing to update
     }
@@ -254,7 +254,7 @@ struct PaletteExportView_Previews: PreviewProvider {
             PaletteExporter.PaletteEntry(name: "Yellow", color: .yellow),
             PaletteExporter.PaletteEntry(name: "Purple", color: .purple)
         ]
-        
+
         PaletteExportView(palette: palette, paletteName: "Sample Palette")
     }
-} 
+}

@@ -33,14 +33,14 @@ public extension AccessiblePaletteGenerator {
         let entries = palette.enumerated().map { index, color in
             PaletteExporter.PaletteEntry(name: "Color \(index + 1)", color: color)
         }
-        
+
         return PaletteExporter.export(
             palette: entries,
             to: format,
             paletteName: paletteName
         )
     }
-    
+
     /// Export a theme to a specific format
     /// - Parameters:
     ///   - theme: The theme to export
@@ -51,7 +51,7 @@ public extension AccessiblePaletteGenerator {
         to format: PaletteExportFormat
     ) -> Data? {
         let entries = PaletteExporter.createPalette(from: theme)
-        
+
         return PaletteExporter.export(
             palette: entries,
             to: format,
@@ -82,10 +82,10 @@ public extension Color {
             paletteSize: paletteSize,
             includeBlackAndWhite: includeBlackAndWhite
         )
-        
+
         let generator = AccessiblePaletteGenerator(configuration: configuration)
         let palette = generator.generatePalette(from: self)
-        
+
         return generator.exportPalette(palette, to: format, paletteName: paletteName)
     }
-} 
+}

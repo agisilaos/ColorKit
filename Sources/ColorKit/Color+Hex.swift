@@ -25,13 +25,13 @@ public extension Color {
     /// - Returns: A `Color` instance if the HEX string is valid; otherwise, `nil`.
     init?(hex: String) {
         let r, g, b, a: CGFloat
-        
+
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-        
+
         var hexNumber: UInt64 = 0
         guard Scanner(string: hexSanitized).scanHexInt64(&hexNumber) else { return nil }
-        
+
         switch hexSanitized.count {
         case 6:
             r = CGFloat((hexNumber & 0xFF0000) >> 16) / 255
@@ -46,10 +46,10 @@ public extension Color {
         default:
             return nil
         }
-        
+
         self.init(red: r, green: g, blue: b, opacity: a)
     }
-    
+
     /// Returns the HEX representation of the color.
     ///
     /// - Returns: A HEX string in the format `#RRGGBBAA` representing the color, or `nil` if conversion fails.
@@ -59,14 +59,14 @@ public extension Color {
         let g = components[1]
         let b = components[2]
         let a = components.count >= 4 ? components[3] : 1.0
-        
+
         return String(format: "#%02X%02X%02X%02X",
                       Int(r * 255),
                       Int(g * 255),
                       Int(b * 255),
                       Int(a * 255))
     }
-    
+
     /// Returns the HEX representation of the color.
     /// This is an alias for `hexValue()` for API consistency.
     ///
@@ -74,7 +74,7 @@ public extension Color {
     func hexString() -> String? {
         return hexValue()
     }
-    
+
     /// Returns the RGBA components of the color as hexadecimal values.
     ///
     /// - Returns: A tuple containing the red, green, blue, and alpha components as hexadecimal values,
@@ -85,7 +85,7 @@ public extension Color {
         let g = components[1]
         let b = components[2]
         let a = components.count >= 4 ? components[3] : 1.0
-        
+
         return (
             red: String(format: "%02X", Int(r * 255)),
             green: String(format: "%02X", Int(g * 255)),

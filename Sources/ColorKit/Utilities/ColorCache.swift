@@ -16,8 +16,8 @@
 //  MIT License. See LICENSE file for details.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// A thread-safe cache for expensive color operations
 @available(iOS 14.0, macOS 11.0, *)
@@ -181,22 +181,22 @@ public final class ColorCache: @unchecked Sendable {
         blendedColorCache.removeAllObjects()
         interpolatedColorCache.removeAllObjects()
     }
-    
+
     /// Clears the LAB components cache
     public func clearLABCache() {
         labCache.removeAllObjects()
     }
-    
+
     /// Clears the HSL components cache
     public func clearHSLCache() {
         hslCache.removeAllObjects()
     }
-    
+
     /// Clears the luminance cache
     public func clearLuminanceCache() {
         luminanceCache.removeAllObjects()
     }
-    
+
     /// Clears the contrast ratio cache
     public func clearContrastCache() {
         contrastRatioCache.removeAllObjects()
@@ -320,7 +320,7 @@ public final class ColorCache: @unchecked Sendable {
         let key1 = cacheKey(for: color1)
         let key2 = cacheKey(for: color2)
         // Round amount to 3 decimal places to avoid too many cache entries
-        let roundedAmount = round(amount * 1000) / 1000
+        let roundedAmount = round(amount * 1_000) / 1_000
         return "\(key1):\(key2):\(roundedAmount):\(colorSpace)" as NSString
     }
 }

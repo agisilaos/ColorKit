@@ -7,7 +7,7 @@ import SwiftUI
 public enum ColorKit {
     /// The current version of ColorKit
     public static let version = "1.5.0"
-    
+
     /// WCAG Compliance Checker
     public struct WCAG {
         /// Returns a demo view for the WCAG compliance checker
@@ -16,7 +16,7 @@ public enum ColorKit {
             return WCAGDemoView()
         }
     }
-    
+
     /// Live Color Inspector
     public struct ColorInspector {
         /// Returns a demo view for the color inspector
@@ -24,14 +24,14 @@ public enum ColorKit {
         public static func demoView() -> some View {
             return ColorInspectorDemoView()
         }
-        
+
         /// Returns a demo view for the accessible palette generator
         @available(iOS 14.0, macOS 11.0, *)
         @MainActor
         public static func accessiblePaletteDemoView() -> some View {
             AccessiblePaletteDemoView()
         }
-        
+
         /// Generates an accessible color palette based on a seed color
         /// - Parameters:
         ///   - seedColor: The color to base the palette on
@@ -52,7 +52,7 @@ public enum ColorKit {
                 includeBlackAndWhite: includeBlackAndWhite
             )
         }
-        
+
         /// Generates an accessible theme based on a seed color
         /// - Parameters:
         ///   - seedColor: The color to base the theme on

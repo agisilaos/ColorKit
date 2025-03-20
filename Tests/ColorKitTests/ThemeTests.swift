@@ -1,10 +1,29 @@
-import XCTest
+//
+//  ThemeTests.swift
+//  ColorKitTests
+//
+//  Created by Agisilaos Tsaraboulidis on 12.03.2024.
+//
+//  Description:
+//  Tests for the color theming system and theme management.
+//
+//  Features:
+//  - Tests for theme creation and configuration
+//  - Tests for theme management (registration, switching)
+//  - Tests for theme color sets and variants
+//  - Tests for default theme handling
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
+import XCTest
+
 @testable import ColorKit
 
 #if canImport(SwiftUI) && (os(iOS) && !(targetEnvironment(macCatalyst)) && swift(>=5.5))
 final class ThemeTests: XCTestCase {
-
     @MainActor
     func testThemeCreation() {
         // Test creating a theme with individual colors

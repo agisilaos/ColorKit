@@ -16,21 +16,21 @@
 //  MIT License. See LICENSE file for details.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 /// Manages themes and provides the current theme to the application
 @available(iOS 14.0, macOS 11.0, *)
 public class ThemeManager: ObservableObject, @unchecked Sendable {
     /// The shared instance for app-wide theme management
     @MainActor public static let shared = ThemeManager()
-    
+
     /// The currently active theme
     @Published public private(set) var currentTheme: ColorTheme
-    
+
     /// All available themes
     public private(set) var availableThemes: [ColorTheme] = []
-    
+
     /// Creates a new theme manager with default themes
     private init() {
         // Create default light theme
@@ -42,7 +42,7 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
             background: Color.white,
             text: Color.black
         )
-        
+
         // Create default dark theme
         let darkTheme = ColorTheme(
             name: "Default Dark",
@@ -52,11 +52,11 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
             background: Color.black,
             text: Color.white
         )
-        
+
         self.availableThemes = [lightTheme, darkTheme]
         self.currentTheme = lightTheme
     }
-    
+
     /// Registers a new theme
     /// - Parameter theme: The theme to register
     /// - Returns: True if the theme was added, false if a theme with the same name already exists
@@ -66,11 +66,11 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
         if availableThemes.contains(where: { $0.name == theme.name }) {
             return false
         }
-        
+
         availableThemes.append(theme)
         return true
     }
-    
+
     /// Switches to a theme by name
     /// - Parameter name: The name of the theme to switch to
     /// - Returns: True if the theme was found and applied, false otherwise
@@ -79,11 +79,11 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
         guard let theme = availableThemes.first(where: { $0.name == name }) else {
             return false
         }
-        
+
         currentTheme = theme
         return true
     }
-    
+
     /// Switches to a specific theme
     /// - Parameter theme: The theme to switch to
     /// - Returns: True if the theme was found and applied, false otherwise
@@ -92,8 +92,8 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
         guard availableThemes.contains(where: { $0.name == theme.name }) else {
             return false
         }
-        
+
         currentTheme = theme
         return true
     }
-} 
+}

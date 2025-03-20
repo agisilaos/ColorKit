@@ -23,25 +23,25 @@ import SwiftUI
 public struct ColorTheme: Equatable, Hashable, Sendable {
     /// The theme's name for identification
     public let name: String
-    
+
     /// Primary colors used for main UI elements
     public let primary: ThemeColorSet
-    
+
     /// Secondary colors for supporting UI elements
     public let secondary: ThemeColorSet
-    
+
     /// Accent colors for highlights and emphasis
     public let accent: ThemeColorSet
-    
+
     /// Background colors for different UI layers
     public let background: ThemeColorSet
-    
+
     /// Text colors for various content types
     public let text: ThemeColorSet
-    
+
     /// Status colors for feedback (success, warning, error)
     public let status: StatusColorSet
-    
+
     /// Creates a new color theme with all color sets
     /// - Parameters:
     ///   - name: The name of the theme
@@ -68,7 +68,7 @@ public struct ColorTheme: Equatable, Hashable, Sendable {
         self.text = text
         self.status = status
     }
-    
+
     /// Creates a new color theme with default values that can be overridden
     /// - Parameters:
     ///   - name: The name of the theme
@@ -106,13 +106,13 @@ public struct ColorTheme: Equatable, Hashable, Sendable {
 public struct ThemeColorSet: Equatable, Hashable, Sendable {
     /// The main color
     public let base: Color
-    
+
     /// A lighter variant of the base color
     public let light: Color
-    
+
     /// A darker variant of the base color
     public let dark: Color
-    
+
     /// Creates a new theme color set
     /// - Parameters:
     ///   - base: The main color
@@ -123,7 +123,7 @@ public struct ThemeColorSet: Equatable, Hashable, Sendable {
         self.light = light
         self.dark = dark
     }
-    
+
     /// Creates a theme color set from a base color, auto-generating light and dark variants
     /// - Parameter base: The base color to generate variants from
     /// - Returns: A complete theme color set
@@ -133,21 +133,21 @@ public struct ThemeColorSet: Equatable, Hashable, Sendable {
             // Fallback if HSL conversion fails
             return ThemeColorSet(base: base, light: base.opacity(0.7), dark: base.opacity(1.3))
         }
-        
+
         // Create lighter variant (increase lightness)
         let lightVariant = Color(
             hue: hsl.hue,
             saturation: max(hsl.saturation - 0.1, 0),
             lightness: min(hsl.lightness + 0.15, 1)
         )
-        
+
         // Create darker variant (decrease lightness)
         let darkVariant = Color(
             hue: hsl.hue,
             saturation: min(hsl.saturation + 0.1, 1),
             lightness: max(hsl.lightness - 0.15, 0)
         )
-        
+
         return ThemeColorSet(base: base, light: lightVariant, dark: darkVariant)
     }
 }
@@ -157,13 +157,13 @@ public struct ThemeColorSet: Equatable, Hashable, Sendable {
 public struct StatusColorSet: Equatable, Hashable, Sendable {
     /// Color for success states
     public let success: Color
-    
+
     /// Color for warning states
     public let warning: Color
-    
+
     /// Color for error states
     public let error: Color
-    
+
     /// Creates a new status color set
     /// - Parameters:
     ///   - success: Color for success states
@@ -174,4 +174,4 @@ public struct StatusColorSet: Equatable, Hashable, Sendable {
         self.warning = warning
         self.error = error
     }
-} 
+}
