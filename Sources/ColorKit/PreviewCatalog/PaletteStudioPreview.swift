@@ -2,7 +2,7 @@
 //  PaletteStudioPreview.swift
 //  ColorKit
 //
-//  Created by Agisilaos Tsaraboulidis on 15.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 20.03.2024.
 //
 //  Description:
 //  A preview component for generating and exporting color palettes.
@@ -19,7 +19,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 /// A preview component for generating, customizing, and exporting color palettes
 /// - Note: This preview doesn't export and share actions because interactive elements such as sheets or save panels are not supported in SwiftUI previews.
@@ -33,8 +32,6 @@ public struct PaletteStudioPreview: View {
     @State private var selectedExportFormat: PaletteExportFormat = .json
     @State private var generatedPalette: [Color] = []
     @State private var paletteName: String = "My Palette"
-    @State private var showResultMessage = false
-    @State private var resultMessage = ""
 
     // MARK: - Body
 
@@ -59,11 +56,6 @@ public struct PaletteStudioPreview: View {
                 exportSection
             }
             .padding()
-        }
-        .alert("Result", isPresented: $showResultMessage) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(resultMessage)
         }
     }
 
@@ -216,22 +208,15 @@ public struct PaletteStudioPreview: View {
             paletteName: paletteName
         )
 
-        resultMessage = success ? "Copied to clipboard" : "Failed to copy to clipboard"
-        showResultMessage = true
+        print(success ? "Copied to clipboard" : "Failed to copy to clipboard")
     }
 
     private func exportPalette() {
-        // In SwiftUI previews, export functionality (like save panels) cannot be presented.
-        // Simulate export action by showing a message.
-        resultMessage = "Export action is disabled in preview."
-        showResultMessage = true
+        print("Export action is disabled in preview.")
     }
 
     private func sharePalette() {
-        // In SwiftUI previews, share functionality (like share sheets) cannot be presented.
-        // Simulate share action by showing a message.
-        resultMessage = "Share action is disabled in preview."
-        showResultMessage = true
+        print("Share action is disabled in preview.")
     }
 
     private func randomizeColor() {
