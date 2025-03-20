@@ -36,7 +36,8 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Comprehensive Theming System**  
 ✅ **High-Performance Caching for Color Operations**  
 ✅ **AccessibilityEnhancer for Intelligent Color Adjustments**  
-✅ **New: Advanced Color Debugging Tools**  
+✅ **Advanced Color Debugging Tools**  
+✅ **Interactive Preview Catalog**  
 
 ---
 
@@ -279,6 +280,51 @@ struct ContentView: View {
     }
 }
 ```
+
+### **1️⃣5️⃣ Preview Catalog**
+```swift
+// Use the Preview Catalog to explore ColorKit features
+struct ContentView: View {
+    var body: some View {
+        MainCatalogView()
+    }
+}
+
+// Or explore specific features
+struct BlendingView: View {
+    var body: some View {
+        BlendingPreview()
+    }
+}
+
+struct GradientView: View {
+    var body: some View {
+        GradientPreview()
+    }
+}
+
+struct ThemeView: View {
+    var body: some View {
+        ThemePreview()
+    }
+}
+
+// Test performance
+struct BenchmarkView: View {
+    var body: some View {
+        PerformanceBenchmark()
+    }
+}
+```
+
+The Preview Catalog provides interactive demonstrations of ColorKit's features:
+- Color blending with real-time preview
+- Gradient generation with code export
+- Theme building with light/dark mode testing
+- Performance benchmarking
+- Accessibility tools
+
+Each preview component is designed to help you understand and utilize ColorKit's capabilities effectively.
 
 ## **🎨 Debugging Tools**  
 
