@@ -62,6 +62,7 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
     case performance = "Performance Insights"
     case debugger = "Color Debugger"
     case paletteStudio = "Palette Studio"
+    case animation = "Color Animation"
 
     var id: String { rawValue }
 
@@ -85,6 +86,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "Debug and inspect colors in detail"
         case .paletteStudio:
             return "Generate and export color palettes with accessibility in mind"
+        case .animation:
+            return "Experiment with color transitions and animations"
         }
     }
 
@@ -106,6 +109,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "magnifyingglass"
         case .paletteStudio:
             return "square.stack.3d.up"
+        case .animation:
+            return "sparkles.tv"
         }
     }
 
@@ -127,6 +132,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             ColorDebuggerPreview()
         case .paletteStudio:
             PaletteStudioPreview()
+        case .animation:
+            ColorAnimationPreview()
         }
     }
 }

@@ -20,6 +20,13 @@ All notable changes to ColorKit will be documented in this file.
     - Accessible palette generation from seed colors
     - WCAG compliance options (AA/AAA)
     - Customizable palette size and options
+    - Export to multiple formats (JSON, CSS, SVG, ASE, PNG)
+    - One-click copying and sharing
+  - `ColorAnimationPreview`: Dynamic color animation and transition tool with:
+    - Real-time color interpolation preview
+    - Multiple interpolation modes (RGB, HSL, LAB)
+    - Customizable animation duration and easing
+    - Performance metrics and FPS monitoring
   - Accessibility-focused UI with proper contrast and SwiftUI best practices
   - Real-time code generation for gradients and themes
   - Performance monitoring for blend operations
