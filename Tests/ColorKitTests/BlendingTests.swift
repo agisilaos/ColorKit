@@ -4,6 +4,17 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 11.03.2024.
 //
+//  Description:
+//  Tests for the color blending functionality.
+//
+//  Features:
+//  - Tests for various blending modes (normal, multiply, screen, etc.)
+//  - Tests for alpha blending and opacity handling
+//  - Tests for blend mode calculations and accuracy
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

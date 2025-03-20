@@ -4,6 +4,19 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 12.03.2024.
 //
+//  Description:
+//  Tests for the color inspector UI component and functionality.
+//
+//  Features:
+//  - Tests for color inspector view creation and configuration
+//  - Tests for color inspector modifiers and positions
+//  - Tests for contrast ratio calculations
+//  - Tests for view extensions and demo views
+//  - Tests for inspector UI component layout and behavior
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

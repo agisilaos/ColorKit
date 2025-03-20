@@ -4,6 +4,19 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 19.03.2024.
 //
+//  Description:
+//  Tests for color comparison and difference calculation functionality.
+//
+//  Features:
+//  - Tests for RGB color comparison
+//  - Tests for HSL color comparison
+//  - Tests for perceptual difference calculations
+//  - Tests for contrast ratio calculations
+//  - Tests for WCAG compliance level checks
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

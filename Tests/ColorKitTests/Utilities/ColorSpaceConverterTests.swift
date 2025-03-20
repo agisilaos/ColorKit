@@ -4,6 +4,20 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 19.03.2024.
 //
+//  Description:
+//  Tests for color space conversion functionality.
+//
+//  Features:
+//  - Tests for RGB color space conversions
+//  - Tests for HSL color space conversions
+//  - Tests for CMYK color space conversions
+//  - Tests for LAB color space conversions
+//  - Tests for XYZ color space conversions
+//  - Tests for color component descriptions
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

@@ -4,6 +4,20 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 11.03.2024.
 //
+//  Description:
+//  Tests for gradient generation and manipulation functionality.
+//
+//  Features:
+//  - Tests for linear gradient generation
+//  - Tests for complementary gradient generation
+//  - Tests for analogous gradient generation
+//  - Tests for triadic gradient generation
+//  - Tests for monochromatic gradient generation
+//  - Tests for edge cases and boundary conditions
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

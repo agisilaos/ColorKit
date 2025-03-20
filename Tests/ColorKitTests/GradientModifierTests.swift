@@ -4,6 +4,18 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 11.03.2024.
 //
+//  Description:
+//  Tests for SwiftUI view modifiers that apply gradient effects.
+//
+//  Features:
+//  - Tests for gradient direction calculations
+//  - Tests for various gradient modifier implementations
+//  - Tests for default parameter handling
+//  - Tests for gradient modifier view extensions
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest

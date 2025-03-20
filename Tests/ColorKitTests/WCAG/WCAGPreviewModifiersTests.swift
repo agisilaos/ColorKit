@@ -4,6 +4,18 @@
 //
 //  Created by Agisilaos Tsaraboulidis on 12.03.2024.
 //
+//  Description:
+//  Tests for WCAG compliance preview modifiers and color blindness simulation.
+//
+//  Features:
+//  - Tests for WCAG compliance preview modifiers
+//  - Tests for color blindness simulation (protanopia, deuteranopia, tritanopia)
+//  - Tests for color effect matrices and transformations
+//  - Tests for view extensions and modifier applications
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
 
 import SwiftUI
 import XCTest
