@@ -11,6 +11,11 @@ All notable changes to ColorKit will be documented in this file.
   - `GradientPreview`: Visual gradient builder with code generation
   - `ThemePreview`: Theme builder with light/dark mode preview
   - `PerformanceBenchmark`: Performance testing tool for color operations
+  - `ColorDebuggerPreview`: Advanced color inspection and comparison tool with:
+    - Real-time color space visualization
+    - Component analysis across RGB, HSL, and LAB
+    - Visual color comparison with difference metrics
+    - WCAG contrast ratio calculation and compliance badges
   - Accessibility-focused UI with proper contrast and SwiftUI best practices
   - Real-time code generation for gradients and themes
   - Performance monitoring for blend operations

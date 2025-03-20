@@ -60,6 +60,7 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
     case accessibility = "Accessibility Tools"
     case themes = "Theme Builder"
     case performance = "Performance Insights"
+    case debugger = "Color Debugger"
 
     var id: String { rawValue }
 
@@ -79,6 +80,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "Build and preview custom color themes"
         case .performance:
             return "Measure and optimize color operations"
+        case .debugger:
+            return "Debug and inspect colors in detail"
         }
     }
 
@@ -96,6 +99,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "paintbrush"
         case .performance:
             return "chart.bar"
+        case .debugger:
+            return "magnifyingglass"
         }
     }
 
@@ -113,6 +118,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             ThemePreview()
         case .performance:
             PerformanceBenchmark()
+        case .debugger:
+            ColorDebuggerPreview()
         }
     }
 }
