@@ -70,7 +70,6 @@ jobs:
 
       - name: Build and Test iOS
         run: |
-          export SWIFT_EXEC=$(xcrun --find swift)
           xcodebuild test \
             -scheme ColorKit \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
@@ -84,7 +83,6 @@ jobs:
 
       - name: Build and Test macOS
         run: |
-          export SWIFT_EXEC=$(xcrun --find swift)
           xcodebuild test \
             -scheme ColorKit \
             -destination 'platform=macOS,arch=arm64' \
