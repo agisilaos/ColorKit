@@ -26,7 +26,6 @@ import AppKit
 #endif
 
 /// Supported formats for exporting color palettes
-@available(iOS 14.0, macOS 11.0, *)
 public enum PaletteExportFormat: String, CaseIterable, Identifiable {
     case json = "JSON"
     case css = "CSS"
@@ -60,7 +59,6 @@ public enum PaletteExportFormat: String, CaseIterable, Identifiable {
 }
 
 /// A utility for exporting color palettes in various formats
-@available(iOS 14.0, macOS 11.0, *)
 public struct PaletteExporter {
     /// A color palette entry with name and color
     public struct PaletteEntry: Identifiable, Equatable, Hashable {

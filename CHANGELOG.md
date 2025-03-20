@@ -5,6 +5,35 @@ All notable changes to ColorKit will be documented in this file.
 ## [1.6.0] - TBR
 
 ### Added
+- **SwiftUI Preview Catalog**: Comprehensive interactive preview components for exploring ColorKit features.
+  - `MainCatalogView`: Central navigation hub with searchable feature list
+  - `BlendingPreview`: Interactive color blending with custom blend modes and performance metrics
+  - `GradientPreview`: Visual gradient builder with code generation
+  - `ThemePreview`: Theme builder with light/dark mode preview
+  - `PerformanceBenchmark`: Performance testing tool for color operations
+  - `ColorDebuggerPreview`: Advanced color inspection and comparison tool with:
+    - Real-time color space visualization
+    - Component analysis across RGB, HSL, and LAB
+    - Visual color comparison with difference metrics
+    - WCAG contrast ratio calculation and compliance badges
+  - `PaletteStudioPreview`: Interactive palette generation and export tool with:
+    - Accessible palette generation from seed colors
+    - WCAG compliance options (AA/AAA)
+    - Customizable palette size and options
+    - Export to multiple formats (JSON, CSS, SVG, ASE, PNG)
+    - One-click copying and sharing
+  - `ColorAnimationPreview`: Dynamic color animation and transition tool with:
+    - Real-time color interpolation preview
+    - Multiple interpolation modes (RGB, HSL, LAB)
+    - Customizable animation duration and easing
+    - Performance metrics and FPS monitoring
+  - `AccessibilityLabPreview`: Comprehensive accessibility testing suite with:
+    - Interactive contrast ratio checker
+    - WCAG 2.1 compliance testing (AA/AAA)
+    - Best practices and guidelines reference
+  - Accessibility-focused UI with proper contrast and SwiftUI best practices
+  - Real-time code generation for gradients and themes
+  - Performance monitoring for blend operations
 - **Color Debugging Utilities**: Comprehensive tools for inspecting and comparing colors across different color spaces.
   - `ColorSpaceConverter`: Converts colors between RGB, HSL, HSB, CMYK, LAB, and XYZ.
   - `ColorComponents`: Structured representation of color components.

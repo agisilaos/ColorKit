@@ -26,7 +26,6 @@ import UniformTypeIdentifiers
 #endif
 
 /// A view for exporting and sharing color palettes
-@available(iOS 14.0, macOS 11.0, *)
 public struct PaletteExportView: View {
     /// The palette to export
     private let palette: [PaletteExporter.PaletteEntry]
@@ -225,7 +224,6 @@ public struct PaletteExportView: View {
 
 #if os(iOS)
 /// A view that presents the system share sheet
-@available(iOS 14.0, *)
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
 
@@ -244,17 +242,14 @@ struct ShareSheet: UIViewControllerRepresentable {
 #endif
 
 /// A preview provider for the palette export view
-@available(iOS 14.0, macOS 11.0, *)
-struct PaletteExportView_Previews: PreviewProvider {
-    static var previews: some View {
-        let palette = [
-            PaletteExporter.PaletteEntry(name: "Red", color: .red),
-            PaletteExporter.PaletteEntry(name: "Green", color: .green),
-            PaletteExporter.PaletteEntry(name: "Blue", color: .blue),
-            PaletteExporter.PaletteEntry(name: "Yellow", color: .yellow),
-            PaletteExporter.PaletteEntry(name: "Purple", color: .purple)
-        ]
+#Preview {
+    let palette = [
+        PaletteExporter.PaletteEntry(name: "Red", color: .red),
+        PaletteExporter.PaletteEntry(name: "Green", color: .green),
+        PaletteExporter.PaletteEntry(name: "Blue", color: .blue),
+        PaletteExporter.PaletteEntry(name: "Yellow", color: .yellow),
+        PaletteExporter.PaletteEntry(name: "Purple", color: .purple)
+    ]
 
-        PaletteExportView(palette: palette, paletteName: "Sample Palette")
-    }
+    PaletteExportView(palette: palette, paletteName: "Sample Palette")
 }

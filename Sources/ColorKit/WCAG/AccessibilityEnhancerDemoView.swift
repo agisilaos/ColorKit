@@ -20,7 +20,6 @@
 import SwiftUI
 
 /// A demo view that showcases the enhanced accessibility features of ColorKit
-@available(iOS 14.0, macOS 11.0, *)
 public struct AccessibilityEnhancerDemoView: View {
     @State private var originalColor: Color = .blue
     @State private var backgroundColor: Color = .white
@@ -253,9 +252,6 @@ public struct AccessibilityEnhancerDemoView: View {
     }
 }
 
-@available(iOS 14.0, macOS 11.0, *)
-struct AccessibilityEnhancerDemoView_Previews: PreviewProvider {
-    static var previews: some View {
-        AccessibilityEnhancerDemoView()
-    }
+#Preview {
+    AccessibilityEnhancerDemoView()
 }

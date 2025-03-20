@@ -36,7 +36,8 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **Comprehensive Theming System**  
 ✅ **High-Performance Caching for Color Operations**  
 ✅ **AccessibilityEnhancer for Intelligent Color Adjustments**  
-✅ **New: Advanced Color Debugging Tools**  
+✅ **Advanced Color Debugging Tools**  
+✅ **Interactive Preview Catalog**  
 
 ---
 
@@ -247,37 +248,79 @@ let targetLevel = WCAGContrastLevel.AA
 
 // Simple enhancement with default settings (preserves hue)
 let enhancedColor = originalColor.enhanced(with: backgroundColor)
+```
 
-// Choose a specific enhancement strategy
-let enhancedWithStrategy = originalColor.enhanced(
-    with: backgroundColor,
-    targetLevel: .AAA,
-    strategy: .preserveSaturation
-)
+### **1️⃣5️⃣ Preview Catalog**
+The Preview Catalog provides interactive demonstrations of ColorKit's features:
 
-// Get multiple accessible color variants that maintain harmony
-let variants = originalColor.suggestAccessibleVariants(
-    with: backgroundColor,
-    targetLevel: .AA,
-    count: 3
-)
+```swift
+import ColorKit
 
-// Use the AccessibilityEnhancer directly for more control
-let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
-    targetLevel: .AA,
-    strategy: .minimumChange,
-    maxPerceptualDistance: 25,
-    preferDarker: true
-))
-
-let customEnhancedColor = enhancer.enhanceColor(originalColor, with: backgroundColor)
-
-// Use the demo view to experiment with enhancement strategies
 struct ContentView: View {
     var body: some View {
-        AccessibilityEnhancerDemoView()
+        MainCatalogView()
     }
 }
+```
+
+Available previews:
+
+1. **BlendingPreview**
+   - Interactive color blending with all blend modes
+   - Real-time blend amount control
+   - Performance metrics
+
+2. **GradientPreview**
+   - Linear, radial, and angular gradient creation
+   - Color stop management
+   - Code generation
+
+3. **ThemePreview**
+   - Light/dark mode testing
+   - UI component showcase
+   - Theme code generation
+
+4. **PerformanceBenchmark**
+   - Operation benchmarking
+   - Caching metrics
+   - Iteration control
+
+5. **ColorDebuggerPreview**
+   - Color space visualization
+   - Component analysis
+   - Visual comparison tools
+   - Performance monitoring
+
+6. **PaletteStudioPreview**
+   - Palette generation
+   - Export functionality
+   - Harmony rules
+   - Theme generation
+
+7. **ColorAnimationPreview**
+   - Color transition testing
+   - Interpolation modes
+   - Timing curves
+   - Performance metrics
+
+8. **AccessibilityLabPreview**
+   - WCAG contrast checking
+   - Color enhancement strategies
+   - Accessible color suggestions
+   - Educational guidelines
+
+Each preview is designed to help developers understand and utilize ColorKit's features effectively. Access them through the `MainCatalogView` or individually:
+
+```swift
+// Use individual previews
+BlendingPreview()
+GradientPreview()
+ThemePreview()
+PerformanceBenchmark()
+ColorDebuggerPreview()
+PaletteStudioPreview()
+ColorAnimationPreview()
+AccessibilityLabPreview()
 ```
 
 ## **🎨 Debugging Tools**  

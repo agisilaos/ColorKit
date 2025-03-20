@@ -147,8 +147,6 @@ public struct ColorInspectorDemoView: View {
     }
 }
 
-struct ColorInspectorDemoView_Previews: PreviewProvider {
-    static var previews: some View {
-        ColorInspectorDemoView()
-    }
+#Preview {
+    ColorInspectorDemoView()
 }

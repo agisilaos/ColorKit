@@ -18,7 +18,6 @@
 import SwiftUI
 
 /// Semantic color roles in a theme
-@available(iOS 14.0, macOS 11.0, *)
 public enum ThemeColorRole: Sendable {
     case primary
     case primaryLight
@@ -41,7 +40,6 @@ public enum ThemeColorRole: Sendable {
 }
 
 // Extension to add semantic color access
-@available(iOS 14.0, macOS 11.0, *)
 public extension Color {
     /// Returns a themed color based on the current theme
     /// - Parameter role: The semantic color role
@@ -95,7 +93,6 @@ public extension Color {
 }
 
 // View extension to get themed colors from environment
-@available(iOS 14.0, macOS 11.0, *)
 public extension View {
     /// Gets a themed color from the environment
     /// - Parameter role: The semantic color role
@@ -106,7 +103,6 @@ public extension View {
 }
 
 /// A modifier that applies a themed color
-@available(iOS 14.0, macOS 11.0, *)
 struct ThemedColorModifier: ViewModifier {
     let role: ThemeColorRole
     @Environment(\.colorTheme)

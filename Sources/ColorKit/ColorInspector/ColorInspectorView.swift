@@ -220,15 +220,9 @@ extension View {
 }
 
 /// A preview provider for the ColorInspectorView
-struct ColorInspectorView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            ColorInspectorView(color: .blue)
-                .padding()
-
-            ColorInspectorView(color: .red, backgroundColor: .black)
-                .padding()
-        }
-        .previewLayout(.sizeThatFits)
+#Preview {
+    VStack {
+        ColorInspectorView(color: .blue).padding()
+        ColorInspectorView(color: .red, backgroundColor: .black).padding()
     }
 }
