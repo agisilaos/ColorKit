@@ -1,3 +1,23 @@
+//
+//  PaletteStudioPreview.swift
+//  ColorKit
+//
+//  Created by Agisilaos Tsaraboulidis on 15.03.2024.
+//
+//  Description:
+//  A preview component for generating and exporting color palettes.
+//
+//  Features:
+//  - Interactive palette generation from seed colors
+//  - WCAG compliance options (AA/AAA)
+//  - Customizable palette size and options
+//  - Export to multiple formats (JSON, CSS, SVG, ASE, PNG)
+//  - One-click copying and sharing functionality
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import UniformTypeIdentifiers
 
