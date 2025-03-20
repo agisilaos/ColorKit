@@ -1,3 +1,10 @@
+//
+//  ColorInspectorTests.swift
+//  ColorKitTests
+//
+//  Created by Agisilaos Tsaraboulidis on 12.03.2024.
+//
+
 import SwiftUI
 import XCTest
 

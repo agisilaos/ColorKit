@@ -3,6 +3,7 @@
 //  ColorKitTests
 //
 //  Created by Agisilaos Tsaraboulidis on 13.03.25.
+//  Created by Agisilaos Tsaraboulidis on 15.03.2024.
 //
 //  Description:
 //  Tests for the palette export functionality.

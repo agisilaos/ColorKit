@@ -1,3 +1,10 @@
+//
+//  BlendingTests.swift
+//  ColorKitTests
+//
+//  Created by Agisilaos Tsaraboulidis on 11.03.2024.
+//
+
 import SwiftUI
 import XCTest
 

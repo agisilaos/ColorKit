@@ -2,7 +2,7 @@
 //  AccessiblePaletteGeneratorTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 12.03.25.
+//  Created by Agisilaos Tsaraboulidis on 12.03.2024.
 //
 //  Description:
 //  Tests for the accessible palette generator functionality.

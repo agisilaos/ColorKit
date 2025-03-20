@@ -2,7 +2,7 @@
 //  AccessibilityEnhancerTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 13.03.25.
+//  Created by Agisilaos Tsaraboulidis on 19.03.2024.
 //
 //  Description:
 //  Tests for the AccessibilityEnhancer feature.
