@@ -252,8 +252,6 @@ public struct AccessibilityEnhancerDemoView: View {
     }
 }
 
-struct AccessibilityEnhancerDemoView_Previews: PreviewProvider {
-    static var previews: some View {
-        AccessibilityEnhancerDemoView()
-    }
+#Preview {
+    AccessibilityEnhancerDemoView()
 }
