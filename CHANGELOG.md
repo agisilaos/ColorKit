@@ -16,6 +16,10 @@ All notable changes to ColorKit will be documented in this file.
     - Component analysis across RGB, HSL, and LAB
     - Visual color comparison with difference metrics
     - WCAG contrast ratio calculation and compliance badges
+  - `PaletteStudioPreview`: Interactive palette generation and export tool with:
+    - Accessible palette generation from seed colors
+    - WCAG compliance options (AA/AAA)
+    - Customizable palette size and options
   - Accessibility-focused UI with proper contrast and SwiftUI best practices
   - Real-time code generation for gradients and themes
   - Performance monitoring for blend operations
