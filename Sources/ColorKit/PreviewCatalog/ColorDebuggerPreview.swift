@@ -22,6 +22,7 @@ import SwiftUI
 /// A preview view for debugging and inspecting colors
 public struct ColorDebuggerPreview: View {
     // MARK: - State
+
     @State private var selectedColor: Color = .blue
     @State private var comparisonColor: Color = .white
     @State private var selectedTab = DebuggerTab.inspector
@@ -29,11 +30,14 @@ public struct ColorDebuggerPreview: View {
     @State private var showComparisonPicker = false
 
     // MARK: - Properties
+
     private enum DebuggerTab {
         case inspector
         case spaceAnalysis
         case comparison
     }
+
+    // MARK: - Body
 
     public var body: some View {
         VStack(spacing: 20) {
@@ -84,6 +88,7 @@ public struct ColorDebuggerPreview: View {
     }
 
     // MARK: - View Components
+
     private var colorSelectionSection: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading) {
@@ -230,12 +235,14 @@ public struct ColorDebuggerPreview: View {
     }
 
     // MARK: - Helper Functions
+
     private func calculateContrastRatio(between color1: Color, and color2: Color) -> Double {
         return color1.wcagContrastRatio(with: color2)
     }
 }
 
 // MARK: - Supporting Views
+
 private struct WCAGComplianceBadge: View {
     let level: String
     let isLargeText: Bool
@@ -252,9 +259,10 @@ private struct WCAGComplianceBadge: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     NavigationView {
         ColorDebuggerPreview()
-            .frame(minWidth: 400, minHeight: 600)
     }
 }

@@ -288,6 +288,8 @@ public struct ColorAnimationPreview: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     ColorAnimationPreview()
 }

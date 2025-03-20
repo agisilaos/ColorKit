@@ -228,6 +228,8 @@ public struct PaletteStudioPreview: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     PaletteStudioPreview()
 }

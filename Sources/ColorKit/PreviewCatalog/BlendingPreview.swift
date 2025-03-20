@@ -16,6 +16,7 @@ import SwiftUI
 
 public struct BlendingPreview: View {
     // MARK: - State
+
     @State private var foregroundColor = Color.blue
     @State private var backgroundColor = Color.red
     @State private var selectedBlendMode = BlendMode.normal
@@ -24,11 +25,14 @@ public struct BlendingPreview: View {
     @State private var renderTime: TimeInterval = 0
 
     // MARK: - Properties
+
     private let blendModes: [BlendMode] = [
         .normal, .multiply, .screen, .overlay,
         .darken, .lighten, .colorDodge, .colorBurn,
         .softLight, .hardLight, .difference, .exclusion
     ]
+
+    // MARK: - Body
 
     public var body: some View {
         ScrollView {
@@ -63,6 +67,7 @@ public struct BlendingPreview: View {
     }
 
     // MARK: - View Components
+
     private var colorSelectionSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Colors")
@@ -178,6 +183,7 @@ public struct BlendingPreview: View {
 }
 
 // MARK: - Supporting Views
+
 private struct BlendModeButton: View {
     let mode: BlendMode
     let isSelected: Bool
@@ -197,7 +203,7 @@ private struct BlendModeButton: View {
     }
 }
 
-//// MARK: - Preview
+// MARK: - Preview
 
 #Preview {
     NavigationView {

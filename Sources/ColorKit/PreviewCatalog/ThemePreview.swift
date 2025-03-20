@@ -23,6 +23,8 @@ public struct ThemePreview: View {
     @State private var isDarkMode = false
     @State private var showCode = false
 
+    // MARK: - Body
+
     public var body: some View {
         ScrollView {
             VStack(spacing: 20) {

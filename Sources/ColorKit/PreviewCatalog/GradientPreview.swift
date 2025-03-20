@@ -39,6 +39,8 @@ public struct GradientPreview: View {
         .bottomLeading, .bottom, .bottomTrailing
     ]
 
+    // MARK: - Body
+
     public var body: some View {
         ScrollView {
             VStack(spacing: 20) {
