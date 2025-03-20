@@ -27,6 +27,10 @@ All notable changes to ColorKit will be documented in this file.
     - Multiple interpolation modes (RGB, HSL, LAB)
     - Customizable animation duration and easing
     - Performance metrics and FPS monitoring
+  - `AccessibilityLabPreview`: Comprehensive accessibility testing suite with:
+    - Interactive contrast ratio checker
+    - WCAG 2.1 compliance testing (AA/AAA)
+    - Best practices and guidelines reference
   - Accessibility-focused UI with proper contrast and SwiftUI best practices
   - Real-time code generation for gradients and themes
   - Performance monitoring for blend operations

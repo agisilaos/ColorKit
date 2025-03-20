@@ -63,6 +63,7 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
     case debugger = "Color Debugger"
     case paletteStudio = "Palette Studio"
     case animation = "Color Animation"
+    case accessibilityLab = "Accessibility Lab"
 
     var id: String { rawValue }
 
@@ -88,6 +89,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "Generate and export color palettes with accessibility in mind"
         case .animation:
             return "Experiment with color transitions and animations"
+        case .accessibilityLab:
+            return "Test and simulate color accessibility features"
         }
     }
 
@@ -111,6 +114,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             return "square.stack.3d.up"
         case .animation:
             return "sparkles.tv"
+        case .accessibilityLab:
+            return "accessibility"
         }
     }
 
@@ -134,6 +139,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
             PaletteStudioPreview()
         case .animation:
             ColorAnimationPreview()
+        case .accessibilityLab:
+            AccessibilityLabPreview()
         }
     }
 }
