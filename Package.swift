@@ -21,6 +21,14 @@ let package = Package(
     targets: [
         .target(
             name: "ColorKit",
+            exclude: [
+                "Utilities/DOCUMENTATION.md",
+                "Utilities/README.md",
+                "Utilities/PaletteExporter.md",
+                "WCAG/README.md",
+                "WCAG/AccessiblePaletteGenerator.md",
+                "ColorInspector/README.md"
+            ],
             plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
         ),
         .testTarget(
