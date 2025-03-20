@@ -5,6 +5,15 @@ All notable changes to ColorKit will be documented in this file.
 ## [1.6.0] - TBR
 
 ### Added
+- **SwiftUI Preview Catalog**: Comprehensive interactive preview components for exploring ColorKit features.
+  - `MainCatalogView`: Central navigation hub with searchable feature list
+  - `BlendingPreview`: Interactive color blending with custom blend modes and performance metrics
+  - `GradientPreview`: Visual gradient builder with code generation
+  - `ThemePreview`: Theme builder with light/dark mode preview
+  - `PerformanceBenchmark`: Performance testing tool for color operations
+  - Accessibility-focused UI with proper contrast and SwiftUI best practices
+  - Real-time code generation for gradients and themes
+  - Performance monitoring for blend operations
 - **Color Debugging Utilities**: Comprehensive tools for inspecting and comparing colors across different color spaces.
   - `ColorSpaceConverter`: Converts colors between RGB, HSL, HSB, CMYK, LAB, and XYZ.
   - `ColorComponents`: Structured representation of color components.
