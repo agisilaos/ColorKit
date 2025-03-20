@@ -19,7 +19,6 @@
 import SwiftUI
 
 /// A view modifier that adds export functionality to a view
-@available(iOS 14.0, macOS 11.0, *)
 public struct PaletteExportModifier: ViewModifier {
     /// The palette to export
     private let palette: [PaletteExporter.PaletteEntry]
@@ -64,7 +63,6 @@ public struct PaletteExportModifier: ViewModifier {
     }
 }
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension View {
     /// Adds export functionality to a view
     /// - Parameters:

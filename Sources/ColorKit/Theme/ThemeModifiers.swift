@@ -21,7 +21,6 @@ import SwiftUI
 // MARK: - Text Modifiers
 
 /// A modifier that applies themed text styling based on a predefined type.
-@available(iOS 14.0, macOS 11.0, *)
 public struct ThemedTextModifier: ViewModifier {
     /// Represents different types of themed text styles.
     public enum TextType {
@@ -58,7 +57,6 @@ public struct ThemedTextModifier: ViewModifier {
 // MARK: - Button Modifiers
 
 /// A modifier that applies themed button styling based on a predefined type.
-@available(iOS 14.0, macOS 11.0, *)
 public struct ThemedButtonModifier: ViewModifier {
     /// Represents different types of themed button styles.
     public enum ButtonType {
@@ -105,7 +103,6 @@ public struct ThemedButtonModifier: ViewModifier {
 
 /// Represents different elevation levels for themed backgrounds.
 /// Elevation determines the background color used for UI elements.
-@available(iOS 14.0, macOS 11.0, *)
 public enum BackgroundElevation {
     /// Default background level, typically used as the base layer.
     case base
@@ -116,7 +113,6 @@ public enum BackgroundElevation {
 }
 
 /// A modifier that applies a themed background based on an elevation level.
-@available(iOS 14.0, macOS 11.0, *)
 public struct ThemedBackgroundModifier: ViewModifier {
     private let elevation: BackgroundElevation
     @Environment(\.colorTheme)
@@ -147,7 +143,6 @@ public struct ThemedBackgroundModifier: ViewModifier {
 
 // MARK: - View Extensions
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension View {
     /// Applies themed text styling to a view.
     /// - Parameter type: The type of text styling to apply.

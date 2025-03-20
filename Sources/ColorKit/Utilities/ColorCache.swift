@@ -20,7 +20,6 @@ import Foundation
 import SwiftUI
 
 /// A thread-safe cache for expensive color operations
-@available(iOS 14.0, macOS 11.0, *)
 public final class ColorCache: @unchecked Sendable {
     /// The shared instance for app-wide caching
     public static let shared = ColorCache()

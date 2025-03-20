@@ -20,8 +20,6 @@ import XCTest
 
 @testable import ColorKit
 
-#if canImport(SwiftUI) && (os(iOS) && !(targetEnvironment(macCatalyst)) && swift(>=5.5))
-@available(iOS 14.0, macOS 11.0, *)
 final class PaletteExporterTests: XCTestCase {
     // Test palette
     private let testPalette: [PaletteExporter.PaletteEntry] = [
@@ -182,4 +180,3 @@ final class PaletteExporterTests: XCTestCase {
         XCTAssertTrue(palette.contains { $0.name == "Text" })
     }
 }
-#endif

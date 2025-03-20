@@ -26,7 +26,6 @@ public enum ColorKit {
         }
 
         /// Returns a demo view for the accessible palette generator
-        @available(iOS 14.0, macOS 11.0, *)
         @MainActor
         public static func accessiblePaletteDemoView() -> some View {
             AccessiblePaletteDemoView()
@@ -39,7 +38,6 @@ public enum ColorKit {
         ///   - paletteSize: The number of colors to generate (default: 5)
         ///   - includeBlackAndWhite: Whether to include black and white (default: true)
         /// - Returns: An array of colors that form an accessible palette
-        @available(iOS 14.0, macOS 11.0, *)
         public static func generateAccessiblePalette(
             from seedColor: Color,
             targetLevel: WCAGContrastLevel = .AA,
@@ -59,7 +57,6 @@ public enum ColorKit {
         ///   - name: The name for the theme
         ///   - targetLevel: The WCAG level to target (default: .AA)
         /// - Returns: A ColorTheme with accessible color combinations
-        @available(iOS 14.0, macOS 11.0, *)
         public static func generateAccessibleTheme(
             from seedColor: Color,
             name: String,

@@ -16,7 +16,6 @@ import XCTest
 
 @testable import ColorKit
 
-@available(iOS 14.0, macOS 11.0, *)
 final class AccessibilityEnhancerTests: XCTestCase {
     // MARK: - Test Configuration
 

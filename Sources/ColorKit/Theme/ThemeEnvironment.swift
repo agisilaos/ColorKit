@@ -18,7 +18,6 @@
 
 import SwiftUI
 
-@available(iOS 14.0, macOS 11.0, *)
 private struct ThemeKey: EnvironmentKey {
     // Using a default theme instead of accessing ThemeManager directly
     static let defaultValue = ColorTheme(
@@ -31,14 +30,12 @@ private struct ThemeKey: EnvironmentKey {
     )
 }
 
-@available(iOS 14.0, macOS 11.0, *)
 private struct ThemeManagerKey: EnvironmentKey {
     // This will be set explicitly by the withThemeManager modifier
     static let defaultValue: ThemeManager? = nil
 }
 
 // Extension to add theme to the environment
-@available(iOS 14.0, macOS 11.0, *)
 public extension EnvironmentValues {
     /// The current color theme
     var colorTheme: ColorTheme {
@@ -54,7 +51,6 @@ public extension EnvironmentValues {
 }
 
 // View extension for applying themes
-@available(iOS 14.0, macOS 11.0, *)
 public extension View {
     /// Applies a specific color theme to this view and its descendants
     /// - Parameter theme: The theme to apply

@@ -17,7 +17,6 @@
 
 import SwiftUI
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension AccessiblePaletteGenerator {
     /// Export a palette to a specific format
     /// - Parameters:
@@ -60,7 +59,6 @@ public extension AccessiblePaletteGenerator {
     }
 }
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension Color {
     /// Export a palette generated from this color
     /// - Parameters:

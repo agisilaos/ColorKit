@@ -51,7 +51,6 @@ public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
 }
 
 /// Provides intelligent color adjustments for accessibility while preserving brand identity
-@available(iOS 14.0, macOS 11.0, *)
 public class AccessibilityEnhancer {
     /// Configuration for the accessibility enhancer
     public struct Configuration {
@@ -361,7 +360,6 @@ public class AccessibilityEnhancer {
 
 // MARK: - Color Extensions
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension Color {
     /// Enhances this color to meet accessibility requirements against a background color
     /// - Parameters:

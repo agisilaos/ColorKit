@@ -20,7 +20,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// A demo view that showcases the accessible palette generation feature
-@available(iOS 14.0, macOS 11.0, *)
 public struct AccessiblePaletteDemoView: View {
     // MARK: - State Properties
 
@@ -472,7 +471,6 @@ public struct AccessiblePaletteDemoView: View {
 
 // MARK: - Export Result Modifier
 
-@available(iOS 14.0, macOS 11.0, *)
 private struct ExportResultModifier: ViewModifier {
     @Binding var showExportResult: Bool
     let exportResultMessage: String

@@ -18,7 +18,6 @@
 
 import SwiftUI
 
-@available(iOS 14.0, macOS 11.0, *)
 public extension Color {
     /// Generates an accessible color palette based on this color
     /// - Parameters:

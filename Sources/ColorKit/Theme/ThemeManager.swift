@@ -20,7 +20,6 @@ import Combine
 import SwiftUI
 
 /// Manages themes and provides the current theme to the application
-@available(iOS 14.0, macOS 11.0, *)
 public class ThemeManager: ObservableObject, @unchecked Sendable {
     /// The shared instance for app-wide theme management
     @MainActor public static let shared = ThemeManager()

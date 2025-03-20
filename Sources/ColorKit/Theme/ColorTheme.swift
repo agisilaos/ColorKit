@@ -19,7 +19,6 @@
 import SwiftUI
 
 /// A complete color theme that defines semantic colors for an application.
-@available(iOS 14.0, macOS 11.0, *)
 public struct ColorTheme: Equatable, Hashable, Sendable {
     /// The theme's name for identification
     public let name: String
@@ -102,7 +101,6 @@ public struct ColorTheme: Equatable, Hashable, Sendable {
 }
 
 /// A set of related colors with different intensities
-@available(iOS 14.0, macOS 11.0, *)
 public struct ThemeColorSet: Equatable, Hashable, Sendable {
     /// The main color
     public let base: Color
@@ -153,7 +151,6 @@ public struct ThemeColorSet: Equatable, Hashable, Sendable {
 }
 
 /// Status colors for feedback
-@available(iOS 14.0, macOS 11.0, *)
 public struct StatusColorSet: Equatable, Hashable, Sendable {
     /// Color for success states
     public let success: Color

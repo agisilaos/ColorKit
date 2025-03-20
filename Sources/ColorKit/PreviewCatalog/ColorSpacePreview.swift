@@ -168,7 +168,6 @@ private struct ColorComponentRow: View {
     }
 }
 
-@available(iOS 14.0, macOS 11.0, *)
 private struct CopyableValueRow: View {
     let label: String
     let value: String

@@ -19,7 +19,6 @@
 import SwiftUI
 
 /// A generator for creating accessible color palettes that meet WCAG guidelines
-@available(iOS 14.0, macOS 11.0, *)
 public struct AccessiblePaletteGenerator {
     /// Configuration options for palette generation
     public struct Configuration {
