@@ -193,59 +193,6 @@ struct ColorSwatch: View {
     }
 }
 
-struct ThemePreview: View {
-    let theme: ColorTheme
-    
-    var body: some View {
-        VStack(spacing: 15) {
-            // Header
-            Text("Theme Preview")
-                .font(.headline)
-                .padding(8)
-                .frame(maxWidth: .infinity)
-                .background(theme.primary)
-                .foregroundColor(theme.primary.accessibleContrastingColor())
-                .cornerRadius(8)
-            
-            // Content
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Primary Heading")
-                    .font(.title3)
-                    .foregroundColor(theme.primary)
-                
-                Text("Secondary Heading")
-                    .font(.headline)
-                    .foregroundColor(theme.secondary)
-                
-                Text("This is regular body text using the theme's text color.")
-                    .foregroundColor(theme.text)
-                
-                Button(action: {}) {
-                    Text("Accent Button")
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(theme.accent)
-                        .foregroundColor(theme.accent.accessibleContrastingColor())
-                        .cornerRadius(8)
-                }
-                .padding(.top, 8)
-            }
-            .padding()
-            .background(theme.background)
-            .cornerRadius(8)
-            
-            // Color Swatches
-            HStack {
-                ColorKey(name: "Primary", color: theme.primary)
-                ColorKey(name: "Secondary", color: theme.secondary)
-                ColorKey(name: "Accent", color: theme.accent)
-                ColorKey(name: "Background", color: theme.background)
-                ColorKey(name: "Text", color: theme.text)
-            }
-        }
-    }
-}
-
 struct ColorKey: View {
     let name: String
     let color: Color
