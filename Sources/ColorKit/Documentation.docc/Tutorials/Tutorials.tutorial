@@ -1,0 +1,27 @@
+@Tutorials(name: "ColorKit Tutorials") {
+    @Intro(title: "Getting Started with ColorKit") {
+        Discover how to use ColorKit to enhance your SwiftUI applications with powerful color utilities, accessibility features, and theming capabilities.
+        
+        @TutorialReference(tutorial: "doc:ColorBasics")
+        @TutorialReference(tutorial: "doc:AccessibilityGuide")
+        @TutorialReference(tutorial: "doc:ThemingSystem")
+    }
+    
+    @Chapter(name: "Color Fundamentals") {
+        Learn the fundamentals of working with colors in ColorKit, including color manipulation, conversion, and gradients.
+        
+        @TutorialReference(tutorial: "doc:ColorBasics")
+    }
+    
+    @Chapter(name: "Accessibility") {
+        Discover how to make your app's colors accessible to all users by using ColorKit's accessibility utilities.
+        
+        @TutorialReference(tutorial: "doc:AccessibilityGuide")
+    }
+    
+    @Chapter(name: "App Theming") {
+        Create dynamic theme systems for your app using ColorKit's powerful theming capabilities.
+        
+        @TutorialReference(tutorial: "doc:ThemingSystem")
+    }
+} 
