@@ -1,0 +1,58 @@
+name: Validate DocC Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Sources/ColorKit/Documentation.docc/**'
+      - '.github/workflows/docc.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Sources/ColorKit/Documentation.docc/**'
+      - '.github/workflows/docc.yml'
+
+jobs:
+  build:
+    name: Build and Validate DocC
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4'
+      
+      - name: Build DocC Documentation
+        run: |
+          xcodebuild docbuild \
+            -scheme ColorKit \
+            -derivedDataPath ./derived \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.2'
+      
+      - name: Verify DocC Build Success
+        run: |
+          if [ -d "./derived/Build/Products/Debug-iphonesimulator/ColorKit.doccarchive" ]; then
+            echo "DocC documentation built successfully!"
+            exit 0
+          else
+            echo "DocC documentation failed to build!"
+            exit 1
+          fi
+      
+      - name: Check for DocC Warnings
+        run: |
+          # Extract warnings from the build log
+          warnings=$(grep -A 2 "warning:" ./derived/Logs/Build/LogStoreManifest.plist || true)
+          
+          if [ -n "$warnings" ]; then
+            echo "DocC documentation contains warnings:"
+            echo "$warnings"
+            # Optional: Uncomment the line below to fail the workflow if there are warnings
+            # exit 1
+          else
+            echo "No warnings found in DocC documentation build!"
+          fi 
