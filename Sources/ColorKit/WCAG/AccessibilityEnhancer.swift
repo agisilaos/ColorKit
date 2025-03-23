@@ -363,7 +363,7 @@ public class AccessibilityEnhancer {
 public extension Color {
     /// Enhances this color to meet accessibility requirements against a background color
     /// - Parameters:
-    ///   - with: The background color to check against
+    ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
     /// - Returns: An enhanced color that meets accessibility requirements
@@ -381,7 +381,7 @@ public extension Color {
 
     /// Suggests accessible color variants that maintain harmony with this color
     /// - Parameters:
-    ///   - with: The background color to check against
+    ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - count: The number of variants to suggest (default: 3)
     /// - Returns: An array of accessible color variants

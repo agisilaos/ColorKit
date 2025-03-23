@@ -22,7 +22,7 @@ public extension Color {
     /// This initializer supports both 6-character (RGB) and 8-character (RGBA) HEX strings.
     ///
     /// - Parameter hex: A HEX string representation of the color. Supports `#RRGGBB` and `#RRGGBBAA` formats.
-    /// - Returns: A `Color` instance if the HEX string is valid; otherwise, `nil`.
+    /// 
     init?(hex: String) {
         let r, g, b, a: CGFloat
 

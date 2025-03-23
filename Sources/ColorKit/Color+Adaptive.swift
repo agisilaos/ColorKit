@@ -61,7 +61,7 @@ public extension Color {
     /// Adjusts the color brightness to ensure accessibility compliance.
     ///
     /// - Parameters:
-    ///   - with: The background color against which contrast should be checked.
+    ///   - background: The background color against which contrast should be checked.
     ///   - minimumRatio: The minimum contrast ratio required.
     /// - Returns: A `Color` adjusted to meet the contrast ratio requirement.
     func adjustedForAccessibility(with background: Color, minimumRatio: CGFloat) -> Color {

@@ -13,6 +13,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     // Original brand colors
