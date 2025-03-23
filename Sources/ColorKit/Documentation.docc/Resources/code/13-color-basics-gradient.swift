@@ -13,6 +13,7 @@
 //
 
 import SwiftUI
+import ColorKit
 
 struct ContentView: View {
     // Define colors for gradients
@@ -31,7 +32,7 @@ struct ContentView: View {
                 GradientSection(
                     title: "Linear Interpolation (Two Colors)",
                     description: "Interpolate between two colors using different color spaces",
-                    content: {
+                    content: AnyView(
                         VStack(spacing: 15) {
                             // RGB interpolation
                             GradientRow(
@@ -69,14 +70,14 @@ struct ContentView: View {
                                 ]
                             )
                         }
-                    }()
+                    )
                 )
                 
                 // Generated gradients
                 GradientSection(
                     title: "Generated Gradients",
                     description: "Create gradients with multiple colors and customization",
-                    content: {
+                    content: AnyView(
                         VStack(spacing: 15) {
                             // Two-color gradient
                             VStack(alignment: .leading, spacing: 5) {
@@ -169,7 +170,7 @@ struct ContentView: View {
                                     .cornerRadius(5)
                             }
                         }
-                    }()
+                    )
                 )
             }
             .padding()
@@ -208,40 +209,17 @@ struct GradientRow: View {
             Text(title)
                 .font(.subheadline)
             
+            // Simplified approach without custom corners
             HStack(spacing: 2) {
                 ForEach(0..<colors.count, id: \.self) { index in
                     Rectangle()
                         .fill(colors[index])
                         .frame(maxWidth: .infinity)
                         .frame(height: 30)
-                        .cornerRadius(index == 0 ? 5 : 0, corners: .topLeft)
-                        .cornerRadius(index == 0 ? 5 : 0, corners: .bottomLeft)
-                        .cornerRadius(index == colors.count - 1 ? 5 : 0, corners: .topRight)
-                        .cornerRadius(index == colors.count - 1 ? 5 : 0, corners: .bottomRight)
                 }
             }
+            .cornerRadius(5)
         }
-    }
-}
-
-// Helper for rounded corners on specific sides
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect, 
-            byRoundingCorners: corners, 
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
     }
 }
 

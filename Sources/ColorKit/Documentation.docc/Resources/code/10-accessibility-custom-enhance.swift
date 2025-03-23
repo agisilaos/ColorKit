@@ -14,36 +14,71 @@
 
 import SwiftUI
 
+// Basic mock types to match ColorKit's API for the documentation sample
+enum EnhancementStrategyDemo: String, CaseIterable {
+    case preserveHue = "preserveHue"
+    case preserveSaturation = "preserveSaturation"
+    case preserveLightness = "preserveLightness"
+    case minimizeShift = "minimizeShift"
+    case smart = "smart"
+}
+
+enum WCAGContrastLevelDemo: String, CaseIterable, Identifiable {
+    case A
+    case AA
+    case AAA
+    
+    var id: String { self.rawValue }
+    
+    var minimumRatio: Double {
+        switch self {
+        case .A: return 3.0
+        case .AA: return 4.5
+        case .AAA: return 7.0
+        }
+    }
+}
+
 struct ContentView: View {
     // Original brand colors
     private let originalBackgroundColor = Color(red: 0.98, green: 0.98, blue: 1.0)
     private let originalTextColor = Color(red: 0.4, green: 0.4, blue: 0.8)
     
     // Enhancement configuration
-    @State private var selectedStrategy: EnhancementStrategy = .preserveHue
-    @State private var targetLevel: WCAGContrastLevel = .AA
+    @State private var selectedStrategy: EnhancementStrategyDemo = .preserveHue
+    @State private var targetLevel: WCAGContrastLevelDemo = .AA
     @State private var preservePerceivedSaturation = true
     @State private var maxColorShift = 0.5
     
+    // In a real app, we'd use ColorKit's enhancer
     private var enhancedColor: Color {
-        // Create custom configuration
-        let config = AccessibilityEnhancerConfig(
-            strategy: selectedStrategy,
-            preservePerceivedSaturation: preservePerceivedSaturation,
-            maxColorShift: maxColorShift
-        )
-        
-        // Use custom enhancer
-        let enhancer = AccessibilityEnhancer(config: config)
-        return enhancer.enhanceColor(originalTextColor, background: originalBackgroundColor, targetLevel: targetLevel)
+        // Demo version - simulate enhancement based on strategy
+        switch selectedStrategy {
+        case .preserveHue:
+            return Color(red: 0.2, green: 0.2, blue: 0.7) // Darker blue
+        case .preserveSaturation:
+            return Color(red: 0.2, green: 0.2, blue: 0.9) // More saturated blue
+        case .preserveLightness:
+            return Color(red: 0.1, green: 0.1, blue: 0.9) // Different hue
+        case .minimizeShift:
+            return Color(red: 0.35, green: 0.35, blue: 0.75) // Slightly adjusted
+        case .smart:
+            return Color(red: 0.2, green: 0.2, blue: 0.8) // Smart adjusted
+        }
     }
     
+    // Simulated contrast ratio
     private var contrastRatio: Double {
-        enhancedColor.wcagContrastRatio(with: originalBackgroundColor)
+        // Demo value - in real code we would use ColorKit's wcagContrastRatio method
+        let ratio = 7.2
+        return ratio
     }
     
+    // Simulated color distance
     private var colorDistance: Double {
-        enhancedColor.colorDistance(from: originalTextColor)
+        // Demo value - in real code we would use ColorKit's colorDistance method
+        let distance = 0.2
+        return distance
     }
     
     var body: some View {
@@ -147,18 +182,13 @@ struct ContentView: View {
                             .font(.subheadline)
                         
                         Picker("Strategy", selection: $selectedStrategy) {
-                            Text("Preserve Hue").tag(EnhancementStrategy.preserveHue)
-                            Text("Preserve Saturation").tag(EnhancementStrategy.preserveSaturation)
-                            Text("Preserve Lightness").tag(EnhancementStrategy.preserveLightness)
-                            Text("Minimize Shift").tag(EnhancementStrategy.minimizeShift)
-                            Text("Smart Enhance").tag(EnhancementStrategy.smart)
+                            Text("Preserve Hue").tag(EnhancementStrategyDemo.preserveHue)
+                            Text("Preserve Saturation").tag(EnhancementStrategyDemo.preserveSaturation)
+                            Text("Preserve Lightness").tag(EnhancementStrategyDemo.preserveLightness)
+                            Text("Minimize Shift").tag(EnhancementStrategyDemo.minimizeShift)
+                            Text("Smart Enhance").tag(EnhancementStrategyDemo.smart)
                         }
                         .pickerStyle(SegmentedPickerStyle())
-                        .onChange(of: selectedStrategy) { _ in
-                            // Optional haptic feedback
-                            let generator = UIImpactFeedbackGenerator(style: .light)
-                            generator.impactOccurred()
-                        }
                     }
                     
                     // WCAG level
@@ -167,7 +197,7 @@ struct ContentView: View {
                             .font(.subheadline)
                         
                         Picker("WCAG Level", selection: $targetLevel) {
-                            ForEach([WCAGContrastLevel.A, .AA, .AAA]) { level in
+                            ForEach([WCAGContrastLevelDemo.A, .AA, .AAA]) { level in
                                 Text("\(level.rawValue) (\(String(format: "%.1f", level.minimumRatio)):1)")
                                     .tag(level)
                             }
@@ -223,7 +253,7 @@ struct ContentView: View {
                             Text("WCAG Level Compliance:")
                             Spacer()
                             HStack(spacing: 4) {
-                                if contrastRatio >= WCAGContrastLevel.A.minimumRatio {
+                                if contrastRatio >= WCAGContrastLevelDemo.A.minimumRatio {
                                     Text("A")
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
@@ -232,7 +262,7 @@ struct ContentView: View {
                                         .cornerRadius(4)
                                 }
                                 
-                                if contrastRatio >= WCAGContrastLevel.AA.minimumRatio {
+                                if contrastRatio >= WCAGContrastLevelDemo.AA.minimumRatio {
                                     Text("AA")
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
@@ -241,7 +271,7 @@ struct ContentView: View {
                                         .cornerRadius(4)
                                 }
                                 
-                                if contrastRatio >= WCAGContrastLevel.AAA.minimumRatio {
+                                if contrastRatio >= WCAGContrastLevelDemo.AAA.minimumRatio {
                                     Text("AAA")
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
@@ -313,7 +343,7 @@ struct ContentView: View {
 }
 
 struct StrategyExplanationView: View {
-    let strategy: EnhancementStrategy
+    let strategy: EnhancementStrategyDemo
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
