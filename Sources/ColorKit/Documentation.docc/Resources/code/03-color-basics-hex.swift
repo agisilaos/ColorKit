@@ -13,7 +13,6 @@
 //
 
 import SwiftUI
-import ColorKit
 
 struct ContentView: View {
     // Colors from HEX strings

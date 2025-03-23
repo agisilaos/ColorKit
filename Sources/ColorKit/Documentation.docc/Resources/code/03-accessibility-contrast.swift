@@ -13,7 +13,6 @@
 //
 
 import SwiftUI
-import ColorKit
 
 struct ContentView: View {
     @State private var foregroundColor = Color.blue

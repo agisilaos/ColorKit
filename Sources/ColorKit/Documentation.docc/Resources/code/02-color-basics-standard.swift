@@ -12,7 +12,6 @@
 //
 
 import SwiftUI
-import ColorKit
 
 struct ContentView: View {
     // Standard SwiftUI colors

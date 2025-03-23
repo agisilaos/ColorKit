@@ -13,7 +13,6 @@
 //
 
 import SwiftUI
-import ColorKit
 
 struct ContentView: View {
     // Create colors from HSL values

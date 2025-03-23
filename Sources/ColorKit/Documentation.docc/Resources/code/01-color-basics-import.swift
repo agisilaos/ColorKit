@@ -12,7 +12,6 @@
 //
 
 import SwiftUI
-import ColorKit
 
 struct ContentView: View {
     var body: some View {
