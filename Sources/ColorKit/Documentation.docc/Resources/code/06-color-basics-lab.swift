@@ -1,3 +1,17 @@
+//
+//  06-color-basics-lab.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates creating colors using LAB color space, which is designed
+//  to be perceptually uniform and approximates human vision.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

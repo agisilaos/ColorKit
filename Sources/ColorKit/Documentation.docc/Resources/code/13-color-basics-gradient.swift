@@ -1,3 +1,17 @@
+//
+//  13-color-basics-gradient.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates how to create and customize color gradients, including
+//  linear, radial, and angular gradients with different color interpolation methods.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

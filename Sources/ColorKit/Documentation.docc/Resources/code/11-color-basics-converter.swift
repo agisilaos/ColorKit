@@ -1,3 +1,17 @@
+//
+//  11-color-basics-converter.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates ColorKit's color space conversion capabilities, allowing
+//  users to convert colors between multiple color spaces.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

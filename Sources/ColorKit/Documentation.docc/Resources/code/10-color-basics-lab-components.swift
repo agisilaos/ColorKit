@@ -1,3 +1,17 @@
+//
+//  10-color-basics-lab-components.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates how to extract LAB color space components from colors
+//  and display them in a user interface.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

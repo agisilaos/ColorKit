@@ -1,3 +1,17 @@
+//
+//  05-color-basics-cmyk.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates how to create colors using the CMYK (Cyan, Magenta, Yellow, Black)
+//  color space, which is commonly used in print design.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

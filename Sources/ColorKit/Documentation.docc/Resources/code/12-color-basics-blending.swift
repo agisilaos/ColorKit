@@ -1,3 +1,17 @@
+//
+//  12-color-basics-blending.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Shows how to blend colors using different blending modes such as
+//  normal, multiply, screen, and overlay.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

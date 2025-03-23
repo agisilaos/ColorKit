@@ -1,3 +1,16 @@
+//
+//  02-color-basics-standard.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Shows how to use standard SwiftUI colors and create custom RGB colors.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

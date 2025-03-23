@@ -1,3 +1,17 @@
+//
+//  04-color-basics-hsl.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Shows how to create colors using HSL (Hue, Saturation, Lightness)
+//  color space and demonstrates the effects of varying these components.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

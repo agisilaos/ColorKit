@@ -1,3 +1,17 @@
+//
+//  02-accessibility-contrast.swift
+//  ColorKit
+//
+//  Created for the AccessibilityGuide tutorial.
+//
+//  Description:
+//  Demonstrates how to check WCAG contrast ratios between
+//  foreground and background colors using ColorKit.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 
 struct ContentView: View {

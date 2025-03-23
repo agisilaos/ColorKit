@@ -1,3 +1,17 @@
+//
+//  07-color-basics-rgb-components.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Shows how to extract and display individual RGB components
+//  from colors using ColorKit's utility methods.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

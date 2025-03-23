@@ -1,3 +1,17 @@
+//
+//  03-color-basics-hex.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Demonstrates how to create colors from hexadecimal values and
+//  work with hex string representations of colors.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 

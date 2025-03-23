@@ -1,3 +1,17 @@
+//
+//  09-color-basics-cmyk-components.swift
+//  ColorKit
+//
+//  Created for the ColorBasics tutorial.
+//
+//  Description:
+//  Shows how to extract CMYK (Cyan, Magenta, Yellow, Black) components
+//  from colors and display them in a user interface.
+//
+//  License:
+//  MIT License. See LICENSE file for details.
+//
+
 import SwiftUI
 import ColorKit
 
