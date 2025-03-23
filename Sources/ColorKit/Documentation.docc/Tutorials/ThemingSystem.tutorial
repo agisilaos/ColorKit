@@ -1,0 +1,253 @@
+@Tutorial(time: 30) {
+    @Intro(title: "Building a Comprehensive Theming System") {
+        Learn how to implement a complete theming system for your SwiftUI app using ColorKit. This tutorial will guide you through creating, managing, and applying themes to create a cohesive and adaptable user interface.
+        
+        @Image(source: theming-system-intro, alt: "Theming System")
+    }
+    
+    @Section(title: "Setting Up Basic Themes") {
+        @ContentAndMedia {
+            Learn how to define and register themes in your SwiftUI app.
+            
+            @Image(source: basic-themes, alt: "Basic Themes")
+        }
+        
+        @Steps {
+            @Step {
+                Import the necessary frameworks.
+                
+                @Code(name: "ThemingApp.swift", file: "01-theming-import.swift")
+            }
+            
+            @Step {
+                Create a basic theme with essential colors.
+                
+                @Code(name: "ThemingApp.swift", file: "02-theming-basic-theme.swift")
+            }
+            
+            @Step {
+                Register the theme with ThemeManager.
+                
+                @Code(name: "ThemingApp.swift", file: "03-theming-register.swift")
+            }
+            
+            @Step {
+                Create a second theme for variety.
+                
+                @Code(name: "ThemingApp.swift", file: "04-theming-second-theme.swift")
+            }
+            
+            @Step {
+                Set up the app entry point with theme support.
+                
+                @Code(name: "ThemingApp.swift", file: "05-theming-app-setup.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Using Themed Colors in Views") {
+        @ContentAndMedia {
+            Learn how to access and apply themed colors throughout your app.
+            
+            @Image(source: themed-colors, alt: "Themed Colors")
+        }
+        
+        @Steps {
+            @Step {
+                Create a simple view using themed colors.
+                
+                @Code(name: "ContentView.swift", file: "06-theming-simple-view.swift")
+            }
+            
+            @Step {
+                Use theme-specific modifiers for common components.
+                
+                @Code(name: "ContentView.swift", file: "07-theming-modifiers.swift")
+            }
+            
+            @Step {
+                Create a card component with themed styling.
+                
+                @Code(name: "CardView.swift", file: "08-theming-card-component.swift")
+            }
+            
+            @Step {
+                Create a button component with themed styling.
+                
+                @Code(name: "ButtonView.swift", file: "09-theming-button-component.swift")
+            }
+            
+            @Step {
+                Combine components to create a cohesive interface.
+                
+                @Code(name: "ContentView.swift", file: "10-theming-cohesive-interface.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Adaptive Themes") {
+        @ContentAndMedia {
+            Learn how to create themes that automatically adapt to light and dark mode.
+            
+            @Image(source: adaptive-themes, alt: "Adaptive Themes")
+        }
+        
+        @Steps {
+            @Step {
+                Create a light mode variant of your theme.
+                
+                @Code(name: "ThemeManager.swift", file: "11-theming-light-theme.swift")
+            }
+            
+            @Step {
+                Create a dark mode variant of your theme.
+                
+                @Code(name: "ThemeManager.swift", file: "12-theming-dark-theme.swift")
+            }
+            
+            @Step {
+                Link the themes together as an adaptive pair.
+                
+                @Code(name: "ThemeManager.swift", file: "13-theming-adaptive-pair.swift")
+            }
+            
+            @Step {
+                Update your app to use the adaptive theme.
+                
+                @Code(name: "ThemingApp.swift", file: "14-theming-use-adaptive.swift")
+            }
+            
+            @Step {
+                Test your app in both light and dark mode.
+                
+                @Code(name: "PreviewHelper.swift", file: "15-theming-preview-modes.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Advanced Theme Management") {
+        @ContentAndMedia {
+            Learn advanced theming techniques for dynamic and user-customizable themes.
+            
+            @Image(source: advanced-theming, alt: "Advanced Theming")
+        }
+        
+        @Steps {
+            @Step {
+                Create a theme with extended properties.
+                
+                @Code(name: "ThemeManager.swift", file: "16-theming-extended-theme.swift")
+            }
+            
+            @Step {
+                Create a theme with custom colors.
+                
+                @Code(name: "ThemeManager.swift", file: "17-theming-custom-colors.swift")
+            }
+            
+            @Step {
+                Build a theme switcher UI component.
+                
+                @Code(name: "ThemeSwitcher.swift", file: "18-theming-theme-switcher.swift")
+            }
+            
+            @Step {
+                Add theme persistence to remember user preferences.
+                
+                @Code(name: "ThemeManager.swift", file: "19-theming-persistence.swift")
+            }
+            
+            @Step {
+                Create a theme preview for testing multiple themes.
+                
+                @Code(name: "ThemePreview.swift", file: "20-theming-theme-preview.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Generating Accessible Themes") {
+        @ContentAndMedia {
+            Learn how to automatically generate accessible themes from brand colors.
+            
+            @Image(source: accessible-themes, alt: "Accessible Themes")
+        }
+        
+        @Steps {
+            @Step {
+                Generate a basic accessible theme from a seed color.
+                
+                @Code(name: "AccessibleThemes.swift", file: "21-theming-accessible-theme.swift")
+            }
+            
+            @Step {
+                Customize the accessible theme generation parameters.
+                
+                @Code(name: "AccessibleThemes.swift", file: "22-theming-custom-accessible.swift")
+            }
+            
+            @Step {
+                Create a complete accessible theme system with multiple themes.
+                
+                @Code(name: "AccessibleThemes.swift", file: "23-theming-accessible-system.swift")
+            }
+            
+            @Step {
+                Build a user interface for accessibility preferences.
+                
+                @Code(name: "AccessibilitySettings.swift", file: "24-theming-accessibility-settings.swift")
+            }
+            
+            @Step {
+                Test the complete theming system with accessibility checks.
+                
+                @Code(name: "ThemeTest.swift", file: "25-theming-accessibility-test.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating a Complete App with Theming") {
+        @ContentAndMedia {
+            Combine everything you've learned to create a complete app with a robust theming system.
+            
+            @Image(source: complete-themed-app, alt: "Complete Themed App")
+        }
+        
+        @Steps {
+            @Step {
+                Set up the app structure with theme support.
+                
+                @Code(name: "ThemedApp.swift", file: "26-theming-complete-app.swift")
+            }
+            
+            @Step {
+                Create a theme configuration system.
+                
+                @Code(name: "ThemeConfig.swift", file: "27-theming-config-system.swift")
+            }
+            
+            @Step {
+                Implement the main navigation with themed components.
+                
+                @Code(name: "MainNavigationView.swift", file: "28-theming-main-navigation.swift")
+            }
+            
+            @Step {
+                Build themed detail views.
+                
+                @Code(name: "DetailView.swift", file: "29-theming-detail-view.swift")
+            }
+            
+            @Step {
+                Create a settings screen for theme customization.
+                
+                @Code(name: "SettingsView.swift", file: "30-theming-settings-view.swift")
+            }
+            
+            @Step {
+                Review the complete app with multiple themes.
+                
+                @Code(name: "AppPreview.swift", file: "31-theming-app-preview.swift")
+            }
+        }
+    }
+} 

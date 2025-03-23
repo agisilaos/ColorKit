@@ -1,0 +1,213 @@
+@Tutorial(time: 25) {
+    @Intro(title: "Building Accessible Color Schemes with ColorKit") {
+        Learn how to create accessible color combinations that comply with WCAG standards using ColorKit. This tutorial guides you through checking contrast ratios, enhancing colors for accessibility, and generating accessible color palettes.
+        
+        @Image(source: accessibility-guide-intro, alt: "Accessibility Guide")
+    }
+    
+    @Section(title: "Understanding Color Accessibility") {
+        @ContentAndMedia {
+            Learn about WCAG contrast requirements and why they matter for users with visual impairments.
+            
+            @Image(source: accessibility-contrast, alt: "Contrast Requirements")
+        }
+        
+        @Steps {
+            @Step {
+                Import the necessary frameworks.
+                
+                @Code(name: "AccessibilityView.swift", file: "01-accessibility-import.swift")
+            }
+            
+            @Step {
+                Create a sample view with potentially inaccessible colors.
+                
+                @Code(name: "AccessibilityView.swift", file: "02-accessibility-sample.swift")
+            }
+            
+            @Step {
+                Calculate contrast ratios between text and background colors.
+                
+                @Code(name: "AccessibilityView.swift", file: "03-accessibility-contrast.swift")
+            }
+            
+            @Step {
+                Check if colors meet WCAG AA and AAA requirements.
+                
+                @Code(name: "AccessibilityView.swift", file: "04-accessibility-requirements.swift")
+            }
+            
+            @Step {
+                Create a helper function to display contrast information.
+                
+                @Code(name: "AccessibilityView.swift", file: "05-accessibility-info-display.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Enhancing Colors for Accessibility") {
+        @ContentAndMedia {
+            Learn how to automatically adjust colors to meet accessibility requirements while preserving brand identity.
+            
+            @Image(source: accessibility-enhance, alt: "Color Enhancement")
+        }
+        
+        @Steps {
+            @Step {
+                Generate accessible text colors for a given background.
+                
+                @Code(name: "AccessibilityView.swift", file: "06-accessibility-text-color.swift")
+            }
+            
+            @Step {
+                Use the AccessibilityEnhancer to improve a color while preserving its identity.
+                
+                @Code(name: "AccessibilityView.swift", file: "07-accessibility-enhancer.swift")
+            }
+            
+            @Step {
+                Apply enhanced colors to our UI components.
+                
+                @Code(name: "AccessibilityView.swift", file: "08-accessibility-apply-enhanced.swift")
+            }
+            
+            @Step {
+                Create a toggle to compare original and enhanced colors.
+                
+                @Code(name: "AccessibilityView.swift", file: "09-accessibility-compare.swift")
+            }
+            
+            @Step {
+                Customize the enhancement process with specific parameters.
+                
+                @Code(name: "AccessibilityView.swift", file: "10-accessibility-custom-enhance.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Creating Accessible Color Palettes") {
+        @ContentAndMedia {
+            Learn how to generate entire color palettes that meet accessibility requirements.
+            
+            @Image(source: accessibility-palette, alt: "Accessible Palette")
+        }
+        
+        @Steps {
+            @Step {
+                Generate an accessible color palette from a seed color.
+                
+                @Code(name: "AccessibilityView.swift", file: "11-accessibility-palette.swift")
+            }
+            
+            @Step {
+                Display the generated palette and verify contrast ratios.
+                
+                @Code(name: "AccessibilityView.swift", file: "12-accessibility-display-palette.swift")
+            }
+            
+            @Step {
+                Customize palette generation with different parameters.
+                
+                @Code(name: "AccessibilityView.swift", file: "13-accessibility-custom-palette.swift")
+            }
+            
+            @Step {
+                Generate an accessible theme from a seed color.
+                
+                @Code(name: "AccessibilityView.swift", file: "14-accessibility-theme.swift")
+            }
+            
+            @Step {
+                Apply the accessible theme to an entire view hierarchy.
+                
+                @Code(name: "AccessibilityView.swift", file: "15-accessibility-apply-theme.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Implementing Accessible UI Components") {
+        @ContentAndMedia {
+            Learn how to use ColorKit's utility modifiers to ensure your UI components are accessible.
+            
+            @Image(source: accessibility-components, alt: "Accessible Components")
+        }
+        
+        @Steps {
+            @Step {
+                Create accessible text using the highContrastColor modifier.
+                
+                @Code(name: "AccessibilityView.swift", file: "16-accessibility-high-contrast.swift")
+            }
+            
+            @Step {
+                Build accessible buttons with guaranteed contrast.
+                
+                @Code(name: "AccessibilityView.swift", file: "17-accessibility-buttons.swift")
+            }
+            
+            @Step {
+                Create accessible form fields.
+                
+                @Code(name: "AccessibilityView.swift", file: "18-accessibility-forms.swift")
+            }
+            
+            @Step {
+                Apply accessibility enhancements to custom UI components.
+                
+                @Code(name: "AccessibilityView.swift", file: "19-accessibility-custom-ui.swift")
+            }
+            
+            @Step {
+                Test your accessible interface with ColorKit's preview tools.
+                
+                @Code(name: "AccessibilityView.swift", file: "20-accessibility-testing.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Building a Complete Accessible Interface") {
+        @ContentAndMedia {
+            Combine all the techniques you've learned to build a fully accessible interface.
+            
+            @Image(source: accessibility-complete, alt: "Complete Accessible UI")
+        }
+        
+        @Steps {
+            @Step {
+                Set up the project structure for an accessible app.
+                
+                @Code(name: "AccessibleApp.swift", file: "21-accessibility-app-setup.swift")
+            }
+            
+            @Step {
+                Create a consistent, accessible color system.
+                
+                @Code(name: "ColorSystem.swift", file: "22-accessibility-color-system.swift")
+            }
+            
+            @Step {
+                Implement accessible navigation components.
+                
+                @Code(name: "NavigationView.swift", file: "23-accessibility-navigation.swift")
+            }
+            
+            @Step {
+                Build accessible content screens.
+                
+                @Code(name: "ContentView.swift", file: "24-accessibility-content.swift")
+            }
+            
+            @Step {
+                Add user preferences for further accessibility customization.
+                
+                @Code(name: "AccessibilitySettings.swift", file: "25-accessibility-settings.swift")
+            }
+            
+            @Step {
+                Conduct a final WCAG compliance check of the entire interface.
+                
+                @Code(name: "WCAGChecker.swift", file: "26-accessibility-wcag-check.swift")
+            }
+        }
+    }
+} 

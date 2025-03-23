@@ -1,0 +1,179 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Color Basics with ColorKit") {
+        Learn how to create, manipulate, and convert colors using ColorKit. This tutorial covers the basic color operations and conversions that will help you build a solid foundation for working with colors in your SwiftUI projects.
+        
+        @Image(source: color-basics-intro, alt: "Color Basics")
+    }
+    
+    @Section(title: "Creating Colors") {
+        @ContentAndMedia {
+            Learn how to create colors using different methods including RGB, HEX, HSL, and more.
+            
+            @Image(source: color-creation, alt: "Color Creation Methods")
+        }
+        
+        @Steps {
+            @Step {
+                Import the necessary frameworks.
+                
+                @Code(name: "ContentView.swift", file: "01-color-basics-import.swift")
+            }
+            
+            @Step {
+                Create colors using standard SwiftUI methods.
+                
+                @Code(name: "ContentView.swift", file: "02-color-basics-standard.swift")
+            }
+            
+            @Step {
+                Create colors from HEX strings using ColorKit.
+                
+                @Code(name: "ContentView.swift", file: "03-color-basics-hex.swift")
+            }
+            
+            @Step {
+                Create colors from HSL values.
+                
+                @Code(name: "ContentView.swift", file: "04-color-basics-hsl.swift")
+            }
+            
+            @Step {
+                Create colors from CMYK values for print design.
+                
+                @Code(name: "ContentView.swift", file: "05-color-basics-cmyk.swift")
+            }
+            
+            @Step {
+                Create colors from LAB values for perceptually accurate colors.
+                
+                @Code(name: "ContentView.swift", file: "06-color-basics-lab.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Converting Between Color Spaces") {
+        @ContentAndMedia {
+            Learn how to extract components from colors and convert between different color spaces.
+            
+            @Image(source: color-conversion, alt: "Color Space Conversion")
+        }
+        
+        @Steps {
+            @Step {
+                Extract RGB components from a color.
+                
+                @Code(name: "ContentView.swift", file: "07-color-basics-rgb-components.swift")
+            }
+            
+            @Step {
+                Convert a color to HEX string representation.
+                
+                @Code(name: "ContentView.swift", file: "08-color-basics-to-hex.swift")
+            }
+            
+            @Step {
+                Extract HSL components from a color.
+                
+                @Code(name: "ContentView.swift", file: "09-color-basics-hsl-components.swift")
+            }
+            
+            @Step {
+                Extract CMYK components from a color.
+                
+                @Code(name: "ContentView.swift", file: "10-color-basics-cmyk-components.swift")
+            }
+            
+            @Step {
+                Extract LAB components from a color.
+                
+                @Code(name: "ContentView.swift", file: "11-color-basics-lab-components.swift")
+            }
+            
+            @Step {
+                Create a color inspector to view all color spaces.
+                
+                @Code(name: "ContentView.swift", file: "12-color-basics-inspector.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Basic Color Manipulation") {
+        @ContentAndMedia {
+            Learn how to modify colors by adjusting their components and using ColorKit's manipulation methods.
+            
+            @Image(source: color-manipulation, alt: "Color Manipulation")
+        }
+        
+        @Steps {
+            @Step {
+                Adjust the lightness of a color.
+                
+                @Code(name: "ContentView.swift", file: "13-color-basics-adjust-lightness.swift")
+            }
+            
+            @Step {
+                Adjust the saturation of a color.
+                
+                @Code(name: "ContentView.swift", file: "14-color-basics-adjust-saturation.swift")
+            }
+            
+            @Step {
+                Create a monochromatic variant of a color.
+                
+                @Code(name: "ContentView.swift", file: "15-color-basics-monochromatic.swift")
+            }
+            
+            @Step {
+                Interpolate between two colors.
+                
+                @Code(name: "ContentView.swift", file: "16-color-basics-interpolate.swift")
+            }
+            
+            @Step {
+                Apply a simple color blend.
+                
+                @Code(name: "ContentView.swift", file: "17-color-basics-blend.swift")
+            }
+            
+            @Step {
+                Create a simple color palette from a base color.
+                
+                @Code(name: "ContentView.swift", file: "18-color-basics-palette.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Working with Adaptive Colors") {
+        @ContentAndMedia {
+            Learn how to create colors that automatically adapt between light and dark mode.
+            
+            @Image(source: adaptive-colors, alt: "Adaptive Colors")
+        }
+        
+        @Steps {
+            @Step {
+                Create a basic adaptive color.
+                
+                @Code(name: "ContentView.swift", file: "19-color-basics-adaptive.swift")
+            }
+            
+            @Step {
+                Apply adaptive colors to text and backgrounds.
+                
+                @Code(name: "ContentView.swift", file: "20-color-basics-adaptive-views.swift")
+            }
+            
+            @Step {
+                Create a view that responds to color scheme changes.
+                
+                @Code(name: "ContentView.swift", file: "21-color-basics-scheme-change.swift")
+            }
+            
+            @Step {
+                Create a complete sample app using adaptive colors.
+                
+                @Code(name: "ContentView.swift", file: "22-color-basics-sample-app.swift")
+            }
+        }
+    }
+} 
