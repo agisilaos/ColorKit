@@ -21,29 +21,29 @@ struct ContentView: View {
     @State private var includeBlackAndWhite = true
     @State private var generatedPalette: [Color] = []
     @State private var generatedTheme: ColorTheme?
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Text("Accessible Color Palette Generator")
                     .font(.title)
                     .padding(.top)
-                
+
                 // Color Selection
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Seed Color")
                         .font(.headline)
-                    
+
                     ColorPicker("Select Seed Color", selection: $seedColor)
                         .padding(.bottom, 5)
-                    
+
                     // Parameter Configuration
                     VStack(alignment: .leading, spacing: 15) {
                         // WCAG Level Selection
                         VStack(alignment: .leading) {
                             Text("WCAG Compliance Level:")
                                 .font(.headline)
-                            
+
                             Picker("WCAG Level", selection: $targetLevel) {
                                 ForEach(WCAGContrastLevel.allCases) { level in
                                     Text(level.rawValue).tag(level)
@@ -51,18 +51,18 @@ struct ContentView: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                         }
-                        
+
                         // Palette Size
                         VStack(alignment: .leading) {
                             Text("Palette Size: \(paletteSize)")
                                 .font(.headline)
-                            
+
                             Slider(value: Binding(
                                 get: { Double(paletteSize) },
                                 set: { paletteSize = Int($0) }
                             ), in: 3...10, step: 1)
                         }
-                        
+
                         // Include Black and White
                         Toggle("Include Black and White", isOn: $includeBlackAndWhite)
                     }
@@ -70,7 +70,7 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Generate Button
                 Button(action: generatePaletteAndTheme) {
                     Text("Generate Accessible Palette")
@@ -81,13 +81,13 @@ struct ContentView: View {
                         .cornerRadius(10)
                 }
                 .padding(.vertical)
-                
+
                 // Display Generated Palette
                 if !generatedPalette.isEmpty {
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Generated Palette")
                             .font(.headline)
-                        
+
                         // Color Grid
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))], spacing: 10) {
                             ForEach(0..<generatedPalette.count, id: \.self) { index in
@@ -99,13 +99,13 @@ struct ContentView: View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(10)
                 }
-                
+
                 // Display Generated Theme
                 if generatedTheme != nil {
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Generated Theme")
                             .font(.headline)
-                        
+
                         // Theme Preview
                         ThemePreview()
                     }
@@ -113,15 +113,15 @@ struct ContentView: View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(10)
                 }
-                
+
                 // Usage Examples
                 VStack(alignment: .leading, spacing: 15) {
                     Text("How to Use in Your Code")
                         .font(.headline)
-                    
+
                     Text("Generate a palette:")
                         .font(.subheadline)
-                    
+
                     Text("""
                     let palette = myColor.generateAccessiblePalette(
                         targetLevel: .AA,
@@ -133,10 +133,10 @@ struct ContentView: View {
                     .padding(10)
                     .background(Color.black.opacity(0.05))
                     .cornerRadius(5)
-                    
+
                     Text("Generate a theme:")
                         .font(.subheadline)
-                    
+
                     Text("""
                     let theme = myColor.generateAccessibleTheme(
                         name: "My Theme",
@@ -155,14 +155,14 @@ struct ContentView: View {
             .padding()
         }
     }
-    
+
     private func generatePaletteAndTheme() {
         generatedPalette = seedColor.generateAccessiblePalette(
             targetLevel: targetLevel,
             paletteSize: paletteSize,
             includeBlackAndWhite: includeBlackAndWhite
         )
-        
+
         generatedTheme = seedColor.generateAccessibleTheme(
             name: "Generated Theme",
             targetLevel: targetLevel
@@ -172,7 +172,7 @@ struct ContentView: View {
 
 struct ColorSwatch: View {
     let color: Color
-    
+
     var body: some View {
         VStack {
             RoundedRectangle(cornerRadius: 8)
@@ -182,7 +182,7 @@ struct ColorSwatch: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray, lineWidth: 0.5)
                 )
-            
+
             // Using string directly instead of hexString property
             Text(color.description)
                 .font(.caption)
@@ -195,7 +195,7 @@ struct ColorSwatch: View {
 struct ColorKey: View {
     let name: String
     let color: Color
-    
+
     var body: some View {
         VStack {
             Circle()
@@ -205,7 +205,7 @@ struct ColorKey: View {
                     Circle()
                         .stroke(Color.gray, lineWidth: 0.5)
                 )
-            
+
             Text(name)
                 .font(.caption)
                 .lineLimit(1)
@@ -217,4 +217,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

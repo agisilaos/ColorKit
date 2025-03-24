@@ -19,14 +19,14 @@ struct ContentView: View {
     let startColor = Color.blue
     let endColor = Color.red
     let midColor = Color.green
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 25) {
                 Text("Color Gradients")
                     .font(.title)
                     .padding(.top)
-                
+
                 // Linear interpolation between two colors
                 GradientSection(
                     title: "Linear Interpolation (Two Colors)",
@@ -44,7 +44,7 @@ struct ContentView: View {
                                     startColor.interpolated(with: endColor, amount: 1.0, in: .rgb)
                                 ]
                             )
-                            
+
                             // HSL interpolation
                             GradientRow(
                                 title: "HSL Interpolation",
@@ -56,7 +56,7 @@ struct ContentView: View {
                                     startColor.interpolated(with: endColor, amount: 1.0, in: .hsl)
                                 ]
                             )
-                            
+
                             // LAB interpolation
                             GradientRow(
                                 title: "LAB Interpolation",
@@ -71,7 +71,7 @@ struct ContentView: View {
                         }
                     )
                 )
-                
+
                 // Generated gradients
                 GradientSection(
                     title: "Generated Gradients",
@@ -82,7 +82,7 @@ struct ContentView: View {
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("Two-Color Gradient")
                                     .font(.subheadline)
-                                
+
                                 Rectangle()
                                     .fill(
                                         LinearGradient(
@@ -94,12 +94,12 @@ struct ContentView: View {
                                     .frame(height: 30)
                                     .cornerRadius(5)
                             }
-                            
+
                             // Three-color gradient
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("Three-Color Gradient")
                                     .font(.subheadline)
-                                
+
                                 Rectangle()
                                     .fill(
                                         LinearGradient(
@@ -111,12 +111,12 @@ struct ContentView: View {
                                     .frame(height: 30)
                                     .cornerRadius(5)
                             }
-                            
+
                             // Custom stops
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("Custom Color Stops")
                                     .font(.subheadline)
-                                
+
                                 Rectangle()
                                     .fill(
                                         LinearGradient(
@@ -134,12 +134,12 @@ struct ContentView: View {
                                     .frame(height: 30)
                                     .cornerRadius(5)
                             }
-                            
+
                             // Radial gradient
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("Radial Gradient")
                                     .font(.subheadline)
-                                
+
                                 Rectangle()
                                     .fill(
                                         RadialGradient(
@@ -152,12 +152,12 @@ struct ContentView: View {
                                     .frame(height: 100)
                                     .cornerRadius(5)
                             }
-                            
+
                             // Angular gradient
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("Angular Gradient")
                                     .font(.subheadline)
-                                
+
                                 Rectangle()
                                     .fill(
                                         AngularGradient(
@@ -181,16 +181,16 @@ struct GradientSection: View {
     let title: String
     let description: String
     let content: AnyView
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title)
                 .font(.headline)
-            
+
             Text(description)
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
+
             content
         }
         .padding()
@@ -202,12 +202,12 @@ struct GradientSection: View {
 struct GradientRow: View {
     let title: String
     let colors: [Color]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title)
                 .font(.subheadline)
-            
+
             // Simplified approach without custom corners
             HStack(spacing: 2) {
                 ForEach(0..<colors.count, id: \.self) { index in
@@ -226,4 +226,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

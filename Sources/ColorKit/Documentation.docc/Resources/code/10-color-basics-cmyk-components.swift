@@ -20,12 +20,12 @@ struct ContentView: View {
     @State private var magenta: Double = 0.3
     @State private var yellow: Double = 0.0
     @State private var black: Double = 0.1
-    
+
     // Derived color from CMYK components
     private var currentColor: Color {
         Color(cyan: CGFloat(cyan), magenta: CGFloat(magenta), yellow: CGFloat(yellow), key: CGFloat(black))
     }
-    
+
     // The equivalent RGB values (derived from CMYK)
     private var derivedRGB: (red: Int, green: Int, blue: Int) {
         guard let components = currentColor.cgColor?.components, components.count >= 3 else {
@@ -37,23 +37,23 @@ struct ContentView: View {
             blue: Int(components[2] * 255)
         )
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 25) {
                 Text("CMYK Color Components")
                     .font(.title)
                     .padding(.top)
-                
+
                 // CMYK Explanation
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Understanding CMYK")
                         .font(.headline)
-                    
+
                     Text("CMYK (Cyan, Magenta, Yellow, Key/Black) is primarily used in print design. Unlike RGB which is additive (adding light), CMYK is subtractive (removing light by adding ink).")
                         .font(.body)
                         .foregroundColor(.secondary)
-                    
+
                     HStack(spacing: 15) {
                         // Color components visualization
                         VStack(spacing: 8) {
@@ -61,37 +61,37 @@ struct ContentView: View {
                                 .fill(Color.cyan)
                                 .frame(width: 50, height: 50)
                                 .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
-                            
+
                             Text("Cyan")
                                 .font(.caption)
                         }
-                        
+
                         VStack(spacing: 8) {
                             Circle()
                                 .fill(Color(red: 1, green: 0, blue: 1))
                                 .frame(width: 50, height: 50)
                                 .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
-                            
+
                             Text("Magenta")
                                 .font(.caption)
                         }
-                        
+
                         VStack(spacing: 8) {
                             Circle()
                                 .fill(Color.yellow)
                                 .frame(width: 50, height: 50)
                                 .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
-                            
+
                             Text("Yellow")
                                 .font(.caption)
                         }
-                        
+
                         VStack(spacing: 8) {
                             Circle()
                                 .fill(Color.black)
                                 .frame(width: 50, height: 50)
                                 .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
-                            
+
                             Text("Black")
                                 .font(.caption)
                         }
@@ -100,12 +100,12 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Color Preview
                 VStack(spacing: 15) {
                     Text("Color Preview")
                         .font(.headline)
-                    
+
                     RoundedRectangle(cornerRadius: 10)
                         .fill(currentColor)
                         .frame(height: 120)
@@ -113,14 +113,14 @@ struct ContentView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color.gray, lineWidth: 0.5)
                         )
-                    
+
                     // CMYK and RGB Values
                     HStack(spacing: 20) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text("CMYK Values:")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            
+
                             Text("C: \(Int(cyan * 100))%")
                                 .font(.system(.caption, design: .monospaced))
                             Text("M: \(Int(magenta * 100))%")
@@ -130,12 +130,12 @@ struct ContentView: View {
                             Text("K: \(Int(black * 100))%")
                                 .font(.system(.caption, design: .monospaced))
                         }
-                        
+
                         VStack(alignment: .leading, spacing: 5) {
                             Text("RGB Values:")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            
+
                             Text("R: \(derivedRGB.red)")
                                 .font(.system(.caption, design: .monospaced))
                             Text("G: \(derivedRGB.green)")
@@ -148,17 +148,17 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // CMYK Controls
                 VStack(alignment: .leading, spacing: 20) {
                     Text("CMYK Controls")
                         .font(.headline)
-                    
+
                     // Cyan Control
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Cyan: \(Int(cyan * 100))%")
                             .font(.subheadline)
-                        
+
                         CMYKSlider(
                             value: $cyan,
                             color: .cyan,
@@ -169,12 +169,12 @@ struct ContentView: View {
                             )
                         )
                     }
-                    
+
                     // Magenta Control
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Magenta: \(Int(magenta * 100))%")
                             .font(.subheadline)
-                        
+
                         CMYKSlider(
                             value: $magenta,
                             color: Color(red: 1, green: 0, blue: 1), // System magenta color
@@ -185,12 +185,12 @@ struct ContentView: View {
                             )
                         )
                     }
-                    
+
                     // Yellow Control
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Yellow: \(Int(yellow * 100))%")
                             .font(.subheadline)
-                        
+
                         CMYKSlider(
                             value: $yellow,
                             color: .yellow,
@@ -201,12 +201,12 @@ struct ContentView: View {
                             )
                         )
                     }
-                    
+
                     // Black Control
                     VStack(alignment: .leading, spacing: 5) {
                         Text("Black (K): \(Int(black * 100))%")
                             .font(.subheadline)
-                        
+
                         CMYKSlider(
                             value: $black,
                             color: .black,
@@ -221,38 +221,38 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Print Swatches
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Common Print Colors")
                         .font(.headline)
-                    
+
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))], spacing: 10) {
                         PrintColorSwatch(
                             name: "Process Cyan",
                             cmyk: (1.0, 0.0, 0.0, 0.0)
                         )
-                        
+
                         PrintColorSwatch(
                             name: "Process Magenta",
                             cmyk: (0.0, 1.0, 0.0, 0.0)
                         )
-                        
+
                         PrintColorSwatch(
                             name: "Process Yellow",
                             cmyk: (0.0, 0.0, 1.0, 0.0)
                         )
-                        
+
                         PrintColorSwatch(
                             name: "Rich Black",
                             cmyk: (0.6, 0.5, 0.5, 1.0)
                         )
-                        
+
                         PrintColorSwatch(
                             name: "Navy Blue",
                             cmyk: (1.0, 0.7, 0.0, 0.5)
                         )
-                        
+
                         PrintColorSwatch(
                             name: "Forest Green",
                             cmyk: (0.8, 0.0, 0.8, 0.5)
@@ -262,12 +262,12 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Code Example
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Code Example")
                         .font(.headline)
-                    
+
                     Text("""
                     // Create a color using CMYK values
                     let color = Color(
@@ -276,7 +276,7 @@ struct ContentView: View {
                         yellow: \(String(format: "%.2f", yellow)),    // 0-1
                         key: \(String(format: "%.2f", black))       // 0-1
                     )
-                    
+
                     // Extract CMYK components from a color
                     if let cmykComponents = myColor.cmykComponents() {
                         let cyan = cmykComponents.cyan
@@ -303,14 +303,14 @@ struct CMYKSlider: View {
     @Binding var value: Double
     let color: Color
     let background: LinearGradient
-    
+
     var body: some View {
         ZStack(alignment: .leading) {
             // Background gradient
             background
                 .frame(height: 30)
                 .cornerRadius(5)
-            
+
             // Slider
             Slider(value: $value, in: 0...1, step: 0.01)
                 .padding(.horizontal, 2)
@@ -321,11 +321,11 @@ struct CMYKSlider: View {
 struct PrintColorSwatch: View {
     let name: String
     let cmyk: (cyan: Double, magenta: Double, yellow: Double, black: Double)
-    
+
     var color: Color {
         Color(cyan: CGFloat(cmyk.cyan), magenta: CGFloat(cmyk.magenta), yellow: CGFloat(cmyk.yellow), key: CGFloat(cmyk.black))
     }
-    
+
     var body: some View {
         VStack(spacing: 5) {
             RoundedRectangle(cornerRadius: 8)
@@ -335,11 +335,11 @@ struct PrintColorSwatch: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray, lineWidth: 0.5)
                 )
-            
+
             Text(name)
                 .font(.caption)
                 .fontWeight(.medium)
-            
+
             Text("C:\(Int(cmyk.cyan * 100)) M:\(Int(cmyk.magenta * 100)) Y:\(Int(cmyk.yellow * 100)) K:\(Int(cmyk.black * 100))")
                 .font(.system(.caption2, design: .monospaced))
                 .foregroundColor(.secondary)

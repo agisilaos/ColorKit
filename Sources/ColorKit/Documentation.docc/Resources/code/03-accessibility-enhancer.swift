@@ -19,13 +19,13 @@ struct ContentView: View {
     @State private var backgroundColor = Color.white
     @State private var targetLevel: WCAGContrastLevel = .AA
     @State private var strategy: AdjustmentStrategy = .preserveHue
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text("Accessibility Color Enhancer")
                 .font(.title)
                 .padding(.top)
-            
+
             // Original and Enhanced Color Preview
             VStack(spacing: 15) {
                 // Calculate enhanced color
@@ -34,19 +34,19 @@ struct ContentView: View {
                     targetLevel: targetLevel,
                     strategy: strategy
                 )
-                
+
                 // Original color
                 ColorPreviewRow(
-                    title: "Original", 
-                    color: originalColor, 
+                    title: "Original",
+                    color: originalColor,
                     backgroundColor: backgroundColor,
                     contrastRatio: originalColor.wcagContrastRatio(with: backgroundColor)
                 )
-                
+
                 // Enhanced color
                 ColorPreviewRow(
-                    title: "Enhanced", 
-                    color: enhancedColor, 
+                    title: "Enhanced",
+                    color: enhancedColor,
                     backgroundColor: backgroundColor,
                     contrastRatio: enhancedColor.wcagContrastRatio(with: backgroundColor)
                 )
@@ -54,18 +54,18 @@ struct ContentView: View {
             .padding()
             .background(Color.gray.opacity(0.1))
             .cornerRadius(10)
-            
+
             // Color Selection Controls
             VStack(alignment: .leading, spacing: 15) {
                 ColorPicker("Select Color to Enhance", selection: $originalColor)
-                
+
                 ColorPicker("Background Color", selection: $backgroundColor)
-                
+
                 // WCAG Level Selection
                 VStack(alignment: .leading) {
                     Text("Target WCAG Level:")
                         .font(.headline)
-                    
+
                     Picker("WCAG Level", selection: $targetLevel) {
                         ForEach(WCAGContrastLevel.allCases) { level in
                             Text(level.rawValue).tag(level)
@@ -73,12 +73,12 @@ struct ContentView: View {
                     }
                     .pickerStyle(SegmentedPickerStyle())
                 }
-                
+
                 // Strategy Selection
                 VStack(alignment: .leading) {
                     Text("Enhancement Strategy:")
                         .font(.headline)
-                    
+
                     Picker("Strategy", selection: $strategy) {
                         ForEach(AdjustmentStrategy.allCases) { strategy in
                             Text(strategy.rawValue.capitalized).tag(strategy)
@@ -88,7 +88,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            
+
             // Suggested Alternatives
             SuggestedAlternativesView(
                 originalColor: originalColor,
@@ -105,12 +105,12 @@ struct ColorPreviewRow: View {
     let color: Color
     let backgroundColor: Color
     let contrastRatio: Double
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text(title)
                 .font(.headline)
-            
+
             HStack {
                 // Color sample
                 RoundedRectangle(cornerRadius: 8)
@@ -120,23 +120,23 @@ struct ColorPreviewRow: View {
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.gray, lineWidth: 1)
                     )
-                
+
                 VStack(alignment: .leading) {
                     Text("Contrast Ratio: \(String(format: "%.2f", contrastRatio)):1")
                         .font(.subheadline)
-                    
+
                     // Compliance indicators
                     let passesAA = contrastRatio >= 4.5
                     let passesAAA = contrastRatio >= 7.0
-                    
+
                     HStack {
                         ComplianceBadge(level: "AA", passes: passesAA)
                         ComplianceBadge(level: "AAA", passes: passesAAA)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Text sample
                 Text("Aa")
                     .font(.title)
@@ -152,7 +152,7 @@ struct ColorPreviewRow: View {
 struct ComplianceBadge: View {
     let level: String
     let passes: Bool
-    
+
     var body: some View {
         Text(level)
             .font(.caption)
@@ -169,29 +169,29 @@ struct SuggestedAlternativesView: View {
     let originalColor: Color
     let backgroundColor: Color
     let targetLevel: WCAGContrastLevel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Suggested Alternatives")
                 .font(.headline)
-            
+
             let suggestedColors = originalColor.suggestAccessibleVariants(
-                with: backgroundColor, 
-                targetLevel: targetLevel, 
+                with: backgroundColor,
+                targetLevel: targetLevel,
                 count: 3
             )
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
                     ForEach(0..<suggestedColors.count, id: \.self) { index in
                         let color = suggestedColors[index]
                         let ratio = color.wcagContrastRatio(with: backgroundColor)
-                        
+
                         VStack {
                             Text("Option \(index + 1)")
                                 .font(.caption)
                                 .bold()
-                            
+
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(color)
                                 .frame(width: 50, height: 50)
@@ -199,7 +199,7 @@ struct SuggestedAlternativesView: View {
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.gray, lineWidth: 1)
                                 )
-                            
+
                             Text("\(String(format: "%.1f", ratio)):1")
                                 .font(.caption)
                         }
@@ -218,4 +218,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

@@ -17,38 +17,38 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedColor = Color.blue
     @State private var sliderValue: CGFloat = 0.5
-    
+
     // Generate a dynamic color
     var dynamicColor: Color {
         Color(hue: sliderValue, saturation: 1.0, brightness: 1.0)
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Text("Color Space Converter")
                     .font(.title)
                     .padding(.top)
-                
+
                 // Color selection
                 VStack {
                     Rectangle()
                         .fill(dynamicColor)
                         .frame(height: 80)
                         .cornerRadius(10)
-                    
+
                     // Hue slider
                     Slider(value: $sliderValue)
                         .padding(.horizontal)
                         .accentColor(dynamicColor)
-                    
+
                     Text("Hue: \(Int(sliderValue * 360))°")
                         .font(.caption)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Convert and display all color spaces
                 ColorSpaceDisplay(color: dynamicColor)
             }
@@ -59,18 +59,18 @@ struct ContentView: View {
 
 struct ColorSpaceDisplay: View {
     let color: Color
-    
+
     // Use ColorSpaceConverter to get all components
     var colorComponents: ColorComponents {
         let converter = ColorSpaceConverter(color: color)
         return converter.getAllColorComponents()
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Color Components")
                 .font(.headline)
-            
+
             // RGB
             ComponentSection(
                 title: "RGB",
@@ -81,7 +81,7 @@ struct ColorSpaceDisplay: View {
                     ("Alpha", colorComponents.rgb.alpha, "%.2f")
                 ]
             )
-            
+
             // HSL
             ComponentSection(
                 title: "HSL",
@@ -91,7 +91,7 @@ struct ColorSpaceDisplay: View {
                     ("Lightness", colorComponents.hsl.lightness, "%.2f")
                 ]
             )
-            
+
             // HSB
             ComponentSection(
                 title: "HSB",
@@ -101,7 +101,7 @@ struct ColorSpaceDisplay: View {
                     ("Brightness", colorComponents.hsb.brightness, "%.2f")
                 ]
             )
-            
+
             // CMYK
             ComponentSection(
                 title: "CMYK",
@@ -112,7 +112,7 @@ struct ColorSpaceDisplay: View {
                     ("Key (Black)", colorComponents.cmyk.key * 100, "%.0f%%")
                 ]
             )
-            
+
             // LAB
             ComponentSection(
                 title: "LAB",
@@ -122,7 +122,7 @@ struct ColorSpaceDisplay: View {
                     ("b* (Blue-Yellow)", colorComponents.lab.b, "%.1f")
                 ]
             )
-            
+
             // XYZ
             ComponentSection(
                 title: "XYZ",
@@ -139,20 +139,20 @@ struct ColorSpaceDisplay: View {
 struct ComponentSection: View {
     let title: String
     let components: [(name: String, value: Double, format: String)]
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-            
+
             HStack {
                 ForEach(components, id: \.name) { component in
                     VStack(alignment: .leading) {
                         Text(component.name)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Text(String(format: component.format, component.value))
                             .font(.caption)
                             .fontWeight(.medium)
@@ -172,4 +172,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

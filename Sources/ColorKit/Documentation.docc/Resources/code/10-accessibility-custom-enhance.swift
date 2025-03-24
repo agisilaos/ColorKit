@@ -27,9 +27,9 @@ enum WCAGContrastLevelDemo: String, CaseIterable, Identifiable {
     case A
     case AA
     case AAA
-    
+
     var id: String { self.rawValue }
-    
+
     var minimumRatio: Double {
         switch self {
         case .A: return 3.0
@@ -43,13 +43,13 @@ struct ContentView: View {
     // Original brand colors
     private let originalBackgroundColor = Color(red: 0.98, green: 0.98, blue: 1.0)
     private let originalTextColor = Color(red: 0.4, green: 0.4, blue: 0.8)
-    
+
     // Enhancement configuration
     @State private var selectedStrategy: EnhancementStrategyDemo = .preserveHue
     @State private var targetLevel: WCAGContrastLevelDemo = .AA
     @State private var preservePerceivedSaturation = true
     @State private var maxColorShift = 0.5
-    
+
     // In a real app, we'd use ColorKit's enhancer
     private var enhancedColor: Color {
         // Demo version - simulate enhancement based on strategy
@@ -66,28 +66,28 @@ struct ContentView: View {
             return Color(red: 0.2, green: 0.2, blue: 0.8) // Smart adjusted
         }
     }
-    
+
     // Simulated contrast ratio
     private var contrastRatio: Double {
         // Demo value - in real code we would use ColorKit's wcagContrastRatio method
         let ratio = 7.2
         return ratio
     }
-    
+
     // Simulated color distance
     private var colorDistance: Double {
         // Demo value - in real code we would use ColorKit's colorDistance method
         let distance = 0.2
         return distance
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 Text("Custom Color Enhancement")
                     .font(.largeTitle)
                     .padding(.top)
-                
+
                 // Color preview
                 VStack(spacing: 25) {
                     HStack(spacing: 20) {
@@ -100,20 +100,20 @@ struct ContentView: View {
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 )
-                            
+
                             Text("Original")
                                 .font(.headline)
-                            
+
                             let originalRatio = originalTextColor.wcagContrastRatio(with: originalBackgroundColor)
                             Text("\(String(format: "%.2f", originalRatio)):1")
                                 .font(.caption)
                                 .foregroundColor(originalRatio >= 4.5 ? .green : .red)
                         }
-                        
+
                         Image(systemName: "arrow.right")
                             .font(.title)
                             .foregroundColor(.gray)
-                        
+
                         // Enhanced color
                         VStack {
                             RoundedRectangle(cornerRadius: 8)
@@ -123,16 +123,16 @@ struct ContentView: View {
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 )
-                            
+
                             Text("Enhanced")
                                 .font(.headline)
-                            
+
                             Text("\(String(format: "%.2f", contrastRatio)):1")
                                 .font(.caption)
                                 .foregroundColor(.green)
                         }
                     }
-                    
+
                     // Text preview
                     HStack(spacing: 20) {
                         // Original
@@ -145,11 +145,11 @@ struct ContentView: View {
                                 .frame(width: 150, height: 80)
                                 .background(originalBackgroundColor)
                                 .cornerRadius(8)
-                            
+
                             Text("Original")
                                 .font(.caption)
                         }
-                        
+
                         // Enhanced
                         VStack {
                             Text("Aa Bb Cc")
@@ -160,7 +160,7 @@ struct ContentView: View {
                                 .frame(width: 150, height: 80)
                                 .background(originalBackgroundColor)
                                 .cornerRadius(8)
-                            
+
                             Text("Enhanced")
                                 .font(.caption)
                         }
@@ -170,17 +170,17 @@ struct ContentView: View {
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                
+
                 // Configuration options
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Enhancement Configuration")
                         .font(.headline)
-                    
+
                     // Strategy selection
                     VStack(alignment: .leading) {
                         Text("Enhancement Strategy")
                             .font(.subheadline)
-                        
+
                         Picker("Strategy", selection: $selectedStrategy) {
                             Text("Preserve Hue").tag(EnhancementStrategyDemo.preserveHue)
                             Text("Preserve Saturation").tag(EnhancementStrategyDemo.preserveSaturation)
@@ -190,12 +190,12 @@ struct ContentView: View {
                         }
                         .pickerStyle(SegmentedPickerStyle())
                     }
-                    
+
                     // WCAG level
                     VStack(alignment: .leading) {
                         Text("Target Accessibility Level")
                             .font(.subheadline)
-                        
+
                         Picker("WCAG Level", selection: $targetLevel) {
                             ForEach([WCAGContrastLevelDemo.A, .AA, .AAA]) { level in
                                 Text("\(level.rawValue) (\(String(format: "%.1f", level.minimumRatio)):1)")
@@ -204,33 +204,33 @@ struct ContentView: View {
                         }
                         .pickerStyle(SegmentedPickerStyle())
                     }
-                    
+
                     // Additional options
                     Toggle("Preserve Perceived Saturation", isOn: $preservePerceivedSaturation)
                         .font(.subheadline)
-                    
+
                     // Max color shift slider
                     VStack(alignment: .leading) {
                         HStack {
                             Text("Maximum Color Shift")
                                 .font(.subheadline)
-                            
+
                             Spacer()
-                            
+
                             Text("\(Int(maxColorShift * 100))%")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
+
                         Slider(value: $maxColorShift, in: 0.1...1.0, step: 0.1)
                     }
-                    
+
                     // Results
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Results")
                             .font(.subheadline)
                             .bold()
-                        
+
                         HStack {
                             Text("Contrast Ratio:")
                             Spacer()
@@ -239,7 +239,7 @@ struct ContentView: View {
                                 .font(.callout)
                                 .bold()
                         }
-                        
+
                         HStack {
                             Text("Color Distance:")
                             Spacer()
@@ -248,7 +248,7 @@ struct ContentView: View {
                                 .font(.callout)
                                 .bold()
                         }
-                        
+
                         HStack {
                             Text("WCAG Level Compliance:")
                             Spacer()
@@ -261,7 +261,7 @@ struct ContentView: View {
                                         .foregroundColor(.white)
                                         .cornerRadius(4)
                                 }
-                                
+
                                 if contrastRatio >= WCAGContrastLevelDemo.AA.minimumRatio {
                                     Text("AA")
                                         .padding(.horizontal, 6)
@@ -270,7 +270,7 @@ struct ContentView: View {
                                         .foregroundColor(.white)
                                         .cornerRadius(4)
                                 }
-                                
+
                                 if contrastRatio >= WCAGContrastLevelDemo.AAA.minimumRatio {
                                     Text("AAA")
                                         .padding(.horizontal, 6)
@@ -290,12 +290,12 @@ struct ContentView: View {
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                
+
                 // Code example
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Implementation Code")
                         .font(.headline)
-                    
+
                     Text("""
                     // Create custom configuration
                     let config = AccessibilityEnhancerConfig(
@@ -303,10 +303,10 @@ struct ContentView: View {
                         preservePerceivedSaturation: \(preservePerceivedSaturation),
                         maxColorShift: \(String(format: "%.1f", maxColorShift))
                     )
-                    
+
                     // Create enhancer with configuration
                     let enhancer = AccessibilityEnhancer(config: config)
-                    
+
                     // Enhance the color
                     let enhancedColor = enhancer.enhanceColor(
                         originalColor,
@@ -323,12 +323,12 @@ struct ContentView: View {
                 .background(Color.white)
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                
+
                 // Strategy explanation
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Strategy Explanation")
                         .font(.headline)
-                    
+
                     StrategyExplanationView(strategy: selectedStrategy)
                 }
                 .padding()
@@ -344,7 +344,7 @@ struct ContentView: View {
 
 struct StrategyExplanationView: View {
     let strategy: EnhancementStrategyDemo
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Strategy icon and name
@@ -353,30 +353,30 @@ struct StrategyExplanationView: View {
                     .font(.title2)
                     .foregroundColor(.blue)
                     .frame(width: 30)
-                
+
                 Text(title)
                     .font(.title3)
                     .fontWeight(.semibold)
             }
-            
+
             // Description
             Text(description)
                 .font(.body)
                 .foregroundColor(.secondary)
                 .padding(.vertical, 4)
-            
+
             // Best use cases
             VStack(alignment: .leading, spacing: 4) {
                 Text("Best for:")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                
+
                 ForEach(bestFor, id: \.self) { use in
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
                             .font(.caption)
-                        
+
                         Text(use)
                             .font(.subheadline)
                     }
@@ -385,7 +385,7 @@ struct StrategyExplanationView: View {
             .padding(.vertical, 4)
         }
     }
-    
+
     private var iconName: String {
         switch strategy {
         case .preserveHue:
@@ -400,7 +400,7 @@ struct StrategyExplanationView: View {
             return "brain"
         }
     }
-    
+
     private var title: String {
         switch strategy {
         case .preserveHue:
@@ -415,7 +415,7 @@ struct StrategyExplanationView: View {
             return "Smart Enhancement"
         }
     }
-    
+
     private var description: String {
         switch strategy {
         case .preserveHue:
@@ -430,7 +430,7 @@ struct StrategyExplanationView: View {
             return "Intelligently chooses the best strategy based on the specific color's properties and the background it's used against."
         }
     }
-    
+
     private var bestFor: [String] {
         switch strategy {
         case .preserveHue:
@@ -471,4 +471,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

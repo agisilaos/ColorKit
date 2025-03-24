@@ -20,17 +20,17 @@ struct ContentView: View {
     let greenColor = Color.green
     let blueColor = Color.blue
     let purpleColor = Color.purple
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text("Extract CMYK Components")
                 .font(.title2)
                 .padding(.top)
-            
+
             // Extract CMYK components for each color
             Group {
                 ColorComponentView(
-                    color: redColor, 
+                    color: redColor,
                     name: "Red",
                     components: {
                         let cmyk = redColor.cmykComponents() ?? (cyan: 0, magenta: 0, yellow: 0, key: 0)
@@ -42,9 +42,9 @@ struct ContentView: View {
                         ]
                     }()
                 )
-                
+
                 ColorComponentView(
-                    color: greenColor, 
+                    color: greenColor,
                     name: "Green",
                     components: {
                         let cmyk = greenColor.cmykComponents() ?? (cyan: 0, magenta: 0, yellow: 0, key: 0)
@@ -56,9 +56,9 @@ struct ContentView: View {
                         ]
                     }()
                 )
-                
+
                 ColorComponentView(
-                    color: blueColor, 
+                    color: blueColor,
                     name: "Blue",
                     components: {
                         let cmyk = blueColor.cmykComponents() ?? (cyan: 0, magenta: 0, yellow: 0, key: 0)
@@ -70,9 +70,9 @@ struct ContentView: View {
                         ]
                     }()
                 )
-                
+
                 ColorComponentView(
-                    color: purpleColor, 
+                    color: purpleColor,
                     name: "Purple",
                     components: {
                         let cmyk = purpleColor.cmykComponents() ?? (cyan: 0, magenta: 0, yellow: 0, key: 0)
@@ -94,7 +94,7 @@ struct ColorComponentView: View {
     let color: Color
     let name: String
     let components: [(String, CGFloat)]
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -102,17 +102,17 @@ struct ColorComponentView: View {
                     .fill(color)
                     .frame(width: 30, height: 30)
                     .cornerRadius(4)
-                
+
                 Text(name)
                     .font(.headline)
             }
-            
+
             HStack(spacing: 12) {
                 ForEach(components, id: \.0) { component in
                     VStack {
                         Text(component.0.prefix(1)) // First letter for the component
                             .font(.caption)
-                        
+
                         Text(String(format: "%.0f%%", component.1 * 100))
                             .font(.caption)
                             .bold()
@@ -132,4 +132,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}

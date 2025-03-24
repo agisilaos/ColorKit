@@ -17,35 +17,35 @@ import SwiftUI
 struct ContentView: View {
     @State private var inputHexValue: String = "#3A7BF7"
     @State private var includeAlpha: Bool = false
-    @State private var selectedColor: Color = Color(red: 0.227, green: 0.482, blue: 0.969)
+    @State private var selectedColor = Color(red: 0.227, green: 0.482, blue: 0.969)
     @State private var selectedAlpha: Double = 1.0
-    
+
     // Derived values
     private var colorFromHex: Color? {
         Color(hex: inputHexValue)
     }
-    
+
     private var hexFromColor: String {
         selectedColor.opacity(selectedAlpha).hexString() ?? "#FFFFFF"
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 25) {
                 Text("Hex Color Conversion")
                     .font(.title)
                     .padding(.top)
-                
+
                 // Hex to Color
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Hex to Color")
                         .font(.headline)
-                    
+
                     HStack {
                         TextField("Enter hex value (e.g., #FF5500)", text: $inputHexValue)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .disableAutocorrection(true)
-                        
+
                         Button(action: {
                             // Clear the input
                             inputHexValue = ""
@@ -55,7 +55,7 @@ struct ContentView: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                     }
-                    
+
                     if let color = colorFromHex {
                         HStack(spacing: 15) {
                             RoundedRectangle(cornerRadius: 8)
@@ -65,17 +65,17 @@ struct ContentView: View {
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.gray, lineWidth: 0.5)
                                 )
-                            
+
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("RGB Values:")
                                     .font(.subheadline)
                                     .fontWeight(.medium)
-                                
+
                                 if let components = color.cgColor?.components, components.count >= 3 {
                                     Text("R: \(Int(components[0] * 255))")
                                     Text("G: \(Int(components[1] * 255))")
                                     Text("B: \(Int(components[2] * 255))")
-                                    
+
                                     if components.count >= 4 && components[3] < 1.0 {
                                         Text("Alpha: \(String(format: "%.2f", components[3]))")
                                     }
@@ -91,23 +91,23 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Color to Hex
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Color to Hex")
                         .font(.headline)
-                    
+
                     ColorPicker("Select Color", selection: $selectedColor)
                         .padding(.bottom, 5)
-                    
+
                     VStack(alignment: .leading) {
                         Text("Alpha: \(Int(selectedAlpha * 100))%")
                         Slider(value: $selectedAlpha, in: 0...1, step: 0.01)
                     }
-                    
+
                     Toggle("Include Alpha in Hex", isOn: $includeAlpha)
                         .padding(.vertical, 5)
-                    
+
                     HStack(spacing: 15) {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(selectedColor.opacity(selectedAlpha))
@@ -116,18 +116,18 @@ struct ContentView: View {
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.gray, lineWidth: 0.5)
                             )
-                        
+
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Hex Value:")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            
+
                             Text(hexFromColor)
                                 .font(.system(.body, design: .monospaced))
                                 .padding(8)
                                 .background(Color.black.opacity(0.05))
                                 .cornerRadius(4)
-                            
+
                             Button(action: {
                                 // In a real app, this would copy to clipboard
                                 // UIPasteboard.general.string = hexFromColor
@@ -142,12 +142,12 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Examples
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Common Hex Color Examples")
                         .font(.headline)
-                    
+
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 15) {
                         ColorHexExample(color: .red, name: "Red")
                         ColorHexExample(color: .green, name: "Green")
@@ -160,19 +160,19 @@ struct ContentView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
-                
+
                 // Code Examples
                 VStack(alignment: .leading, spacing: 15) {
                     Text("Code Examples")
                         .font(.headline)
-                    
+
                     Text("Convert hex string to Color:")
                         .font(.subheadline)
-                    
+
                     Text("""
                     // Create a color from a hex string
                     let blueColor = Color(hex: "#3A7BF7")
-                    
+
                     // With alpha channel
                     let translucentRed = Color(hex: "#FF000080")
                     """)
@@ -180,15 +180,15 @@ struct ContentView: View {
                     .padding(10)
                     .background(Color.black.opacity(0.05))
                     .cornerRadius(6)
-                    
+
                     Text("Convert Color to hex string:")
                         .font(.subheadline)
                         .padding(.top, 10)
-                    
+
                     Text("""
                     // Get hex string with # prefix
                     let hexString = myColor.hexString() // "#3A7BF7"
-                    
+
                     // Get hex string (alternative method)
                     let hexValue = myColor.hexValue() // "#3A7BF7FF"
                     """)
@@ -209,11 +209,11 @@ struct ContentView: View {
 struct ColorHexExample: View {
     let color: Color
     let name: String
-    
+
     private var hexValue: String {
         color.hexString() ?? "#FFFFFF"
     }
-    
+
     var body: some View {
         VStack(spacing: 5) {
             Circle()
@@ -223,11 +223,11 @@ struct ColorHexExample: View {
                     Circle()
                         .stroke(Color.gray, lineWidth: 0.5)
                 )
-            
+
             Text(name)
                 .font(.caption)
                 .fontWeight(.medium)
-            
+
             Text(hexValue)
                 .font(.system(.caption2, design: .monospaced))
                 .foregroundColor(.secondary)
@@ -238,4 +238,4 @@ struct ColorHexExample: View {
 
 #Preview {
     ContentView()
-}   
+}

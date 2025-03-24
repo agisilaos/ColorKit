@@ -16,14 +16,14 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var useAccessibleColors = false
-    
+
     // Potentially inaccessible color combinations
     private let primaryColor = Color.purple
     private let accentColor = Color(red: 0.6, green: 0.2, blue: 0.8)
     private let backgroundColor = Color(red: 0.95, green: 0.95, blue: 1.0)
     private let textColor = Color(red: 0.5, green: 0.4, blue: 0.7)
     private let linkColor = Color.blue.opacity(0.6)
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -32,7 +32,7 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(primaryColor)
-                
+
                 // Potentially low-contrast text
                 Text("This text has potentially low contrast with the background.")
                     .font(.body)
@@ -41,16 +41,16 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
                     .background(backgroundColor)
                     .cornerRadius(10)
-                
+
                 // Card with potentially inaccessible colors
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Sample Card")
                         .font(.headline)
                         .foregroundColor(primaryColor)
-                    
+
                     Text("This card contains content with potentially inaccessible color combinations that might not meet WCAG contrast requirements.")
                         .foregroundColor(textColor)
-                    
+
                     Button(action: {}) {
                         Text("Learn More")
                             .fontWeight(.medium)
@@ -60,7 +60,7 @@ struct ContentView: View {
                             .foregroundColor(.white.opacity(0.9))
                             .cornerRadius(8)
                     }
-                    
+
                     Text("Visit our documentation")
                         .font(.caption)
                         .foregroundColor(linkColor)
@@ -70,7 +70,7 @@ struct ContentView: View {
                 .background(backgroundColor)
                 .cornerRadius(10)
                 .shadow(radius: 2)
-                
+
                 Spacer()
             }
             .padding()
@@ -83,4 +83,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-} 
+}
