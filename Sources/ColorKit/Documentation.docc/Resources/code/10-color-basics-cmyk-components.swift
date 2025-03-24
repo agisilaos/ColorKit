@@ -23,21 +23,18 @@ struct ContentView: View {
     
     // Derived color from CMYK components
     private var currentColor: Color {
-        Color.cmykComponents(
-            cyan: cyan,
-            magenta: magenta,
-            yellow: yellow,
-            black: black
-        )
+        Color(cyan: CGFloat(cyan), magenta: CGFloat(magenta), yellow: CGFloat(yellow), key: CGFloat(black))
     }
     
     // The equivalent RGB values (derived from CMYK)
     private var derivedRGB: (red: Int, green: Int, blue: Int) {
-        let rgbComponents = currentColor.rgbComponents
+        guard let components = currentColor.cgColor?.components, components.count >= 3 else {
+            return (red: 0, green: 0, blue: 0)
+        }
         return (
-            red: Int(rgbComponents.red * 255),
-            green: Int(rgbComponents.green * 255),
-            blue: Int(rgbComponents.blue * 255)
+            red: Int(components[0] * 255),
+            green: Int(components[1] * 255),
+            blue: Int(components[2] * 255)
         )
     }
     
@@ -71,7 +68,7 @@ struct ContentView: View {
                         
                         VStack(spacing: 8) {
                             Circle()
-                                .fill(Color.magenta)
+                                .fill(Color(red: 1, green: 0, blue: 1))
                                 .frame(width: 50, height: 50)
                                 .overlay(Circle().stroke(Color.gray, lineWidth: 0.5))
                             
@@ -180,9 +177,9 @@ struct ContentView: View {
                         
                         CMYKSlider(
                             value: $magenta,
-                            color: .magenta,
+                            color: Color(red: 1, green: 0, blue: 1), // System magenta color
                             background: LinearGradient(
-                                gradient: Gradient(colors: [.white, .magenta]),
+                                gradient: Gradient(colors: [.white, Color(red: 1, green: 0, blue: 1)]),
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -273,19 +270,20 @@ struct ContentView: View {
                     
                     Text("""
                     // Create a color using CMYK values
-                    let color = Color.cmyk(
+                    let color = Color(
                         cyan: \(String(format: "%.2f", cyan)),      // 0-1
                         magenta: \(String(format: "%.2f", magenta)),   // 0-1
                         yellow: \(String(format: "%.2f", yellow)),    // 0-1
-                        black: \(String(format: "%.2f", black))       // 0-1
+                        key: \(String(format: "%.2f", black))       // 0-1
                     )
                     
                     // Extract CMYK components from a color
-                    let cmykComponents = myColor.cmykComponents
-                    let cyan = cmykComponents.cyan
-                    let magenta = cmykComponents.magenta
-                    let yellow = cmykComponents.yellow
-                    let black = cmykComponents.black
+                    if let cmykComponents = myColor.cmykComponents() {
+                        let cyan = cmykComponents.cyan
+                        let magenta = cmykComponents.magenta
+                        let yellow = cmykComponents.yellow
+                        let key = cmykComponents.key
+                    }
                     """)
                     .font(.system(.body, design: .monospaced))
                     .padding(10)
@@ -325,12 +323,7 @@ struct PrintColorSwatch: View {
     let cmyk: (cyan: Double, magenta: Double, yellow: Double, black: Double)
     
     var color: Color {
-        Color.cmyk(
-            cyan: cmyk.cyan,
-            magenta: cmyk.magenta,
-            yellow: cmyk.yellow,
-            black: cmyk.black
-        )
+        Color(cyan: CGFloat(cmyk.cyan), magenta: CGFloat(cmyk.magenta), yellow: CGFloat(cmyk.yellow), key: CGFloat(cmyk.black))
     }
     
     var body: some View {
@@ -353,9 +346,6 @@ struct PrintColorSwatch: View {
         }
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-} 
+#Preview {
+    ContentView()
+}
