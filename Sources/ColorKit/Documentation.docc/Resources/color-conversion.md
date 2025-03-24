@@ -9,91 +9,90 @@ ColorKit makes it easy to convert colors between different color spaces, allowin
 ### Basic Conversions
 
 ```swift
-// Start with a color in RGB
-let blueColor = Color.rgb(red: 0.2, green: 0.4, blue: 0.8)
+// Start with a color from hex
+let blueColor = Color(hex: "#3366CC")
 
 // Convert to HSL
-let hslComponents = blueColor.hslComponents
-// Access components
-let hue = hslComponents.hue // 220 degrees
-let saturation = hslComponents.saturation // 0.6
-let lightness = hslComponents.lightness // 0.5
-
-// Convert to HSB
-let hsbComponents = blueColor.hsbComponents
-// Access components
-let brightness = hsbComponents.brightness // 0.8
+if let hsl = blueColor.hslComponents() {
+    // Access components (all in 0-1 range)
+    let hue = hsl.hue         // Multiply by 360 for degrees
+    let saturation = hsl.saturation 
+    let lightness = hsl.lightness
+    
+    // Create a new color with modified HSL values
+    let newColor = Color(
+        hue: hue,
+        saturation: min(1, saturation * 1.2), // Increase saturation by 20%
+        lightness: lightness
+    )
+}
 
 // Convert to CMYK
-let cmykComponents = blueColor.cmykComponents
-// Access components
-let cyan = cmykComponents.cyan // 0.75
-let magenta = cmykComponents.magenta // 0.5
-let yellow = cmykComponents.yellow // 0
-let black = cmykComponents.black // 0.2
-
-// Convert to LAB
-let labComponents = blueColor.labComponents
-// Access components
-let l = labComponents.l // Lightness
-let a = labComponents.a // Green-Red component
-let b = labComponents.b // Blue-Yellow component
+if let cmyk = blueColor.cmykComponents() {
+    // Access components (all in 0-1 range)
+    let cyan = cmyk.cyan
+    let magenta = cmyk.magenta
+    let yellow = cmyk.yellow
+    let black = cmyk.key
+    
+    // Create a new color with modified CMYK values
+    let newColor = Color(
+        cyan: cyan,
+        magenta: magenta,
+        yellow: yellow,
+        key: min(1, black + 0.1) // Make it slightly darker
+    )
+}
 ```
 
 ### Converting to Hex Strings
 
-ColorKit provides convenient methods to convert colors to hex string representations:
+ColorKit provides methods to convert colors to hex string representations:
 
 ```swift
-let color = Color.rgb(red: 1.0, green: 0.5, blue: 0.0)
+let color = Color(hex: "#FF8000")
 
-// Get a hex string with # prefix
-let hexWithHash = color.hexString // "#FF8000"
+// Get a hex string (includes alpha)
+let hexString = color.hexString() // "#FF8000FF"
 
-// Get a hex string without # prefix
-let hexRaw = color.hexStringWithoutHash // "FF8000"
-
-// Get a hex string with alpha
-let hexWithAlpha = color.hexStringWithAlpha // "#FF8000FF"
+// Get a hex string (alternative method)
+let hexValue = color.hexValue() // Same as hexString()
 ```
 
-### Creating New Colors in Different Spaces
+### Working with Color Components
 
-You can create new colors by extracting components from one color space and modifying them:
+When working with color components in ColorKit, remember these key points:
 
-```swift
-let originalColor = Color.rgb(red: 0.2, green: 0.5, blue: 0.8)
+1. All component values are normalized to the 0-1 range
+2. HSL hue is in 0-1 range (multiply by 360 to get degrees)
+3. Component extraction methods return optional values
+4. Always handle the optional return values appropriately
 
-// Extract HSL components
-let hsl = originalColor.hslComponents
-
-// Create a new color with the same hue but different saturation and lightness
-let newColor = Color.hsl(
-    hue: hsl.hue,
-    saturation: hsl.saturation * 0.8, // 80% of original saturation
-    lightness: hsl.lightness * 1.2 // 120% of original lightness
-)
-```
-
-## Working with Color Components
-
-ColorKit allows you to work with individual color components directly:
+Example of safe component handling:
 
 ```swift
-let color = Color.rgb(red: 0.5, green: 0.3, blue: 0.7)
+let color = Color(hex: "#FF8000")
 
-// RGB components
-let red = color.redComponent // 0.5
-let green = color.greenComponent // 0.3
-let blue = color.blueComponent // 0.7
+// Safe HSL component extraction
+if let hsl = color.hslComponents() {
+    // Use the components
+    let adjustedColor = Color(
+        hue: hsl.hue,
+        saturation: hsl.saturation,
+        lightness: max(0, min(1, hsl.lightness + 0.1)) // Lighten by 10%
+    )
+}
 
-// HSL components
-let hue = color.hueComponent // in degrees (0-360)
-let saturation = color.saturationComponent // 0-1
-let lightness = color.lightnessComponent // 0-1
-
-// Alpha component
-let alpha = color.alphaComponent // 1.0 (fully opaque)
+// Safe CMYK component extraction
+if let cmyk = color.cmykComponents() {
+    // Use the components
+    let adjustedColor = Color(
+        cyan: cmyk.cyan,
+        magenta: cmyk.magenta,
+        yellow: cmyk.yellow,
+        key: max(0, min(1, cmyk.key - 0.1)) // Reduce black by 10%
+    )
+}
 ```
 
 ## Converting for Specific Use Cases

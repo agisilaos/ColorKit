@@ -6,19 +6,14 @@ Learn how to create colors using ColorKit in various color spaces.
 
 ColorKit allows you to create colors using different color spaces to suit your specific needs:
 
-### RGB Colors
+### Hex Colors
 
-RGB (Red, Green, Blue) is the most common color space for digital displays:
+The most common way to specify colors in web and app design:
 
 ```swift
-// Create a color using RGB values (0-1 range)
-let skyBlue = Color.rgb(red: 0.4, green: 0.7, blue: 0.9)
-
-// Create a color using RGB values (0-255 range)
-let coral = Color.rgb255(red: 255, green: 127, blue: 80)
-
 // Create a color from a hex string
-let brandColor = Color(hex: "#3A7BF7")
+let brandColor = Color(hex: "#3A7BF7") // RGB format
+let transparentBlue = Color(hex: "#3A7BF7CC") // RGBA format with alpha
 ```
 
 ### HSL Colors
@@ -27,18 +22,19 @@ HSL (Hue, Saturation, Lightness) provides an intuitive way to describe colors:
 
 ```swift
 // Create a color using HSL values
-// Hue: 0-360, Saturation: 0-1, Lightness: 0-1
-let purple = Color.hsl(hue: 270, saturation: 0.7, lightness: 0.5)
-```
+// All values are in 0-1 range
+let purple = Color(
+    hue: 0.75,        // 270° mapped to 0-1 range
+    saturation: 0.7,  // 70% saturation
+    lightness: 0.5    // 50% lightness
+)
 
-### HSB Colors
-
-HSB (Hue, Saturation, Brightness) is similar to HSL with a different approach to lightness:
-
-```swift
-// Create a color using HSB values
-// Hue: 0-360, Saturation: 0-1, Brightness: 0-1
-let orange = Color.hsb(hue: 30, saturation: 0.8, brightness: 0.9)
+// Extract HSL components
+if let hsl = purple.hslComponents() {
+    let hue = hsl.hue         // 0-1 range
+    let saturation = hsl.saturation // 0-1 range
+    let lightness = hsl.lightness   // 0-1 range
+}
 ```
 
 ### CMYK Colors
@@ -47,18 +43,44 @@ CMYK (Cyan, Magenta, Yellow, Key/Black) is primarily used in print design:
 
 ```swift
 // Create a color using CMYK values (0-1 range)
-let printBlue = Color.cmyk(cyan: 0.8, magenta: 0.2, yellow: 0, black: 0.1)
+let printBlue = Color(
+    cyan: 0.8,    // 80% cyan
+    magenta: 0.2, // 20% magenta
+    yellow: 0.0,  // 0% yellow
+    key: 0.1      // 10% black
+)
+
+// Extract CMYK components
+if let cmyk = printBlue.cmykComponents() {
+    let cyan = cmyk.cyan       // 0-1 range
+    let magenta = cmyk.magenta // 0-1 range
+    let yellow = cmyk.yellow   // 0-1 range
+    let black = cmyk.key       // 0-1 range
+}
 ```
 
-### LAB Colors
+### Converting Between Formats
 
-LAB is a perceptually uniform color space:
+You can convert colors between different formats using ColorKit's component extraction methods:
 
 ```swift
-// Create a color using LAB values
-// L: 0-100, a: -128 to 127, b: -128 to 127
-let labColor = Color.lab(l: 65, a: -20, b: 40)
+let color = Color(hex: "#3A7BF7")
+
+// Get hex string representation
+let hexString = color.hexString() // Returns "#3A7BF7FF"
+
+// Get CMYK components
+if let cmyk = color.cmykComponents() {
+    // Use CMYK values
+}
+
+// Get HSL components
+if let hsl = color.hslComponents() {
+    // Use HSL values
+}
 ```
+
+Note: All component values in ColorKit are normalized to the 0-1 range. For HSL, this means hue is also in 0-1 range (multiply by 360 to get degrees).
 
 ## Creating Colors from System Colors
 
