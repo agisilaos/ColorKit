@@ -101,13 +101,13 @@ struct ContentView: View {
                 }
                 
                 // Display Generated Theme
-                if let theme = generatedTheme {
+                if generatedTheme != nil {
                     VStack(alignment: .leading, spacing: 15) {
                         Text("Generated Theme")
                             .font(.headline)
                         
                         // Theme Preview
-                        ThemePreview(theme: theme)
+                        ThemePreview()
                     }
                     .padding()
                     .background(Color.gray.opacity(0.1))
@@ -183,12 +183,11 @@ struct ColorSwatch: View {
                         .stroke(Color.gray, lineWidth: 0.5)
                 )
             
-            if let hex = color.hexString {
-                Text(hex)
-                    .font(.caption)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-            }
+            // Using string directly instead of hexString property
+            Text(color.description)
+                .font(.caption)
+                .lineLimit(1)
+                .truncationMode(.middle)
         }
     }
 }
