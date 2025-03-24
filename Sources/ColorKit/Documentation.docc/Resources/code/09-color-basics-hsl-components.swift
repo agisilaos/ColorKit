@@ -16,19 +16,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var hue: Double = 210
+    @State private var hue: Double = 0.583 // 210/360
     @State private var saturation: Double = 0.8
     @State private var lightness: Double = 0.5
     @State private var alpha: Double = 1.0
     
     // Derived color from HSL components
     private var currentColor: Color {
-        Color.hsl(
-            hue: hue,
-            saturation: saturation,
-            lightness: lightness,
-            alpha: alpha
-        )
+        Color(hue: CGFloat(hue), saturation: CGFloat(saturation), lightness: CGFloat(lightness))
     }
     
     var body: some View {
@@ -44,7 +39,7 @@ struct ContentView: View {
                         .font(.headline)
                     
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(currentColor)
+                        .fill(currentColor.opacity(alpha))
                         .frame(height: 120)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
@@ -53,7 +48,7 @@ struct ContentView: View {
                     
                     // HSL Values
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("HSL(\(Int(hue)), \(Int(saturation * 100))%, \(Int(lightness * 100))%)")
+                        Text("HSL(\(Int(hue * 360)), \(Int(saturation * 100))%, \(Int(lightness * 100))%)")
                             .font(.system(.body, design: .monospaced))
                         
                         if alpha < 1.0 {
@@ -76,7 +71,7 @@ struct ContentView: View {
                     
                     // Hue Control
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Hue: \(Int(hue))°")
+                        Text("Hue: \(Int(hue * 360))°")
                             .font(.subheadline)
                         
                         // Hue slider with color gradient background
@@ -113,7 +108,7 @@ struct ContentView: View {
                             .font(.subheadline)
                         
                         // Alpha slider with checkerboard background
-                        AlphaSlider(color: currentColor.withAlpha(1.0), alpha: $alpha)
+                        AlphaSlider(color: currentColor, alpha: $alpha)
                             .frame(height: 30)
                             .cornerRadius(5)
                     }
@@ -134,9 +129,9 @@ struct ContentView: View {
                         
                         HStack(spacing: 0) {
                             ForEach(0..<6) { i in
-                                let variantHue = (hue + Double(i) * 60).truncatingRemainder(dividingBy: 360)
+                                let variantHue = (hue + Double(i) * (1.0/6.0)).truncatingRemainder(dividingBy: 1.0)
                                 Rectangle()
-                                    .fill(Color.hsl(hue: variantHue, saturation: saturation, lightness: lightness))
+                                    .fill(Color(hue: CGFloat(variantHue), saturation: CGFloat(saturation), lightness: CGFloat(lightness)))
                                     .frame(maxWidth: .infinity, maxHeight: 40)
                             }
                         }
@@ -152,7 +147,7 @@ struct ContentView: View {
                             ForEach(0..<5) { i in
                                 let variantSaturation = Double(i) * 0.25
                                 Rectangle()
-                                    .fill(Color.hsl(hue: hue, saturation: variantSaturation, lightness: lightness))
+                                    .fill(Color(hue: CGFloat(hue), saturation: CGFloat(variantSaturation), lightness: CGFloat(lightness)))
                                     .frame(maxWidth: .infinity, maxHeight: 40)
                             }
                         }
@@ -168,7 +163,7 @@ struct ContentView: View {
                             ForEach(0..<5) { i in
                                 let variantLightness = Double(i) * 0.25
                                 Rectangle()
-                                    .fill(Color.hsl(hue: hue, saturation: saturation, lightness: variantLightness))
+                                    .fill(Color(hue: CGFloat(hue), saturation: CGFloat(saturation), lightness: CGFloat(variantLightness)))
                                     .frame(maxWidth: .infinity, maxHeight: 40)
                             }
                         }
@@ -186,18 +181,18 @@ struct ContentView: View {
                     
                     Text("""
                     // Create a color using HSL values
-                    let color = Color.hsl(
-                        hue: \(Int(hue)),             // 0-360 degrees
-                        saturation: \(String(format: "%.2f", saturation)),    // 0-1
-                        lightness: \(String(format: "%.2f", lightness)),     // 0-1
-                        alpha: \(String(format: "%.2f", alpha))         // 0-1
+                    let color = Color(
+                        hue: \(String(format: "%.2f", hue)),       // 0-1 (normalized)
+                        saturation: \(String(format: "%.2f", saturation)),  // 0-1
+                        lightness: \(String(format: "%.2f", lightness))    // 0-1
                     )
                     
                     // Extract HSL components from a color
-                    let hslComponents = myColor.hslComponents
-                    let hue = hslComponents.hue
-                    let saturation = hslComponents.saturation
-                    let lightness = hslComponents.lightness
+                    if let hslComponents = myColor.hslComponents() {
+                        let hue = hslComponents.hue        // 0-1
+                        let saturation = hslComponents.saturation  // 0-1
+                        let lightness = hslComponents.lightness    // 0-1
+                    }
                     """)
                     .font(.system(.body, design: .monospaced))
                     .padding(10)
@@ -221,20 +216,20 @@ struct HueSlider: View {
             // Hue gradient background
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color.hsl(hue: 0, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 60, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 120, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 180, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 240, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 300, saturation: 1, lightness: 0.5),
-                    Color.hsl(hue: 360, saturation: 1, lightness: 0.5)
+                    Color(hue: 0, saturation: 1, lightness: 0.5),
+                    Color(hue: 1.0/6.0, saturation: 1, lightness: 0.5),
+                    Color(hue: 2.0/6.0, saturation: 1, lightness: 0.5),
+                    Color(hue: 3.0/6.0, saturation: 1, lightness: 0.5),
+                    Color(hue: 4.0/6.0, saturation: 1, lightness: 0.5),
+                    Color(hue: 5.0/6.0, saturation: 1, lightness: 0.5),
+                    Color(hue: 1, saturation: 1, lightness: 0.5)
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
             )
             
             // Slider
-            Slider(value: $hue, in: 0...360, step: 1)
+            Slider(value: $hue, in: 0...1, step: 0.001)
                 .padding(.horizontal, 2)
         }
     }
@@ -250,15 +245,15 @@ struct SaturationSlider: View {
             // Saturation gradient background
             LinearGradient(
                 gradient: Gradient(colors: [
-                    Color.hsl(hue: hue, saturation: 0, lightness: lightness),
-                    Color.hsl(hue: hue, saturation: 1, lightness: lightness)
+                    Color(hue: CGFloat(hue), saturation: 0, lightness: CGFloat(lightness)),
+                    Color(hue: CGFloat(hue), saturation: 1, lightness: CGFloat(lightness))
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
             )
             
             // Slider
-            Slider(value: $saturation, in: 0...1, step: 0.01)
+            Slider(value: $saturation, in: 0...1, step: 0.001)
                 .padding(.horizontal, 2)
         }
     }
@@ -275,7 +270,7 @@ struct LightnessSlider: View {
             LinearGradient(
                 gradient: Gradient(colors: [
                     Color.black,
-                    Color.hsl(hue: hue, saturation: saturation, lightness: 0.5),
+                    Color(hue: CGFloat(hue), saturation: CGFloat(saturation), lightness: 0.5),
                     Color.white
                 ]),
                 startPoint: .leading,
@@ -283,7 +278,7 @@ struct LightnessSlider: View {
             )
             
             // Slider
-            Slider(value: $lightness, in: 0...1, step: 0.01)
+            Slider(value: $lightness, in: 0...1, step: 0.001)
                 .padding(.horizontal, 2)
         }
     }
@@ -301,15 +296,15 @@ struct AlphaSlider: View {
             // Alpha gradient overlay
             LinearGradient(
                 gradient: Gradient(colors: [
-                    color.withAlpha(0),
-                    color.withAlpha(1)
+                    color.opacity(0),
+                    color.opacity(1)
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
             )
             
             // Slider
-            Slider(value: $alpha, in: 0...1, step: 0.01)
+            Slider(value: $alpha, in: 0...1, step: 0.001)
                 .padding(.horizontal, 2)
         }
     }
@@ -344,8 +339,6 @@ struct CheckerboardBackground: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-} 
+#Preview {
+    ContentView()
+}

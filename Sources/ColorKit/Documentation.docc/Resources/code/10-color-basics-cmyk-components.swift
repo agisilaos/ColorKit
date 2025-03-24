@@ -23,7 +23,7 @@ struct ContentView: View {
     
     // Derived color from CMYK components
     private var currentColor: Color {
-        Color.cmyk(
+        Color.cmykComponents(
             cyan: cyan,
             magenta: magenta,
             yellow: yellow,

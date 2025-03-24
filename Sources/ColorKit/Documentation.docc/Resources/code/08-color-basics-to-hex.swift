@@ -26,13 +26,7 @@ struct ContentView: View {
     }
     
     private var hexFromColor: String {
-        if includeAlpha {
-            // Format: #RRGGBBAA
-            return selectedColor.withAlpha(selectedAlpha).hexStringWithAlpha ?? "#FFFFFFFF"
-        } else {
-            // Format: #RRGGBB
-            return selectedColor.withAlpha(selectedAlpha).hexString ?? "#FFFFFF"
-        }
+        selectedColor.opacity(selectedAlpha).hexString() ?? "#FFFFFF"
     }
     
     var body: some View {
@@ -50,7 +44,6 @@ struct ContentView: View {
                     HStack {
                         TextField("Enter hex value (e.g., #FF5500)", text: $inputHexValue)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
                             .disableAutocorrection(true)
                         
                         Button(action: {
@@ -78,13 +71,14 @@ struct ContentView: View {
                                     .font(.subheadline)
                                     .fontWeight(.medium)
                                 
-                                let components = color.rgbComponents
-                                Text("R: \(Int(components.red * 255))")
-                                Text("G: \(Int(components.green * 255))")
-                                Text("B: \(Int(components.blue * 255))")
-                                
-                                if components.alpha < 1.0 {
-                                    Text("Alpha: \(String(format: "%.2f", components.alpha))")
+                                if let components = color.cgColor?.components, components.count >= 3 {
+                                    Text("R: \(Int(components[0] * 255))")
+                                    Text("G: \(Int(components[1] * 255))")
+                                    Text("B: \(Int(components[2] * 255))")
+                                    
+                                    if components.count >= 4 && components[3] < 1.0 {
+                                        Text("Alpha: \(String(format: "%.2f", components[3]))")
+                                    }
                                 }
                             }
                         }
@@ -116,7 +110,7 @@ struct ContentView: View {
                     
                     HStack(spacing: 15) {
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(selectedColor.withAlpha(selectedAlpha))
+                            .fill(selectedColor.opacity(selectedAlpha))
                             .frame(width: 80, height: 80)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
@@ -193,13 +187,10 @@ struct ContentView: View {
                     
                     Text("""
                     // Get hex string with # prefix
-                    let hexString = myColor.hexString // "#3A7BF7"
+                    let hexString = myColor.hexString() // "#3A7BF7"
                     
-                    // Get hex string without # prefix
-                    let rawHex = myColor.hexStringWithoutHash // "3A7BF7"
-                    
-                    // Get hex string with alpha
-                    let hexWithAlpha = myColor.hexStringWithAlpha // "#3A7BF7FF"
+                    // Get hex string (alternative method)
+                    let hexValue = myColor.hexValue() // "#3A7BF7FF"
                     """)
                     .font(.system(.body, design: .monospaced))
                     .padding(10)
@@ -220,7 +211,7 @@ struct ColorHexExample: View {
     let name: String
     
     private var hexValue: String {
-        color.hexString ?? "#FFFFFF"
+        color.hexString() ?? "#FFFFFF"
     }
     
     var body: some View {
@@ -245,8 +236,6 @@ struct ColorHexExample: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-} 
+#Preview {
+    ContentView()
+}   

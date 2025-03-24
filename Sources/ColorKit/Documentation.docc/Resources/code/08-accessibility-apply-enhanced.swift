@@ -53,24 +53,18 @@ struct ContentView: View {
                     
                     // Compare original vs. enhanced colors
                     ColorComparisonView(
-                        originalColor: originalPrimaryColor,
-                        enhancedColor: enhancedPrimaryColor,
-                        backgroundcolor: originalBackgroundColor,
-                        name: "Primary"
+                        color1: originalPrimaryColor,
+                        color2: enhancedPrimaryColor
                     )
                     
                     ColorComparisonView(
-                        originalColor: originalSecondaryColor,
-                        enhancedColor: enhancedSecondaryColor,
-                        backgroundcolor: originalBackgroundColor,
-                        name: "Secondary"
+                        color1: originalSecondaryColor,
+                        color2: enhancedSecondaryColor
                     )
                     
                     ColorComparisonView(
-                        originalColor: originalAccentColor,
-                        enhancedColor: enhancedAccentColor,
-                        backgroundcolor: originalBackgroundColor,
-                        name: "Accent"
+                        color1: originalAccentColor,
+                        color2: enhancedAccentColor
                     )
                 }
                 .padding()

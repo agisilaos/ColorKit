@@ -13,7 +13,11 @@
 //
 
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 struct ContentView: View {
     // Original brand colors
@@ -69,8 +73,10 @@ struct ContentView: View {
                         .toggleStyle(SwitchToggleStyle(tint: accentColor))
                         .onChange(of: useEnhancedColors) { _ in
                             // Haptic feedback when toggling
+                            #if os(iOS)
                             let generator = UIImpactFeedbackGenerator(style: .medium)
                             generator.impactOccurred()
+                            #endif
                         }
                     
                     Spacer()
