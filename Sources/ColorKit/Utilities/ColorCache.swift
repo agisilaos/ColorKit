@@ -220,7 +220,7 @@ public final class ColorCache: @unchecked Sendable {
     /// - Returns: The cached blended color if available, nil otherwise
     public func getCachedBlendedColor(color1: Color, with color2: Color, blendMode: String) -> Color? {
         let key = blendCacheKey(for: color1, with: color2, blendMode: blendMode)
-        
+
         #if canImport(AppKit)
         return blendedColorCache.object(forKey: key).map { Color($0) }
         #elseif canImport(UIKit)
@@ -240,10 +240,10 @@ public final class ColorCache: @unchecked Sendable {
         let key = blendCacheKey(for: color1, with: color2, blendMode: blendMode)
         cacheColor(result, forKey: key)
     }
-    
+
     private func cacheColor(_ color: Color, forKey key: NSString) {
         guard let cgColor = color.cgColor else { return }
-        
+
         #if canImport(AppKit)
         if let nsColor = NSColor(cgColor: cgColor) {
             blendedColorCache.setObject(nsColor, forKey: key)
@@ -269,7 +269,7 @@ public final class ColorCache: @unchecked Sendable {
     /// - Returns: The cached interpolated color if available, nil otherwise
     public func getCachedInterpolatedColor(color1: Color, with color2: Color, amount: CGFloat, colorSpace: String) -> Color? {
         let key = interpolationCacheKey(for: color1, with: color2, amount: amount, colorSpace: colorSpace)
-        
+
         #if canImport(AppKit)
         return interpolatedColorCache.object(forKey: key).map { Color($0) }
         #elseif canImport(UIKit)
@@ -289,7 +289,7 @@ public final class ColorCache: @unchecked Sendable {
     public func cacheInterpolatedColor(color1: Color, with color2: Color, amount: CGFloat, colorSpace: String, result: Color) {
         let key = interpolationCacheKey(for: color1, with: color2, amount: amount, colorSpace: colorSpace)
         guard let cgColor = result.cgColor else { return }
-        
+
         #if canImport(AppKit)
         if let nsColor = NSColor(cgColor: cgColor) {
             interpolatedColorCache.setObject(nsColor, forKey: key)
