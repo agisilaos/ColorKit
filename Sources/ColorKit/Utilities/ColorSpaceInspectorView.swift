@@ -138,7 +138,6 @@ public struct ColorSpaceInspectorView: View {
         return Color.white
         #endif
     }
-}
 
 private struct ColorSpaceSection: View {
     let title: String
