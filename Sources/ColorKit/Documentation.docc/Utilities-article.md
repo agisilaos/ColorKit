@@ -111,7 +111,6 @@ let overlay = color1.blended(with: color2, mode: .overlay)
 - ``PaletteExporter/export(palette:to:paletteName:)``
 
 ### Gradients
-- ``GradientGenerator``
 - ``Color/linearGradient(to:in:steps:)``
 - ``Color/monochromaticGradient(steps:)``
 

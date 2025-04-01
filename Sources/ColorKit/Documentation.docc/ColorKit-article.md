@@ -14,11 +14,12 @@ ColorKit provides a comprehensive set of tools for working with colors in your S
 - ``ThemeManager``
 
 ### Color Spaces
-- <doc:Color-Spaces-article>
+- <doc:Color-Spaces>
 - ``ColorSpaceConverter``
-- ``LABColor``
-- ``CMYKColor``
-- ``HSLColor``
+- ``Color/init(L: CGFloat, a: CGFloat, b: CGFloat)``
+- ``Color/init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat)``
+- ``Color/init?(hex: String)``
+- ``Color/init(cyan: CGFloat, magenta: CGFloat, yellow: CGFloat, key: CGFloat)``
 
 ### Accessibility
 - <doc:Accessibility-article>
@@ -34,7 +35,6 @@ ColorKit provides a comprehensive set of tools for working with colors in your S
 - <doc:Utilities-article>
 - ``ColorCache``
 - ``PaletteExporter``
-- ``GradientGenerator``
 
 ### Preview Catalog
 - ``MainCatalogView``

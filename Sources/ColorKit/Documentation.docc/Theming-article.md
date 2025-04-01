@@ -113,6 +113,6 @@ let adaptiveTheme = ColorTheme(
 - ``ThemedBackgroundModifier``
 
 ### Theme Customization
-- ``ColorTheme/init(name:primary:secondary:accent:background:text:)``
+- ``ColorTheme/init(name:primary:secondary:accent:background:text:status:)``
 - ``ThemeManager/register(theme:)``
 - ``ThemeManager/currentTheme``
