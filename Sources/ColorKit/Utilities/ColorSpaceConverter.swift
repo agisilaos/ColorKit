@@ -20,18 +20,54 @@ import UIKit
 import AppKit
 #endif
 
-/// A utility for converting colors between different color spaces
+/// A utility for converting colors between different color spaces.
+///
+/// `ColorSpaceConverter` provides methods to convert colors between various color spaces including:
+/// - RGB (Red, Green, Blue)
+/// - HSL (Hue, Saturation, Lightness)
+/// - HSB (Hue, Saturation, Brightness)
+/// - CMYK (Cyan, Magenta, Yellow, Key)
+/// - LAB (Lightness, a*, b*)
+/// - XYZ (CIE XYZ)
+///
+/// Example usage:
+/// ```swift
+/// let color = Color.red
+/// let converter = ColorSpaceConverter(color: color)
+/// let components = converter.getAllColorComponents()
+///
+/// // Access different color space representations
+/// let lab = components.lab
+/// print("L: \(lab.l), a: \(lab.a), b: \(lab.b)")
+/// ```
 public struct ColorSpaceConverter {
     private let color: Color
 
-    /// Creates a new color space converter for a specific color
-    /// - Parameter color: The color to convert
+    /// Creates a new color space converter for a specific color.
+    /// - Parameter color: The color to convert between different color spaces.
     public init(color: Color) {
         self.color = color
     }
 
-    /// Get all color components in various color spaces
-    /// - Returns: A ColorComponents structure with all color space representations
+    /// Get all color components in various color spaces.
+    ///
+    /// This method converts the color to all supported color spaces and returns their components
+    /// in a single structure. This is useful when you need to analyze or compare a color across
+    /// different color spaces.
+    ///
+    /// Example:
+    /// ```swift
+    /// let converter = ColorSpaceConverter(color: .blue)
+    /// let components = converter.getAllColorComponents()
+    ///
+    /// // Access RGB components
+    /// print("R: \(components.rgb.red), G: \(components.rgb.green), B: \(components.rgb.blue)")
+    ///
+    /// // Access LAB components
+    /// print("L: \(components.lab.l), a: \(components.lab.a), b: \(components.lab.b)")
+    /// ```
+    ///
+    /// - Returns: A ``ColorComponents`` structure containing all color space representations
     public func getAllColorComponents() -> ColorComponents {
         let rgb = color.rgbaComponents()
 
@@ -81,7 +117,15 @@ public struct ColorSpaceConverter {
         )
     }
 
-    /// Calculate LAB color components from RGB
+    /// Calculate LAB color components from RGB values.
+    ///
+    /// This method implements the conversion from RGB to LAB color space using the D65 white point.
+    /// The conversion happens in two steps:
+    /// 1. RGB to XYZ
+    /// 2. XYZ to LAB
+    ///
+    /// - Parameter rgb: A tuple containing the red, green, blue, and alpha components
+    /// - Returns: A tuple containing the LAB components (L, a, b)
     private func calculateLAB(from rgb: (red: Double, green: Double, blue: Double, alpha: Double)) -> (l: Double, a: Double, b: Double) {
         // First convert RGB to XYZ
         let xyz = calculateXYZ(from: rgb)
@@ -107,7 +151,14 @@ public struct ColorSpaceConverter {
         return (l, a, b)
     }
 
-    /// Calculate XYZ color components from RGB
+    /// Calculate XYZ color components from RGB values.
+    ///
+    /// This method converts RGB values to CIE XYZ color space. The conversion process:
+    /// 1. Converts RGB to linear RGB
+    /// 2. Applies the RGB to XYZ transformation matrix
+    ///
+    /// - Parameter rgb: A tuple containing the red, green, blue, and alpha components
+    /// - Returns: A tuple containing the XYZ components (x, y, z)
     private func calculateXYZ(from rgb: (red: Double, green: Double, blue: Double, alpha: Double)) -> (x: Double, y: Double, z: Double) {
         // Convert RGB to linear RGB
         let r = rgb.red <= 0.04045 ? rgb.red / 12.92 : pow((rgb.red + 0.055) / 1.055, 2.4)

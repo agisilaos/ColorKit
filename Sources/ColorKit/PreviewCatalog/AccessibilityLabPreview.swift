@@ -2,7 +2,7 @@
 //  AccessibilityLabPreview.swift
 //  ColorKit
 //
-//  Created by Agisilaos Tsaraboulidis on 20.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 20.03.2025.
 //
 //  Description:
 //  A preview component for testing and simulating color accessibility features.

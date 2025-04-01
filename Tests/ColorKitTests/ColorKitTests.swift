@@ -2,7 +2,7 @@
 //  ColorKitTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 10.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 10.03.2025.
 //
 
 import SwiftUI

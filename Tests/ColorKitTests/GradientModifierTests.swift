@@ -2,7 +2,7 @@
 //  GradientModifierTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 11.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 11.03.2025.
 //
 //  Description:
 //  Tests for SwiftUI view modifiers that apply gradient effects.

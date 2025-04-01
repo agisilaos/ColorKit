@@ -19,23 +19,58 @@
 
 import SwiftUI
 
-/// Defines the strategy for adjusting colors to meet accessibility requirements
+/// Defines strategies for adjusting colors to meet accessibility requirements.
+///
+/// Each strategy represents a different approach to modifying colors while maintaining
+/// certain characteristics of the original color:
+///
+/// - ``preserveHue``: Keeps the color's basic identity
+/// - ``preserveSaturation``: Maintains the color's intensity
+/// - ``preserveLightness``: Keeps the perceived brightness
+/// - ``minimumChange``: Makes the smallest possible adjustment
+///
+/// Example:
+/// ```swift
+/// let strategy = AdjustmentStrategy.preserveHue
+/// print(strategy.description) // "Maintains the color's hue..."
+/// ```
 public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
-    /// Preserves the hue while adjusting saturation and lightness
+    /// Preserves the hue while adjusting saturation and lightness.
+    ///
+    /// This strategy is best when maintaining brand colors is important.
+    /// It adjusts the color's intensity and brightness while keeping its
+    /// basic identity (e.g., "blue" stays "blue").
     case preserveHue
 
-    /// Preserves the saturation while adjusting hue and lightness
+    /// Preserves the saturation while adjusting hue and lightness.
+    ///
+    /// This strategy maintains the color's intensity while allowing its
+    /// hue to shift. Useful when the vibrancy of the color is more
+    /// important than its specific hue.
     case preserveSaturation
 
-    /// Preserves the lightness while adjusting hue and saturation
+    /// Preserves the lightness while adjusting hue and saturation.
+    ///
+    /// This strategy maintains the perceived brightness of the color
+    /// while allowing other properties to change. Useful for maintaining
+    /// the visual hierarchy of interface elements.
     case preserveLightness
 
-    /// Adjusts all components to find the closest accessible color
+    /// Adjusts all components to find the closest accessible color.
+    ///
+    /// This strategy makes the smallest possible change to achieve
+    /// accessibility requirements. It considers all color properties
+    /// and chooses the adjustment that results in the least
+    /// perceptual difference.
     case minimumChange
 
+    /// Unique identifier for the strategy.
     public var id: String { rawValue }
 
-    /// Description of the adjustment strategy
+    /// A human-readable description of the adjustment strategy.
+    ///
+    /// This property provides a clear explanation of how the strategy
+    /// modifies colors to achieve accessibility requirements.
     public var description: String {
         switch self {
         case .preserveHue:
@@ -50,23 +85,70 @@ public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
     }
 }
 
-/// Provides intelligent color adjustments for accessibility while preserving brand identity
+/// A utility for enhancing colors to meet accessibility requirements while preserving visual identity.
+///
+/// `AccessibilityEnhancer` provides intelligent color adjustments that balance accessibility
+/// needs with brand identity and aesthetic considerations. It offers multiple strategies
+/// for color adjustment and can suggest alternative colors that maintain harmony with
+/// the original design.
+///
+/// Example usage:
+/// ```swift
+/// // Create an enhancer targeting WCAG AA compliance
+/// let config = AccessibilityEnhancer.Configuration(
+///     targetLevel: .AA,
+///     strategy: .preserveHue
+/// )
+/// let enhancer = AccessibilityEnhancer(configuration: config)
+///
+/// // Enhance a color against a background
+/// let enhancedColor = enhancer.enhanceColor(
+///     .blue,
+///     against: .white
+/// )
+///
+/// // Get multiple accessible variants
+/// let variants = enhancer.suggestAccessibleVariants(
+///     for: .blue,
+///     against: .white,
+///     count: 3
+/// )
+/// ```
 public class AccessibilityEnhancer {
-    /// Configuration for the accessibility enhancer
+    /// Configuration options for the accessibility enhancement process.
+    ///
+    /// This structure defines how the enhancer should approach color adjustments,
+    /// including the target accessibility level and preferred adjustment strategies.
+    ///
+    /// Example:
+    /// ```swift
+    /// let config = AccessibilityEnhancer.Configuration(
+    ///     targetLevel: .AA,
+    ///     strategy: .preserveHue,
+    ///     maxPerceptualDistance: 25,
+    ///     preferDarker: true
+    /// )
+    /// ```
     public struct Configuration {
-        /// The WCAG level to target
+        /// The WCAG contrast level to achieve.
         public let targetLevel: WCAGContrastLevel
 
-        /// The adjustment strategy to use
+        /// The strategy to use when adjusting colors.
         public let strategy: AdjustmentStrategy
 
-        /// The maximum perceptual distance allowed for adjustments (0-100)
+        /// The maximum allowed perceptual difference from the original color.
+        ///
+        /// Values range from 0 to 100, where:
+        /// - 0-20: Subtle changes
+        /// - 20-40: Moderate changes
+        /// - 40+: Significant changes
         public let maxPerceptualDistance: Double
 
-        /// Whether to prioritize darker or lighter adjustments
+        /// Whether to prefer darker adjustments when possible.
         public let preferDarker: Bool
 
-        /// Creates a new configuration
+        /// Creates a new configuration for the accessibility enhancer.
+        ///
         /// - Parameters:
         ///   - targetLevel: The WCAG level to target (default: .AA)
         ///   - strategy: The adjustment strategy to use (default: .preserveHue)
@@ -85,16 +167,36 @@ public class AccessibilityEnhancer {
         }
     }
 
-    /// The configuration for this enhancer
+    /// The configuration controlling the enhancement behavior.
     public let configuration: Configuration
 
-    /// Creates a new accessibility enhancer
-    /// - Parameter configuration: The configuration to use
+    /// Creates a new accessibility enhancer with the specified configuration.
+    ///
+    /// - Parameter configuration: The configuration to use for color enhancements.
     public init(configuration: Configuration = Configuration()) {
         self.configuration = configuration
     }
 
-    /// Enhances a color to meet accessibility requirements against a background color
+    /// Enhances a color to meet accessibility requirements against a background color.
+    ///
+    /// This method adjusts the input color to ensure it meets the configured WCAG
+    /// contrast requirements when used with the specified background color. The
+    /// adjustment preserves as much of the original color's character as possible
+    /// while achieving the required contrast ratio.
+    ///
+    /// Example:
+    /// ```swift
+    /// let enhancer = AccessibilityEnhancer()
+    /// let textColor = Color.blue
+    /// let backgroundColor = Color.white
+    ///
+    /// // Get an accessible version of the text color
+    /// let accessibleColor = enhancer.enhanceColor(
+    ///     textColor,
+    ///     against: backgroundColor
+    /// )
+    /// ```
+    ///
     /// - Parameters:
     ///   - color: The color to enhance
     ///   - backgroundColor: The background color to check against
@@ -119,11 +221,36 @@ public class AccessibilityEnhancer {
         }
     }
 
-    /// Suggests a set of accessible color variants that maintain harmony with the original
+    /// Suggests multiple accessible color variants that maintain harmony with the original.
+    ///
+    /// This method generates a set of alternative colors that all meet accessibility
+    /// requirements while maintaining different aspects of the original color's character.
+    /// It's useful when you want to provide multiple options to choose from.
+    ///
+    /// Example:
+    /// ```swift
+    /// let enhancer = AccessibilityEnhancer()
+    /// let brandColor = Color.blue
+    /// let backgroundColor = Color.white
+    ///
+    /// // Get three accessible variants
+    /// let variants = enhancer.suggestAccessibleVariants(
+    ///     for: brandColor,
+    ///     against: backgroundColor,
+    ///     count: 3
+    /// )
+    ///
+    /// // Use variants in UI
+    /// ForEach(variants, id: \.self) { variant in
+    ///     Text("Sample Text")
+    ///         .foregroundColor(variant)
+    /// }
+    /// ```
+    ///
     /// - Parameters:
-    ///   - color: The original color
+    ///   - color: The original color to base variants on
     ///   - backgroundColor: The background color to check against
-    ///   - count: The number of variants to suggest (default: 3)
+    ///   - count: The number of variants to generate (default: 3)
     /// - Returns: An array of accessible color variants
     public func suggestAccessibleVariants(for color: Color, against backgroundColor: Color, count: Int = 3) -> [Color] {
         var variants: [Color] = []
@@ -363,7 +490,7 @@ public class AccessibilityEnhancer {
 public extension Color {
     /// Enhances this color to meet accessibility requirements against a background color
     /// - Parameters:
-    ///   - with: The background color to check against
+    ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
     /// - Returns: An enhanced color that meets accessibility requirements
@@ -381,7 +508,7 @@ public extension Color {
 
     /// Suggests accessible color variants that maintain harmony with this color
     /// - Parameters:
-    ///   - with: The background color to check against
+    ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - count: The number of variants to suggest (default: 3)
     /// - Returns: An array of accessible color variants

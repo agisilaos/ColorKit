@@ -19,15 +19,61 @@
 
 import SwiftUI
 
-// MARK: - Gradient Generation
+/// Extension providing gradient generation and color interpolation functionality.
+///
+/// This extension adds sophisticated gradient generation capabilities to SwiftUI's Color type,
+/// supporting multiple color spaces and gradient types:
+///
+/// - Linear gradients between any two colors
+/// - Complementary gradients using color wheel theory
+/// - Analogous gradients for harmonious transitions
+/// - Triadic gradients for balanced color schemes
+/// - Monochromatic gradients for subtle variations
+///
+/// Example usage:
+/// ```swift
+/// // Generate a simple linear gradient
+/// let colors = Color.blue.linearGradient(to: .purple, steps: 10)
+///
+/// // Create a complementary gradient
+/// let complementary = Color.blue.complementaryGradient(steps: 10)
+///
+/// // Generate an analogous color scheme
+/// let analogous = Color.blue.analogousGradient(steps: 10, angle: 0.1)
+/// ```
+///
+/// All gradient generation methods support:
+/// - Custom step counts for granular control
+/// - Multiple color spaces (RGB, HSL, LAB)
+/// - Caching for performance optimization
 public extension Color {
     /// Creates a linear gradient between two colors with a specified number of steps.
     ///
+    /// This method generates a smooth transition between two colors by interpolating
+    /// in the specified color space. The resulting array includes both the start
+    /// and end colors.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.linearGradient(
+    ///     to: .purple,
+    ///     steps: 10,
+    ///     in: .hsl
+    /// )
+    ///
+    /// // Use in a SwiftUI view
+    /// LinearGradient(
+    ///     colors: gradient,
+    ///     startPoint: .leading,
+    ///     endPoint: .trailing
+    /// )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - to: The destination color.
-    ///   - steps: The number of color steps to generate (including start and end colors).
-    ///   - colorSpace: The color space in which to perform the interpolation.
-    /// - Returns: An array of colors representing the gradient.
+    ///   - to: The destination color to transition towards.
+    ///   - steps: The number of colors to generate (minimum 2).
+    ///   - colorSpace: The color space for interpolation (default: .rgb).
+    /// - Returns: An array of colors representing the gradient steps.
     func linearGradient(to: Color, steps: Int, in colorSpace: GradientColorSpace = .rgb) -> [Color] {
         guard steps > 1 else { return [self] }
 
@@ -43,10 +89,32 @@ public extension Color {
 
     /// Creates a complementary gradient with a specified number of steps.
     ///
+    /// Generates a gradient that transitions from the base color to its complement
+    /// (opposite on the color wheel). This creates high-contrast, visually striking
+    /// gradients that work well for highlighting important content.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.complementaryGradient(
+    ///     steps: 10,
+    ///     in: .hsl
+    /// )
+    ///
+    /// // Use in a SwiftUI view
+    /// Rectangle()
+    ///     .fill(
+    ///         LinearGradient(
+    ///             colors: gradient,
+    ///             startPoint: .topLeading,
+    ///             endPoint: .bottomTrailing
+    ///         )
+    ///     )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - steps: The number of color steps to generate (including start and complementary colors).
-    ///   - colorSpace: The color space in which to perform the interpolation.
-    /// - Returns: An array of colors representing the gradient from this color to its complement.
+    ///   - steps: The number of colors to generate (minimum 2).
+    ///   - colorSpace: The color space for interpolation (default: .hsl).
+    /// - Returns: An array of colors from this color to its complement.
     func complementaryGradient(steps: Int, in colorSpace: GradientColorSpace = .hsl) -> [Color] {
         guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
 
@@ -59,11 +127,34 @@ public extension Color {
 
     /// Creates an analogous gradient with a specified number of steps.
     ///
+    /// Generates a gradient using colors that are adjacent on the color wheel.
+    /// Analogous color schemes create harmonious, natural-looking transitions
+    /// that are pleasing to the eye.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.analogousGradient(
+    ///     steps: 10,
+    ///     angle: 0.1,  // Wider spread between colors
+    ///     in: .hsl
+    /// )
+    ///
+    /// // Create a background with the gradient
+    /// Color.clear
+    ///     .background(
+    ///         LinearGradient(
+    ///             colors: gradient,
+    ///             startPoint: .leading,
+    ///             endPoint: .trailing
+    ///         )
+    ///     )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - steps: The number of color steps to generate.
-    ///   - angle: The angle on the color wheel to span (default: 30° or 0.0833 in normalized hue).
-    ///   - colorSpace: The color space in which to perform the interpolation.
-    /// - Returns: An array of colors representing the analogous gradient.
+    ///   - steps: The number of colors to generate (minimum 2).
+    ///   - angle: The angle on the color wheel to span (default: 30° or 0.0833).
+    ///   - colorSpace: The color space for interpolation (default: .hsl).
+    /// - Returns: An array of analogous colors forming a gradient.
     func analogousGradient(steps: Int, angle: CGFloat = 0.0833, in colorSpace: GradientColorSpace = .hsl) -> [Color] {
         guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
 
@@ -79,10 +170,31 @@ public extension Color {
 
     /// Creates a triadic gradient with a specified number of steps.
     ///
+    /// Generates a gradient using three colors evenly spaced around the color wheel
+    /// (120° apart). Triadic color schemes are vibrant and balanced, even when using
+    /// muted hues.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.triadicGradient(
+    ///     steps: 7,  // Steps per segment
+    ///     in: .hsl
+    /// )
+    ///
+    /// // Create a circular gradient
+    /// Circle()
+    ///     .fill(
+    ///         AngularGradient(
+    ///             colors: gradient,
+    ///             center: .center
+    ///         )
+    ///     )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - steps: The number of color steps to generate for each segment.
-    ///   - colorSpace: The color space in which to perform the interpolation.
-    /// - Returns: An array of colors representing the triadic gradient.
+    ///   - steps: The number of steps between each triadic color.
+    ///   - colorSpace: The color space for interpolation (default: .hsl).
+    /// - Returns: An array of colors forming a triadic gradient.
     func triadicGradient(steps: Int, in colorSpace: GradientColorSpace = .hsl) -> [Color] {
         guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
 
@@ -108,22 +220,153 @@ public extension Color {
 
     /// Creates a monochromatic gradient by varying the lightness.
     ///
+    /// Generates a gradient by keeping the hue and saturation constant while varying
+    /// the lightness. This creates subtle, professional-looking gradients perfect
+    /// for backgrounds and non-distracting UI elements.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.monochromaticGradient(
+    ///     steps: 8,
+    ///     lightnessRange: 0.3...0.7  // More mid-tones
+    /// )
+    ///
+    /// // Create a subtle background
+    /// Rectangle()
+    ///     .fill(
+    ///         LinearGradient(
+    ///             colors: gradient,
+    ///             startPoint: .top,
+    ///             endPoint: .bottom
+    ///         )
+    ///     )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - steps: The number of color steps to generate.
-    ///   - lightnessRange: The range of lightness values to span (default: 0.1 to 0.9).
-    /// - Returns: An array of colors representing the monochromatic gradient.
+    ///   - steps: The number of colors to generate.
+    ///   - lightnessRange: The range of lightness values (default: 0.1...0.9).
+    /// - Returns: An array of colors forming a monochromatic gradient.
     func monochromaticGradient(steps: Int, lightnessRange: ClosedRange<CGFloat> = 0.1...0.9) -> [Color] {
         guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
 
         var colors: [Color] = []
+        let lightnessStep = (lightnessRange.upperBound - lightnessRange.lowerBound) / CGFloat(steps - 1)
 
         for step in 0..<steps {
-            let amount = CGFloat(step) / CGFloat(steps - 1)
-            let lightness = lightnessRange.lowerBound + amount * (lightnessRange.upperBound - lightnessRange.lowerBound)
+            let lightness = lightnessRange.lowerBound + lightnessStep * CGFloat(step)
             colors.append(Color(hue: hsl.hue, saturation: hsl.saturation, lightness: lightness))
         }
 
         return colors
+    }
+
+    /// Creates a split-complementary gradient.
+    ///
+    /// Generates a gradient using a base color and two colors adjacent to its
+    /// complement. This creates a high-contrast, vibrant scheme that's more
+    /// balanced than a pure complementary gradient.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.splitComplementaryGradient(
+    ///     steps: 8,
+    ///     angle: 0.1  // Adjust split angle
+    /// )
+    ///
+    /// // Create a dynamic background
+    /// Rectangle()
+    ///     .fill(
+    ///         AngularGradient(
+    ///             colors: gradient,
+    ///             center: .center
+    ///         )
+    ///     )
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - steps: The number of steps between each color.
+    ///   - angle: The angle of separation from the complement (default: 0.0833 or 30°).
+    ///   - colorSpace: The color space for interpolation (default: .hsl).
+    /// - Returns: An array of colors forming a split-complementary gradient.
+    func splitComplementaryGradient(steps: Int, angle: CGFloat = 0.0833, in colorSpace: GradientColorSpace = .hsl) -> [Color] {
+        guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
+
+        // Calculate the complement and its adjacent colors
+        let complementHue = fmod(hsl.hue + 0.5, 1.0)
+        let split1Hue = fmod(complementHue - angle + 1.0, 1.0)
+        let split2Hue = fmod(complementHue + angle, 1.0)
+
+        let split1 = Color(hue: split1Hue, saturation: hsl.saturation, lightness: hsl.lightness)
+        let split2 = Color(hue: split2Hue, saturation: hsl.saturation, lightness: hsl.lightness)
+
+        // Generate gradients between colors
+        let gradient1 = self.linearGradient(to: split1, steps: steps, in: colorSpace)
+        let gradient2 = split1.linearGradient(to: split2, steps: steps, in: colorSpace)
+        let gradient3 = split2.linearGradient(to: self, steps: steps, in: colorSpace)
+
+        // Combine gradients
+        var result = gradient1
+        result.append(contentsOf: gradient2.dropFirst())
+        result.append(contentsOf: gradient3.dropFirst())
+
+        return result
+    }
+
+    /// Creates a tetradic (double complementary) gradient.
+    ///
+    /// Generates a gradient using four colors arranged in two complementary
+    /// pairs. This creates a rich, balanced color scheme with maximum contrast
+    /// and variety.
+    ///
+    /// Example:
+    /// ```swift
+    /// let gradient = Color.blue.tetradicGradient(
+    ///     steps: 6,
+    ///     angle: 0.25  // 90° between pairs
+    /// )
+    ///
+    /// // Create a complex gradient background
+    /// Circle()
+    ///     .fill(
+    ///         AngularGradient(
+    ///             colors: gradient,
+    ///             center: .center,
+    ///             startAngle: .degrees(0),
+    ///             endAngle: .degrees(360)
+    ///         )
+    ///     )
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - steps: The number of steps between each color.
+    ///   - angle: The angle between complementary pairs (default: 0.25 or 90°).
+    ///   - colorSpace: The color space for interpolation (default: .hsl).
+    /// - Returns: An array of colors forming a tetradic gradient.
+    func tetradicGradient(steps: Int, angle: CGFloat = 0.25, in colorSpace: GradientColorSpace = .hsl) -> [Color] {
+        guard let hsl = self.hslComponents(), steps > 1 else { return [self] }
+
+        // Calculate the four tetradic colors
+        let hue2 = fmod(hsl.hue + angle, 1.0)
+        let hue3 = fmod(hsl.hue + 0.5, 1.0)
+        let hue4 = fmod(hue2 + 0.5, 1.0)
+
+        let color2 = Color(hue: hue2, saturation: hsl.saturation, lightness: hsl.lightness)
+        let color3 = Color(hue: hue3, saturation: hsl.saturation, lightness: hsl.lightness)
+        let color4 = Color(hue: hue4, saturation: hsl.saturation, lightness: hsl.lightness)
+
+        // Generate gradients between each pair of colors
+        let gradient1 = self.linearGradient(to: color2, steps: steps, in: colorSpace)
+        let gradient2 = color2.linearGradient(to: color3, steps: steps, in: colorSpace)
+        let gradient3 = color3.linearGradient(to: color4, steps: steps, in: colorSpace)
+        let gradient4 = color4.linearGradient(to: self, steps: steps, in: colorSpace)
+
+        // Combine gradients
+        var result = gradient1
+        result.append(contentsOf: gradient2.dropFirst())
+        result.append(contentsOf: gradient3.dropFirst())
+        result.append(contentsOf: gradient4.dropFirst())
+
+        return result
     }
 }
 
@@ -131,10 +374,26 @@ public extension Color {
 public extension Color {
     /// Interpolates between this color and another color.
     ///
+    /// This method performs smooth color interpolation in the specified color space.
+    /// Results are cached for performance when the same interpolation is requested multiple times.
+    ///
+    /// Example:
+    /// ```swift
+    /// let start = Color.blue
+    /// let end = Color.purple
+    ///
+    /// // Get color 30% of the way from blue to purple
+    /// let interpolated = start.interpolated(
+    ///     with: end,
+    ///     amount: 0.3,
+    ///     in: .hsl
+    /// )
+    /// ```
+    ///
     /// - Parameters:
-    ///   - color: The destination color.
-    ///   - amount: The interpolation amount (0.0 = this color, 1.0 = destination color).
-    ///   - colorSpace: The color space in which to perform the interpolation.
+    ///   - color: The destination color to interpolate towards.
+    ///   - amount: The interpolation amount (0.0 = this color, 1.0 = destination).
+    ///   - colorSpace: The color space for interpolation (default: .rgb).
     /// - Returns: The interpolated color.
     func interpolated(with color: Color, amount: CGFloat, in colorSpace: GradientColorSpace = .rgb) -> Color {
         let clampedAmount = max(0, min(1, amount))
@@ -239,14 +498,45 @@ public extension Color {
     }
 }
 
-/// Defines the color space to use for gradient interpolation.
+/// Defines the color spaces available for gradient interpolation.
+///
+/// Different color spaces can produce significantly different results when
+/// creating gradients:
+///
+/// - `rgb`: Linear RGB interpolation. Best for technical accuracy and performance.
+/// - `hsl`: Interpolation in Hue, Saturation, Lightness space. Creates more
+///   natural-looking transitions, especially for hue changes.
+/// - `lab`: Interpolation in CIE L*a*b* space. Produces perceptually uniform
+///   gradients but is more computationally intensive.
+///
+/// Example:
+/// ```swift
+/// // Compare different color spaces
+/// let rgbGradient = color1.linearGradient(
+///     to: color2,
+///     steps: 10,
+///     in: .rgb
+/// )
+///
+/// let hslGradient = color1.linearGradient(
+///     to: color2,
+///     steps: 10,
+///     in: .hsl
+/// )
+///
+/// let labGradient = color1.linearGradient(
+///     to: color2,
+///     steps: 10,
+///     in: .lab
+/// )
+/// ```
 public enum GradientColorSpace {
-    /// Interpolate in RGB color space (linear).
+    /// Linear RGB color space interpolation
     case rgb
 
-    /// Interpolate in HSL color space (better for hue transitions).
+    /// HSL (Hue, Saturation, Lightness) color space interpolation
     case hsl
 
-    /// Interpolate in LAB color space (perceptually uniform).
+    /// CIE L*a*b* color space interpolation
     case lab
 }
