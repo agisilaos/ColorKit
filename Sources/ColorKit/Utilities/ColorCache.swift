@@ -151,7 +151,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached contrast ratio between two colors
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     /// - Returns: The cached contrast ratio if available, nil otherwise
     public func getCachedContrastRatio(for color1: Color, with color2: Color) -> Double? {
         let key = contrastCacheKey(for: color1, with: color2)
@@ -164,7 +164,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache contrast ratio between two colors
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     ///   - ratio: The contrast ratio to cache
     public func cacheContrastRatio(for color1: Color, with color2: Color, ratio: Double) {
         let key = contrastCacheKey(for: color1, with: color2)
@@ -215,7 +215,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached blended color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     ///   - blendMode: The blend mode used
     /// - Returns: The cached blended color if available, nil otherwise
     public func getCachedBlendedColor(color1: Color, with color2: Color, blendMode: String) -> Color? {
@@ -233,7 +233,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache blended color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     ///   - blendMode: The blend mode used
     ///   - result: The resulting blended color
     public func cacheBlendedColor(color1: Color, with color2: Color, blendMode: String, result: Color) {
@@ -263,7 +263,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Get cached interpolated color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     ///   - amount: The interpolation amount
     ///   - colorSpace: The color space used for interpolation
     /// - Returns: The cached interpolated color if available, nil otherwise
@@ -282,7 +282,7 @@ public final class ColorCache: @unchecked Sendable {
     /// Cache interpolated color
     /// - Parameters:
     ///   - color1: The first color
-    ///   - with: The second color
+    ///   - color2: The second color
     ///   - amount: The interpolation amount
     ///   - colorSpace: The color space used for interpolation
     ///   - result: The resulting interpolated color

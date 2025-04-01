@@ -18,23 +18,89 @@
 
 import SwiftUI
 
-/// A generator for creating accessible color palettes that meet WCAG guidelines
+/// A utility for generating accessible color palettes that meet WCAG guidelines.
+///
+/// `AccessiblePaletteGenerator` helps create color palettes and themes that are both
+/// aesthetically pleasing and accessible. It ensures that generated color combinations
+/// meet specified WCAG contrast requirements while maintaining visual harmony.
+///
+/// Key features:
+/// - Generate accessible color palettes from a seed color
+/// - Create complete themes with proper contrast between elements
+/// - Customize palette size and accessibility requirements
+/// - Support for different WCAG compliance levels
+///
+/// Example usage:
+/// ```swift
+/// // Create a generator with custom configuration
+/// let config = AccessiblePaletteGenerator.Configuration(
+///     targetLevel: .AA,
+///     paletteSize: 5,
+///     includeBlackAndWhite: true
+/// )
+/// let generator = AccessiblePaletteGenerator(configuration: config)
+///
+/// // Generate a palette from a seed color
+/// let seedColor = Color.blue
+/// let palette = generator.generatePalette(from: seedColor)
+///
+/// // Create an accessible theme
+/// let theme = generator.generateAccessibleTheme(
+///     from: seedColor,
+///     name: "Ocean Theme"
+/// )
+/// ```
 public struct AccessiblePaletteGenerator {
-    /// Configuration options for palette generation
+    /// Configuration options for palette generation.
+    ///
+    /// This structure defines the parameters that control how color palettes
+    /// are generated, including accessibility requirements and palette characteristics.
+    ///
+    /// Example:
+    /// ```swift
+    /// let config = AccessiblePaletteGenerator.Configuration(
+    ///     targetLevel: .AAA,        // Highest accessibility level
+    ///     paletteSize: 7,           // 7 colors in the palette
+    ///     includeBlackAndWhite: true // Include black and white
+    /// )
+    /// ```
     public struct Configuration {
-        /// The minimum contrast ratio to enforce between foreground and background colors
+        /// The minimum contrast ratio to enforce between foreground and background colors.
+        ///
+        /// This value is derived from the target WCAG level and ensures that all
+        /// color combinations in the palette meet the required contrast ratio.
         public let minimumContrastRatio: Double
 
-        /// The WCAG level to target
+        /// The WCAG level to target for accessibility compliance.
+        ///
+        /// This determines the minimum contrast requirements:
+        /// - AA: 4.5:1 for normal text
+        /// - AAA: 7:1 for normal text
         public let targetLevel: WCAGContrastLevel
 
-        /// The number of colors to generate in the palette
+        /// The number of colors to generate in the palette.
+        ///
+        /// The generator will attempt to create this many distinct colors
+        /// that meet the contrast requirements. Minimum value is 2.
         public let paletteSize: Int
 
-        /// Whether to include black and white in the palette
+        /// Whether to include black and white in the palette.
+        ///
+        /// When true, black and white will be added to the palette automatically,
+        /// ensuring maximum contrast options are available.
         public let includeBlackAndWhite: Bool
 
-        /// Creates a new configuration with the specified parameters
+        /// Creates a new configuration with the specified parameters.
+        ///
+        /// Example:
+        /// ```swift
+        /// let config = Configuration(
+        ///     targetLevel: .AA,
+        ///     paletteSize: 5,
+        ///     includeBlackAndWhite: true
+        /// )
+        /// ```
+        ///
         /// - Parameters:
         ///   - targetLevel: The WCAG level to target (default: .AA)
         ///   - paletteSize: The number of colors to generate (default: 5)
@@ -51,16 +117,58 @@ public struct AccessiblePaletteGenerator {
         }
     }
 
-    /// The configuration for palette generation
+    /// The configuration controlling palette generation behavior.
     private let configuration: Configuration
 
-    /// Creates a new palette generator with the specified configuration
-    /// - Parameter configuration: The configuration to use
+    /// Creates a new palette generator with the specified configuration.
+    ///
+    /// Example:
+    /// ```swift
+    /// // Use default configuration
+    /// let generator = AccessiblePaletteGenerator()
+    ///
+    /// // Or with custom configuration
+    /// let config = AccessiblePaletteGenerator.Configuration(
+    ///     targetLevel: .AAA,
+    ///     paletteSize: 6
+    /// )
+    /// let customGenerator = AccessiblePaletteGenerator(configuration: config)
+    /// ```
+    ///
+    /// - Parameter configuration: The configuration to use for generating palettes
     public init(configuration: Configuration = Configuration()) {
         self.configuration = configuration
     }
 
-    /// Generates an accessible color palette based on a seed color
+    /// Generates an accessible color palette based on a seed color.
+    ///
+    /// This method creates a palette of colors that:
+    /// - Meet the specified WCAG contrast requirements
+    /// - Are visually distinct from each other
+    /// - Maintain harmony with the seed color
+    ///
+    /// The generation process:
+    /// 1. Starts with the seed color
+    /// 2. Adds black and white if configured
+    /// 3. Generates additional contrasting colors
+    /// 4. Falls back to default colors if needed
+    ///
+    /// Example:
+    /// ```swift
+    /// let generator = AccessiblePaletteGenerator()
+    /// let seedColor = Color.blue
+    ///
+    /// // Generate a palette
+    /// let palette = generator.generatePalette(from: seedColor)
+    ///
+    /// // Use colors in UI
+    /// ForEach(palette, id: \.self) { color in
+    ///     Rectangle()
+    ///         .fill(color)
+    ///         .frame(height: 50)
+    /// }
+    /// ```
+    ///
     /// - Parameter seedColor: The color to base the palette on
     /// - Returns: An array of colors that form an accessible palette
     public func generatePalette(from seedColor: Color) -> [Color] {
@@ -108,7 +216,36 @@ public struct AccessiblePaletteGenerator {
         return palette
     }
 
-    /// Generates a theme from a seed color with accessible color combinations
+    /// Generates a theme from a seed color with accessible color combinations.
+    ///
+    /// This method creates a complete color theme that ensures:
+    /// - All text is readable against its background
+    /// - Primary, secondary, and accent colors work together
+    /// - The theme maintains the character of the seed color
+    ///
+    /// The theme includes:
+    /// - Primary color (based on seed)
+    /// - Secondary color (harmonious with primary)
+    /// - Accent color (complementary to primary)
+    /// - Background color (ensures contrast)
+    /// - Text color (ensures readability)
+    ///
+    /// Example:
+    /// ```swift
+    /// let generator = AccessiblePaletteGenerator()
+    /// let seedColor = Color.blue
+    ///
+    /// let theme = generator.generateAccessibleTheme(
+    ///     from: seedColor,
+    ///     name: "Ocean Theme"
+    /// )
+    ///
+    /// // Use in SwiftUI
+    /// Text("Heading")
+    ///     .foregroundColor(theme.text)
+    ///     .background(theme.background)
+    /// ```
+    ///
     /// - Parameters:
     ///   - seedColor: The primary color to base the theme on
     ///   - name: The name for the theme
@@ -155,7 +292,13 @@ public struct AccessiblePaletteGenerator {
 
     // MARK: - Private Helper Methods
 
-    /// Generates a color that contrasts well with the given color
+    /// Generates a color that contrasts well with the given color.
+    ///
+    /// This method creates a new color by:
+    /// 1. Shifting the hue significantly
+    /// 2. Adjusting lightness for contrast
+    /// 3. Increasing saturation for vibrancy
+    /// 4. Verifying the contrast ratio
     private func generateContrastingColor(for color: Color) -> Color? {
         // Get the HSL components of the color
         guard let hsl = color.hslComponents() else {
@@ -188,7 +331,10 @@ public struct AccessiblePaletteGenerator {
         return Color(hue: newHue, saturation: newSaturation, lightness: extremeLightness)
     }
 
-    /// Generates a complementary color for the given color
+    /// Generates a complementary color for the given color.
+    ///
+    /// Creates a color on the opposite side of the color wheel while
+    /// adjusting saturation and lightness to ensure good contrast.
     private func generateComplementaryColor(for color: Color) -> Color {
         guard let hsl = color.hslComponents() else { return color }
 
