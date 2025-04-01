@@ -2,9 +2,18 @@
 
 All notable changes to ColorKit will be documented in this file.
 
-## [1.6.0] - TBR
+## [1.6.0] - 2025-04-01
 
 ### Added
+- **DocC documentation integration:** Comprehensive DocC documentation integration
+  - Main documentation article with overview and features
+  - Color Spaces article detailing RGB, HSL, CMYK, and LAB color spaces
+  - Accessibility article covering WCAG compliance and tools
+  - Theming article explaining the theme system and components
+  - Utilities article documenting caching, export, gradients, and blending
+- Enhanced inline documentation for all public APIs
+- Code examples and usage guides for all major features
+- Cross-referenced documentation between related components
 - **SwiftUI Preview Catalog**: Comprehensive interactive preview components for exploring ColorKit features.
   - `MainCatalogView`: Central navigation hub with searchable feature list
   - `BlendingPreview`: Interactive color blending with custom blend modes and performance metrics
@@ -55,9 +64,9 @@ All notable changes to ColorKit will be documented in this file.
   - Custom configuration to balance strictness with practicality
 
 ### Fixed
-- Platform-specific test issues for proper macOS compatibility. 
+- Platform-specific test issues for proper macOS compatibility.
 
-## [1.5.0] - 2024-03-14
+## [1.5.0] - 2025-03-14
 
 ### Added
 - Palette export and sharing functionality
@@ -98,7 +107,7 @@ All notable changes to ColorKit will be documented in this file.
 - Added more comprehensive examples in README
 - Improved parameter descriptions for clarity
 
-## [1.4.3] - 2024-03-14
+## [1.4.3] - 2025-03-14
 
 ### Fixed
 - Added proper availability check for SF Symbols on macOS to fix compilation issues
