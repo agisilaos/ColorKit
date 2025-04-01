@@ -2,7 +2,7 @@
 //  ThemeTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 12.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 12.03.2025.
 //
 //  Description:
 //  Tests for the color theming system and theme management.

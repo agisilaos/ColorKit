@@ -2,7 +2,7 @@
 //  WCAGPreviewModifiersTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 12.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 12.03.2025.
 //
 //  Description:
 //  Tests for WCAG compliance preview modifiers and color blindness simulation.

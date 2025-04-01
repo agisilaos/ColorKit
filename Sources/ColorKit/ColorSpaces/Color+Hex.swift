@@ -79,7 +79,7 @@ public extension Color {
     ///
     /// - Parameter hex: A hexadecimal string representation of the color.
     ///                 Supports `#RRGGBB` and `#RRGGBBAA` formats.
-    /// 
+    ///
     init?(hex: String) {
         let r, g, b, a: CGFloat
 

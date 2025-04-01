@@ -2,7 +2,7 @@
 //  ColorAnimationPreview.swift
 //  ColorKit
 //
-//  Created by Agisilaos Tsaraboulidis on 15.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 15.03.2025.
 //
 //  Description:
 //  A preview component for demonstrating color animations and transitions.

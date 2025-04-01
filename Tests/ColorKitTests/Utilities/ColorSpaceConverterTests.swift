@@ -2,7 +2,7 @@
 //  ColorSpaceConverterTests.swift
 //  ColorKitTests
 //
-//  Created by Agisilaos Tsaraboulidis on 19.03.2024.
+//  Created by Agisilaos Tsaraboulidis on 19.03.2025.
 //
 //  Description:
 //  Tests for color space conversion functionality.
