@@ -144,16 +144,14 @@ public extension Color {
         return generator.generateAccessibleTheme(from: self, name: name)
     }
 
-    /// Finds a color that contrasts well with this color and meets the specified WCAG level.
+    /// Returns the best available contrasting endpoint, either black or white.
     ///
-    /// This method generates a contrasting color that ensures readability when used
-    /// together with the base color. It's particularly useful for text colors
-    /// or UI elements that need to stand out against a background.
+    /// Compares both endpoints using `wcagContrastRatio(with:)` and returns the one
+    /// with the higher ratio. Exact ties return black.
     ///
-    /// The method follows these steps:
-    /// 1. Checks if black or white provides sufficient contrast
-    /// 2. If not, creates a new color by adjusting lightness
-    /// 3. Falls back to black or white if other attempts fail
+    /// The result is independent of the requested level: the stronger endpoint is
+    /// returned even when neither meets the target. In particular, AAA may be
+    /// unattainable. Color resolution follows the existing WCAG calculation.
     ///
     /// Example:
     /// ```swift
@@ -170,35 +168,12 @@ public extension Color {
     ///     .background(backgroundColor)
     /// ```
     ///
-    /// - Parameter level: The WCAG level to target
-    /// - Returns: A color that contrasts well with this color
+    /// - Parameter level: The desired WCAG level (default: .AA), retained for API
+    ///   compatibility. Meeting this level is not guaranteed.
+    /// - Returns: Black or white, whichever provides the greater WCAG contrast ratio.
     func accessibleContrastingColor(for level: WCAGContrastLevel = .AA) -> Color {
-        // Get the luminance of this color
-        let luminance = self.wcagRelativeLuminance()
-
-        // Start with black or white based on luminance
-        let contrastingColor: Color = luminance < 0.5 ? .white : .black
-
-        // Check if the contrast is sufficient
-        let ratio = self.wcagContrastRatio(with: contrastingColor)
-        if ratio >= level.minimumRatio {
-            return contrastingColor
-        }
-
-        // If not, try to find a color with sufficient contrast
-        // Extract HSL components
-        guard let hsl = self.hslComponents() else {
-            // Fallback to black or white if HSL conversion fails
-            return luminance < 0.5 ? .white : .black
-        }
-
-        // Adjust lightness to ensure sufficient contrast
-        let targetLightness = luminance < 0.5 ? 0.9 : 0.1
-
-        return Color(
-            hue: hsl.hue,
-            saturation: hsl.saturation,
-            lightness: targetLightness
-        )
+        let blackRatio = wcagContrastRatio(with: .black)
+        let whiteRatio = wcagContrastRatio(with: .white)
+        return blackRatio >= whiteRatio ? .black : .white
     }
 }
