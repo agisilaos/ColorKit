@@ -2,6 +2,11 @@
 
 All notable changes to ColorKit will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
+
 ## [1.6.0] - 2025-04-01
 
 ### Added

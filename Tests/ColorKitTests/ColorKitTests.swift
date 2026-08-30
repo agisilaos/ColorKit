@@ -19,8 +19,8 @@ final class ColorKitTests: XCTestCase {
 
     func testColorToHex() {
         let color = Color(red: 1.0, green: 0.341, blue: 0.2)
-        let expectedHex = "#FF5632FF"
-        XCTAssertEqual(color.hexValue(), expectedHex, "HEX conversion failed (may be due to rounding differences)")
+        let expectedHex = "#FF5733FF"
+        XCTAssertEqual(color.hexValue(), expectedHex, "HEX conversion should round each channel to the nearest byte")
     }
 
     // MARK: - Hex Conversion Tests
