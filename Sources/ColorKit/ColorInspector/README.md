@@ -10,6 +10,19 @@ The Color Inspector is a powerful tool for real-time color analysis in SwiftUI a
 - **Customizable Position**: Place the inspector in any corner of your view
 - **Cross-Platform**: Works on iOS, macOS, and other Apple platforms
 
+## Unavailable conversions
+
+The inspector derives its presentation from the current inputs on every render,
+including its first appearance and when contrast information is shown again.
+It never retains values from an earlier color after a conversion fails.
+
+An unavailable HEX conversion displays `#??????`. Unavailable RGB and HSL
+conversions display `Unavailable`. If either color cannot supply the components
+needed for contrast, the inspector displays `Ratio: Unavailable` without
+compliance badges. A background conversion failure does not hide valid foreground
+color information. Setting `showContrastInfo` to `false` hides the entire contrast
+section; showing it again uses the latest foreground and background colors.
+
 ## Usage
 
 ### Basic Usage
@@ -132,4 +145,4 @@ struct ColorInspectorExample: View {
         )
     }
 }
-``` 
+```
