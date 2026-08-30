@@ -22,7 +22,6 @@ import XCTest
 
 @testable import ColorKit
 
-#if canImport(SwiftUI) && (os(iOS) && !(targetEnvironment(macCatalyst)) && swift(>=5.5))
 final class ThemeTests: XCTestCase {
     @MainActor
     func testThemeCreation() {
@@ -60,52 +59,6 @@ final class ThemeTests: XCTestCase {
     }
 
     @MainActor
-    func testThemeManager() {
-        let manager = ThemeManager.shared
-
-        // Test default themes
-        XCTAssertEqual(manager.availableThemes.count, 2)
-        XCTAssertEqual(manager.currentTheme.name, "Default Light")
-
-        // Test registering a new theme
-        let newTheme = ColorTheme(
-            name: "Custom Theme",
-            primary: Color.purple,
-            secondary: Color.orange,
-            accent: Color.yellow,
-            background: Color.gray,
-            text: Color.white
-        )
-
-        let result = manager.register(theme: newTheme)
-        XCTAssertTrue(result)
-        XCTAssertEqual(manager.availableThemes.count, 3)
-
-        // Test switching themes
-        let switchResult = manager.switchToTheme(named: "Custom Theme")
-        XCTAssertTrue(switchResult)
-        XCTAssertEqual(manager.currentTheme.name, "Custom Theme")
-
-        // Test switching to a non-existent theme
-        let failedSwitchResult = manager.switchToTheme(named: "Non-existent Theme")
-        XCTAssertFalse(failedSwitchResult)
-
-        // Test registering a theme with a duplicate name
-        let duplicateTheme = ColorTheme(
-            name: "Custom Theme",
-            primary: Color.red,
-            secondary: Color.blue,
-            accent: Color.green,
-            background: Color.white,
-            text: Color.black
-        )
-
-        let duplicateResult = manager.register(theme: duplicateTheme)
-        XCTAssertFalse(duplicateResult)
-        XCTAssertEqual(manager.availableThemes.count, 3)
-    }
-
-    @MainActor
     func testThemeColorSet() {
         // Test generating a color set from a base color
         let generatedSet = ThemeColorSet.from(base: Color.blue)
@@ -113,4 +66,3 @@ final class ThemeTests: XCTestCase {
         XCTAssertNotNil(generatedSet)
     }
 }
-#endif

@@ -1,4 +1,50 @@
-# Migration Guide: ColorKit 1.5.0
+# Migration Guide
+
+## Unreleased: Theme ownership (F05)
+
+`ThemeManager` is now isolated to `MainActor` as a whole. Previously only
+`ThemeManager.shared` required main-actor access; code holding a manager reference
+could read or mutate its state without isolation. That synchronous access from
+nonisolated code is now a source compatibility break.
+
+Mark synchronous callers that read `currentTheme` or `availableThemes`, subscribe
+to their publishers, register themes, or switch themes as `@MainActor`. The
+`withThemeManager(_:)` view modifier also requires a main-actor context. SwiftUI
+view bodies already provide that context; separately declared helpers may need
+an annotation.
+
+```swift
+@MainActor
+func configureTheme(_ theme: ColorTheme) {
+    let manager = ThemeManager.shared
+    manager.register(theme: theme)
+    manager.switchTo(theme: theme)
+}
+
+// From asynchronous code on another actor:
+func selectTheme(named name: String, manager: ThemeManager) async -> Bool {
+    await manager.switchToTheme(named: name)
+}
+```
+
+Use `await MainActor.run { ... }` when several synchronous manager operations
+must happen together from asynchronous code. Merely running on the main thread
+does not replace the compiler's actor-isolation requirement. The unchecked
+`Sendable` conformance is removed; main-actor isolation protects the manager's
+state instead. No synchronous API silently schedules work for later.
+
+`ObservableObject`, `@Published currentTheme`, the singleton's private initializer,
+and the iOS 14 / macOS 12 deployment targets are unchanged. `availableThemes` now
+publishes successful registrations. `withThemeManager(_:)` observes the manager
+itself, so parents no longer need to observe it just to refresh the environment.
+Local `applyTheme(_:)` overrides retain their normal subtree precedence.
+
+Selection behavior is unchanged: registration rejects duplicate names, switching
+by name selects the registered value, and switching by instance selects the
+supplied value if its name is registered. A failed switch leaves the selection
+unchanged. Changes to those semantics belong to F06.
+
+## ColorKit 1.5.0
 
 This guide helps you migrate your code from ColorKit 1.4.x to version 1.5.0. The main changes in this version focus on standardizing parameter naming across the library for better consistency and intuitiveness.
 
@@ -115,4 +161,4 @@ After completing the migration:
 1. Review your codebase for any other potential improvements
 2. Consider updating to the latest Swift version if you haven't already
 3. Test your app thoroughly, especially color-related features
-4. Update your CI/CD pipelines if necessary 
+4. Update your CI/CD pipelines if necessary

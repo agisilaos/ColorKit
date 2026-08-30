@@ -30,6 +30,8 @@ import SwiftUI
 ///
 /// The manager is designed to work seamlessly with SwiftUI's environment system
 /// and supports dynamic theme switching.
+/// All state access and registration or selection operations are isolated to the
+/// main actor. Call from `@MainActor` code or use `await` from another actor.
 ///
 /// Example usage:
 /// ```swift
@@ -61,19 +63,20 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public class ThemeManager: ObservableObject, @unchecked Sendable {
+@MainActor
+public class ThemeManager: ObservableObject {
     /// The shared instance for app-wide theme management.
     ///
     /// This singleton instance should be used throughout your application to
-    /// ensure consistent theme management. It's marked as `@MainActor` to
-    /// ensure thread-safe access to theme state.
+    /// ensure consistent theme management. The entire manager is isolated to
+    /// `MainActor`, including instances passed to other code.
     ///
     /// Example:
     /// ```swift
     /// let manager = ThemeManager.shared
     /// print("Current theme: \(manager.currentTheme.name)")
     /// ```
-    @MainActor public static let shared = ThemeManager()
+    public static let shared = ThemeManager()
 
     /// The currently active theme.
     ///
@@ -97,7 +100,9 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
     ///
     /// This array contains all themes that can be switched to. The default
     /// implementation includes a light and dark theme, but you can register
-    /// additional themes as needed.
+    /// additional themes as needed. Successful registration publishes the
+    /// updated list without changing the current theme. Duplicate names do not
+    /// change or publish the list.
     ///
     /// Example:
     /// ```swift
@@ -106,7 +111,7 @@ public class ThemeManager: ObservableObject, @unchecked Sendable {
     ///     print("Available theme: \(theme.name)")
     /// }
     /// ```
-    public private(set) var availableThemes: [ColorTheme] = []
+    @Published public private(set) var availableThemes: [ColorTheme] = []
 
     /// Creates a new theme manager with default themes.
     ///

@@ -21,7 +21,7 @@ let oceanTheme = ColorTheme(
     text: Color(hex: "#263238")
 )
 
-// Register the theme
+// Register the theme from main-actor code
 ThemeManager.shared.register(theme: oceanTheme)
 ```
 
@@ -32,7 +32,7 @@ Apply themes to your views using modifiers:
 ```swift
 // Apply theme to view hierarchy
 ContentView()
-    .withThemeManager()
+    .withThemeManager(ThemeManager.shared)
 
 // Use themed colors in views
 Text("Themed Text")
@@ -44,6 +44,50 @@ Button("Primary Button") {}
 Rectangle()
     .fill(Color.themed(.accent))
 ```
+
+`withThemeManager(_:)` observes the supplied manager. Views that read
+`@Environment(\.colorTheme)` receive later selections even when the enclosing
+view does not observe the manager. The modifier also supplies the manager through
+`@Environment(\.themeManager)` and `@EnvironmentObject`.
+
+Apply a local override inside the managed hierarchy to keep that subtree's theme
+independent of the manager's selection:
+
+```swift
+VStack {
+    ContentView()
+    PreviewView()
+        .applyTheme(oceanTheme)
+}
+.withThemeManager(ThemeManager.shared)
+```
+
+The nearest theme provider to a descendant wins. The preview keeps `oceanTheme`
+when the manager switches, and the override does not change the manager itself.
+
+### Actor Isolation and Observation
+
+`ThemeManager` and `withThemeManager(_:)` are isolated to `MainActor`. Access the
+manager's state and call its methods from main-actor code; asynchronous callers
+on another actor must use `await`. Synchronous helpers that access the manager
+should also be marked `@MainActor`.
+
+```swift
+@MainActor
+func selectTheme(_ theme: ColorTheme) {
+    ThemeManager.shared.register(theme: theme)
+    ThemeManager.shared.switchTo(theme: theme)
+}
+
+func selectFromAnotherActor(name: String, manager: ThemeManager) async -> Bool {
+    await manager.switchToTheme(named: name)
+}
+```
+
+The manager remains an `ObservableObject`. Both `currentTheme` and
+`availableThemes` are published, so theme pickers update after successful
+registration even when the selection stays unchanged. Rejected duplicate names
+do not publish a registry change. iOS 14 and macOS 12 remain supported.
 
 ### Theme Components
 
@@ -99,7 +143,7 @@ let adaptiveTheme = ColorTheme(
 ### Theme Management
 - ``ColorTheme``
 - ``ThemeManager``
-- ``View/withThemeManager()``
+- ``View/withThemeManager(_:)``
 
 ### Theme Components
 - ``View/themedText(_:)``
