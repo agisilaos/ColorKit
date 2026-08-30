@@ -110,7 +110,7 @@ final class ColorSpaceConverterTests: XCTestCase {
     }
 
     func testHexCodeRoundtripping() {
-        let hex = "#232323FF" //known to cause rounding issues when round tripping
+        let hex = "#232323FF" // known to cause rounding issues when round tripping
         let color = Color(hex: hex)
         let hex2 = color?.hexString() ?? ""
         XCTAssertEqual(hex, hex2)
