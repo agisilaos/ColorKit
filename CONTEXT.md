@@ -24,3 +24,19 @@ A contrast adjustment attempt that ends without finding a color that meets the r
 **Contrast fallback**:
 The black or white color selected when contrast adjustment is unsuccessful. It is not guaranteed to meet every requested minimum.
 _Avoid_: Guaranteed compliant color
+
+**LAB**:
+CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.
+_Avoid_: RGB brightness when referring to L*.
+
+**XYZ**:
+CIE XYZ tristimulus coordinates. ColorKit's public XYZ values use a relative scale on which the reference white has Y = 100; this is not an upper bound on every coordinate.
+_Avoid_: XYZ percentages, XYZ in the range 0–1 without specifying a different scale.
+
+**Normalized XYZ**:
+CIE XYZ coordinates on a relative scale where the reference white has Y = 1. Multiplying each coordinate by 100 expresses the same color on ColorKit's public XYZ scale.
+_Avoid_: XYZ percentages.
+
+**D65 reference white**:
+The reference white used for ColorKit's LAB coordinates, with XYZ values (95.047, 100, 108.883) on the Y = 100 scale.
+_Avoid_: White RGB color when referring to the reference white itself.
