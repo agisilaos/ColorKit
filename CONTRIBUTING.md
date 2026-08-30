@@ -136,13 +136,24 @@ To run the same platform checks locally with Xcode 26.5 selected:
 
 ```sh
 swiftlint lint --strict
-xcodebuild test -scheme ColorKit \
-  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+  -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
-xcodebuild test -scheme ColorKit \
-  -destination 'platform=macOS' \
+scripts/run_tests.sh macOS 'platform=macOS' \
+  -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -skipPackagePluginValidation -skipMacroValidation
+scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+  -parallel-testing-enabled NO \
+  -only-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -skipPackagePluginValidation -skipMacroValidation
+scripts/run_tests.sh macOS 'platform=macOS' \
+  -parallel-testing-enabled NO \
+  -only-testing:ColorKitTests/ColorCacheIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
 ```
+
+`ColorCacheIntegrationTests` clears `ColorCache.shared` before and after each test.
+Run it separately without parallel testing; direct cache tests use independent instances.
 
 The `test-results` workflow artifact retains raw build logs and `.xcresult`
 bundles for 14 days, including logs from failed test commands. Check the

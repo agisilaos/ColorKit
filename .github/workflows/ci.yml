@@ -71,6 +71,7 @@ jobs:
           mkdir -p TestResults
           scripts/run_tests.sh --log-file TestResults/iOS.log \
             iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+            -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
             -resultBundlePath TestResults/iOS.xcresult \
             -skipPackagePluginValidation \
             -skipMacroValidation
@@ -81,7 +82,33 @@ jobs:
           mkdir -p TestResults
           scripts/run_tests.sh --log-file TestResults/macOS.log \
             macOS 'platform=macOS' \
+            -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
             -resultBundlePath TestResults/macOS.xcresult \
+            -skipPackagePluginValidation \
+            -skipMacroValidation
+
+      # Shared-cache tests clear global state and run outside the parallel suite.
+      - name: Test Shared Cache iOS
+        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
+        run: |
+          mkdir -p TestResults
+          scripts/run_tests.sh --log-file TestResults/SharedCacheiOS.log \
+            iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+            -parallel-testing-enabled NO \
+            -only-testing:ColorKitTests/ColorCacheIntegrationTests \
+            -resultBundlePath TestResults/SharedCacheiOS.xcresult \
+            -skipPackagePluginValidation \
+            -skipMacroValidation
+
+      - name: Test Shared Cache macOS
+        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
+        run: |
+          mkdir -p TestResults
+          scripts/run_tests.sh --log-file TestResults/SharedCachemacOS.log \
+            macOS 'platform=macOS' \
+            -parallel-testing-enabled NO \
+            -only-testing:ColorKitTests/ColorCacheIntegrationTests \
+            -resultBundlePath TestResults/SharedCachemacOS.xcresult \
             -skipPackagePluginValidation \
             -skipMacroValidation
 
