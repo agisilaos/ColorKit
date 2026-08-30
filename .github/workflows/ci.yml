@@ -66,34 +66,24 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-derived-data-
 
       - name: Build and Test iOS
+        id: ios_tests
         run: |
           mkdir -p TestResults
-          xcodebuild test \
-            -scheme ColorKit \
-            -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
-            -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 4 \
-            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+          scripts/run_tests.sh --log-file TestResults/iOS.log \
+            iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
             -resultBundlePath TestResults/iOS.xcresult \
-            -enableCodeCoverage YES \
             -skipPackagePluginValidation \
-            -skipMacroValidation \
-            | tee TestResults/iOS.log
+            -skipMacroValidation
 
       - name: Build and Test macOS
+        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
         run: |
           mkdir -p TestResults
-          xcodebuild test \
-            -scheme ColorKit \
-            -destination 'platform=macOS' \
-            -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 4 \
-            -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+          scripts/run_tests.sh --log-file TestResults/macOS.log \
+            macOS 'platform=macOS' \
             -resultBundlePath TestResults/macOS.xcresult \
-            -enableCodeCoverage YES \
             -skipPackagePluginValidation \
-            -skipMacroValidation \
-            | tee TestResults/macOS.log
+            -skipMacroValidation
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
