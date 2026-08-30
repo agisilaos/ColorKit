@@ -89,46 +89,14 @@ public extension Color {
         }
 
         guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let r = components[0]
-        let g = components[1]
-        let b = components[2]
-
-        // Convert RGB to XYZ
-        func linearize(_ v: CGFloat) -> CGFloat {
-            v > 0.04045 ? pow((v + 0.055) / 1.055, 2.4) : v / 12.92
-        }
-
-        let rl = linearize(r)
-        let gl = linearize(g)
-        let bl = linearize(b)
-
-        // Using D65 illuminant
-        let x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375
-        let y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750
-        let z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
-
-        // Convert XYZ to LAB
-        func f(_ t: CGFloat) -> CGFloat {
-            t > 0.008856 ? pow(t, 1.0 / 3.0) : (7.787 * t) + (16.0 / 116.0)
-        }
-
-        // Reference values for D65 illuminant
-        let xn: CGFloat = 0.95047
-        let yn: CGFloat = 1.0
-        let zn: CGFloat = 1.08883
-
-        let fx = f(x / xn)
-        let fy = f(y / yn)
-        let fz = f(z / zn)
-
-        let L = (116.0 * fy) - 16
-        let a = 500 * (fx - fy)
-        let bValue = 200 * (fy - fz)
+        let xyz = SRGBColorConversion.xyz(from: (Double(components[0]), Double(components[1]), Double(components[2])))
+        let lab = SRGBColorConversion.lab(from: xyz)
+        let result = (L: CGFloat(lab.l), a: CGFloat(lab.a), b: CGFloat(lab.b))
 
         // Cache the result
-        ColorCache.shared.cacheLABComponents(for: self, L: L, a: a, b: bValue)
+        ColorCache.shared.cacheLABComponents(for: self, L: result.L, a: result.a, b: result.b)
 
-        return (L, a, bValue)
+        return result
     }
 
     /// Creates a `Color` from LAB (L*, a*, b*) values.

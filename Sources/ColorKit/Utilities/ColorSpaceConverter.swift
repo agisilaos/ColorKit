@@ -54,6 +54,8 @@ public struct ColorSpaceConverter {
     /// This method converts the color to all supported color spaces and returns their components
     /// in a single structure. This is useful when you need to analyze or compare a color across
     /// different color spaces.
+    /// LAB and XYZ share the D65 conversion used by `Color.labComponents()`.
+    /// XYZ uses a relative scale where the reference white has Y = 100.
     ///
     /// Example:
     /// ```swift
@@ -101,11 +103,8 @@ public struct ColorSpaceConverter {
             key: Double(cmykComponents.key)
         )
 
-        // Get LAB
-        let lab = calculateLAB(from: rgb)
-
-        // Get XYZ
-        let xyz = calculateXYZ(from: rgb)
+        let xyz = SRGBColorConversion.xyz(from: (rgb.red, rgb.green, rgb.blue))
+        let lab = SRGBColorConversion.lab(from: xyz)
 
         return ColorComponents(
             rgb: rgb,
@@ -113,63 +112,39 @@ public struct ColorSpaceConverter {
             hsb: hsb,
             cmyk: cmyk,
             lab: lab,
-            xyz: xyz
+            xyz: (x: xyz.x * 100, y: xyz.y * 100, z: xyz.z * 100)
+        )
+    }
+}
+
+/// Pure sRGB/D65 conversions. Internal XYZ uses reference-white Y = 1.
+enum SRGBColorConversion {
+    static func xyz(from rgb: (red: Double, green: Double, blue: Double)) -> (x: Double, y: Double, z: Double) {
+        func linearize(_ value: Double) -> Double {
+            value > 0.04045 ? pow((value + 0.055) / 1.055, 2.4) : value / 12.92
+        }
+
+        let r = linearize(rgb.red)
+        let g = linearize(rgb.green)
+        let b = linearize(rgb.blue)
+
+        return (
+            x: r * 0.4124564 + g * 0.3575761 + b * 0.1804375,
+            y: r * 0.2126729 + g * 0.7151522 + b * 0.0721750,
+            z: r * 0.0193339 + g * 0.1191920 + b * 0.9503041
         )
     }
 
-    /// Calculate LAB color components from RGB values.
-    ///
-    /// This method implements the conversion from RGB to LAB color space using the D65 white point.
-    /// The conversion happens in two steps:
-    /// 1. RGB to XYZ
-    /// 2. XYZ to LAB
-    ///
-    /// - Parameter rgb: A tuple containing the red, green, blue, and alpha components
-    /// - Returns: A tuple containing the LAB components (L, a, b)
-    private func calculateLAB(from rgb: (red: Double, green: Double, blue: Double, alpha: Double)) -> (l: Double, a: Double, b: Double) {
-        // First convert RGB to XYZ
-        let xyz = calculateXYZ(from: rgb)
+    static func lab(from xyz: (x: Double, y: Double, z: Double)) -> (l: Double, a: Double, b: Double) {
+        // Keep the existing LAB threshold and slope, also used by the inverse.
+        func transform(_ value: Double) -> Double {
+            value > 0.008856 ? pow(value, 1.0 / 3.0) : 7.787 * value + 16.0 / 116.0
+        }
 
-        // XYZ to LAB
-        // Using D65 reference white
-        let refX: Double = 95.047
-        let refY: Double = 100.0
-        let refZ: Double = 108.883
+        let fx = transform(xyz.x / 0.95047)
+        let fy = transform(xyz.y)
+        let fz = transform(xyz.z / 1.08883)
 
-        let x = xyz.x / refX
-        let y = xyz.y / refY
-        let z = xyz.z / refZ
-
-        let fx = x > 0.008856 ? pow(x, 1 / 3) : (7.787 * x) + (16 / 116)
-        let fy = y > 0.008856 ? pow(y, 1 / 3) : (7.787 * y) + (16 / 116)
-        let fz = z > 0.008856 ? pow(z, 1 / 3) : (7.787 * z) + (16 / 116)
-
-        let l = (116 * fy) - 16
-        let a = 500 * (fx - fy)
-        let b = 200 * (fy - fz)
-
-        return (l, a, b)
-    }
-
-    /// Calculate XYZ color components from RGB values.
-    ///
-    /// This method converts RGB values to CIE XYZ color space. The conversion process:
-    /// 1. Converts RGB to linear RGB
-    /// 2. Applies the RGB to XYZ transformation matrix
-    ///
-    /// - Parameter rgb: A tuple containing the red, green, blue, and alpha components
-    /// - Returns: A tuple containing the XYZ components (x, y, z)
-    private func calculateXYZ(from rgb: (red: Double, green: Double, blue: Double, alpha: Double)) -> (x: Double, y: Double, z: Double) {
-        // Convert RGB to linear RGB
-        let r = rgb.red <= 0.04045 ? rgb.red / 12.92 : pow((rgb.red + 0.055) / 1.055, 2.4)
-        let g = rgb.green <= 0.04045 ? rgb.green / 12.92 : pow((rgb.green + 0.055) / 1.055, 2.4)
-        let b = rgb.blue <= 0.04045 ? rgb.blue / 12.92 : pow((rgb.blue + 0.055) / 1.055, 2.4)
-
-        // Convert linear RGB to XYZ
-        let x = r * 0.4124 + g * 0.3576 + b * 0.1805
-        let y = r * 0.2126 + g * 0.7152 + b * 0.0722
-        let z = r * 0.0193 + g * 0.1192 + b * 0.9505
-
-        return (x * 100, y * 100, z * 100)
+        return (l: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz))
     }
 }

@@ -232,6 +232,52 @@ final class ColorKitTests: XCTestCase {
         XCTAssertEqual(Double(whiteLab.L), 100.0, accuracy: 0.1, "White L* value incorrect")
     }
 
+    func testLABConversionPopulatesCache() throws {
+        let color = Color(.sRGB, red: 0.23, green: 0.47, blue: 0.61)
+        ColorCache.shared.clearCache()
+        defer { ColorCache.shared.clearCache() }
+
+        XCTAssertNil(ColorCache.shared.getCachedLABComponents(for: color))
+        let lab = try XCTUnwrap(color.labComponents())
+        let cached = try XCTUnwrap(ColorCache.shared.getCachedLABComponents(for: color))
+
+        XCTAssertEqual(cached.L, lab.L)
+        XCTAssertEqual(cached.a, lab.a)
+        XCTAssertEqual(cached.b, lab.b)
+    }
+
+    func testLABRoundTripAroundLowLightnessThreshold() throws {
+        for lightness: CGFloat in [0, 0.1, 7.999, 8, 8.001, 50, 100] {
+            let color = Color(L: lightness, a: 0, b: 0)
+            let lab = try XCTUnwrap(color.labComponents())
+
+            XCTAssertEqual(lab.L, lightness, accuracy: 0.0001, "L*: \(lightness)")
+            XCTAssertEqual(lab.a, 0, accuracy: 0.0001, "L*: \(lightness)")
+            XCTAssertEqual(lab.b, 0, accuracy: 0.0001, "L*: \(lightness)")
+        }
+    }
+
+    func testLABInversePreservesInputClampingAndRGBClipping() {
+        let outsideBounds = Color(L: 120, a: 200, b: -200).rgbaComponents()
+        let atBounds = Color(L: 100, a: 127, b: -128).rgbaComponents()
+
+        XCTAssertEqual(outsideBounds.red, atBounds.red, accuracy: 1e-7)
+        XCTAssertEqual(outsideBounds.green, atBounds.green, accuracy: 1e-7)
+        XCTAssertEqual(outsideBounds.blue, atBounds.blue, accuracy: 1e-7)
+        XCTAssertEqual(atBounds.red, 1, accuracy: 1e-7)
+        XCTAssertEqual(atBounds.blue, 1, accuracy: 1e-7)
+        XCTAssertTrue((0...1).contains(atBounds.green))
+
+        let belowBounds = Color(L: -20, a: -200, b: 200).rgbaComponents()
+        let lowerBounds = Color(L: 0, a: -128, b: 127).rgbaComponents()
+        XCTAssertEqual(belowBounds.red, lowerBounds.red, accuracy: 1e-7)
+        XCTAssertEqual(belowBounds.green, lowerBounds.green, accuracy: 1e-7)
+        XCTAssertEqual(belowBounds.blue, lowerBounds.blue, accuracy: 1e-7)
+        XCTAssertEqual(lowerBounds.red, 0, accuracy: 1e-7)
+        XCTAssertEqual(lowerBounds.blue, 0, accuracy: 1e-7)
+        XCTAssertTrue((0...1).contains(lowerBounds.green))
+    }
+
     // MARK: - RGBA Components Test
     func testRGBAComponents() {
         let color = Color(red: 0.5, green: 0.6, blue: 0.7, opacity: 0.8)
