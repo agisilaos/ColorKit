@@ -9,7 +9,7 @@
 //
 //  Features:
 //  - `adaptiveColor`: Applies a light or dark color based on system appearance.
-//  - `highContrastColor`: Ensures text meets a minimum contrast ratio.
+//  - `highContrastColor`: Attempts to meet a minimum contrast ratio.
 //  - `onAdaptiveColorChange`: Executes an action when the system color scheme changes.
 //
 //  License:
@@ -85,23 +85,22 @@ public extension View {
         self.modifier(AdaptiveColorModifier(light: light, dark: dark, brightnessAdjustment: brightnessAdjustment))
     }
 
-    /// Ensures a color meets a minimum contrast ratio against the background.
+    /// Applies the result of `Color.adjustedForAccessibility(with:minimumRatio:)` to the foreground.
     ///
-    /// This modifier automatically adjusts the color to meet WCAG contrast
-    /// requirements, ensuring text and UI elements remain readable. It will
-    /// attempt to preserve the original color while meeting the contrast
-    /// requirements.
+    /// Preserves an already-compliant base color and delegates adjustment to the legacy
+    /// contrast calculation. Conversion failure returns the base color; unsuccessful
+    /// adjustment uses the existing black/white fallback, which may not meet the minimum.
     ///
     /// Example:
     /// ```swift
-    /// // Ensure text meets WCAG AA standard (4.5:1)
+    /// // Request a contrast ratio of 4.5:1
     /// Text("Readable Text")
     ///     .highContrastColor(
     ///         base: .blue,
     ///         background: .white
     ///     )
     ///
-    /// // Meet stricter WCAG AAA standard (7:1)
+    /// // Request a stricter contrast ratio of 7:1
     /// Text("High Contrast Text")
     ///     .highContrastColor(
     ///         base: .purple,
@@ -182,10 +181,7 @@ private struct AdaptiveColorModifier: ViewModifier {
     }
 }
 
-/// A ViewModifier that ensures a text or foreground element meets a minimum contrast ratio.
-///
-/// This modifier automatically adjusts colors to meet WCAG accessibility guidelines
-/// while attempting to preserve the original color's characteristics.
+/// A ViewModifier that applies the result of the legacy accessibility color adjustment.
 ///
 /// Example:
 /// ```swift

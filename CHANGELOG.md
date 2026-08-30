@@ -6,6 +6,7 @@ All notable changes to ColorKit will be documented in this file.
 
 ### Fixed
 - Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
+- Preserve already-compliant colors, including opacity, in `adjustedForAccessibility` and `highContrastColor` instead of replacing them with black or white.
 
 ## [1.6.0] - 2025-04-01
 
