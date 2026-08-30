@@ -1,6 +1,8 @@
 # **ColorKit 🎨**  
 ![Swift Package Manager](https://img.shields.io/badge/SPM-Supported-green)  
-![Swift Version](https://img.shields.io/badge/Swift-5.5%2B-blue)  
+![Swift Version](https://img.shields.io/badge/Swift-6.0%2B-blue)  
+
+**English** | [Español](README.es-ES.md)
 
 A lightweight **Swift package** for **color manipulation, adaptive themes, and accessibility compliance** in SwiftUI.  
 
