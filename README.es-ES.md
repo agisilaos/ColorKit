@@ -1,8 +1,8 @@
-
-
 # **ColorKit 🎨**  
 ![Swift Package Manager](https://img.shields.io/badge/SPM-Supported-green)  
-![Swift Version](https://img.shields.io/badge/Swift-5.5%2B-blue)  
+![Swift Version](https://img.shields.io/badge/Swift-6.0%2B-blue)  
+
+[English](README.md) | **Español**
 
 Un **paquete ligero de Swift** para **manipulación de colores, temas adaptables y cumplimiento de accesibilidad** en SwiftUI.  
 
@@ -34,7 +34,7 @@ ColorKit es compatible con **Swift Package Manager (SPM)**.
 ✅ **Exportar y compartir paletas de colores**  
 ✅ **Modificadores de SwiftUI para colores dinámicos**  
 ✅ **Utilidades de generación de gradientes**  
-✅ **Modos de fusión de colores (Superposición, Multiplicar, Pantalla, etc.)**  
+✅ **Modos de fusión de colores (Superposición, Multiplicar, Trama, etc.)**  
 ✅ **Sistema de temas integral**  
 ✅ **Caché de alto rendimiento para operaciones de color**  
 ✅ **AccessibilityEnhancer para ajustes inteligentes de color**  
@@ -239,7 +239,7 @@ ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
 ColorCache.shared.clearCache()
 ```
 
-Para más detalles sobre las mejoras de rendimiento, consulte [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
+Para más detalles sobre las mejoras de rendimiento, consulta [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
 
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
 ```swift
@@ -302,7 +302,7 @@ Vistas previas disponibles:
 7. **ColorAnimationPreview**
    - Pruebas de transición de color
    - Modos de interpolación
-   - Curvas de timing
+   - Curvas de temporización
    - Métricas de rendimiento
 
 8. **AccessibilityLabPreview**
@@ -311,7 +311,7 @@ Vistas previas disponibles:
    - Sugerencias de colores accesibles
    - Directrices educativas
 
-Cada vista previa está diseñada para ayudar a los desarrolladores a comprender y utilizar eficazmente las características de ColorKit. Acceda a ellas a través de `MainCatalogView` o de forma individual:
+Cada vista previa está diseñada para ayudar a los desarrolladores a comprender y utilizar eficazmente las características de ColorKit. Accede a ellas a través de `MainCatalogView` o de forma individual:
 
 ```swift
 // Usar vistas previas individuales
@@ -370,14 +370,14 @@ let suggestions = backgroundColor.suggestedAccessibleColors(
 )
 ```
 
-Consulte la [Documentación de depuración de colores](Sources/ColorKit/Utilities/DOCUMENTATION.md) para más detalles.
+Consulta la [Documentación de depuración de colores](Sources/ColorKit/Utilities/DOCUMENTATION.md) para más detalles.
 
 ---
 
 ## **🛠 Contribuciones**  
-¡Bienvenidas las contribuciones! No dudes en enviar issues o abrir pull requests.  
+¡Bienvenidas las contribuciones! No dudes en informar de problemas o abrir pull requests.  
 
 ## **📜 Licencia**  
-Licencia MIT. Consulte `LICENSE` para ver los detalles.  
+Licencia MIT. Consulta `LICENSE` para ver los detalles.  
 
 ---
