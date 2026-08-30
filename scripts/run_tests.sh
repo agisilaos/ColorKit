@@ -10,6 +10,8 @@ Usage: scripts/run_tests.sh [--log-file path] platform destination [xcodebuild-o
 With no arguments, run both iOS and macOS tests and report both results.
 With a platform label and destination, run only that destination. Additional
 arguments are passed unchanged to xcodebuild after the shared test options.
+An explicit -parallel-testing-enabled option replaces the default parallel
+settings; pass -parallel-testing-enabled NO for tests that share mutable state.
 Use --log-file to save raw output with tee instead of formatting with xcpretty;
 the log's parent directory must already exist. This requires a single platform.
 
@@ -31,16 +33,23 @@ run_tests() {
     local statuses
     shift 2
 
+    local argument
+    local test_options=(-parallel-testing-enabled YES -parallel-testing-worker-count 4 "$@")
+    for argument in "$@"; do
+        if [[ $argument == -parallel-testing-enabled ]]; then
+            test_options=("$@")
+            break
+        fi
+    done
+
     printf '\nRunning tests for %s...\n' "$platform"
 
     if xcodebuild test \
         -scheme ColorKit \
         -destination "$destination" \
-        -parallel-testing-enabled YES \
-        -parallel-testing-worker-count 4 \
         -derivedDataPath "$HOME/Library/Developer/Xcode/DerivedData" \
         -enableCodeCoverage YES \
-        "$@" \
+        "${test_options[@]}" \
         | "${output_command[@]}"; then
         printf '%s tests passed\n' "$platform"
         return 0

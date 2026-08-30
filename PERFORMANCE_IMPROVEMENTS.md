@@ -45,6 +45,14 @@ The caching system is implemented through the `ColorCache` class, which:
 - Maintains thread safety through proper synchronization
 - Automatically manages memory based on system pressure
 
+### Cache identity
+
+Caching is optional. Colors without a fixed identity in one of the supported RGB or grayscale spaces miss the cache and are not inserted. Keys retain the original color space, every component including alpha, and exact finite interpolation amounts; they do not convert colors or round values. Unsupported spaces and nonfinite key inputs bypass caching.
+
+Contrast keys are symmetric. Blend and interpolation keys preserve operand order and operation parameters. All six stores use the same count limit. Fewer hits or eviction must not change numerical results.
+
+See [the cache identity design](docs/design/cache-identity.md) for the supported spaces and regression coverage. This change does not extend the color formats accepted by the underlying computations.
+
 ## Using the Cache in Memory-Sensitive Applications
 
 While the cache is automatically managed, you can manually control it if needed:
