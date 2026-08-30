@@ -23,6 +23,11 @@ compliance badges. A background conversion failure does not hide valid foregroun
 color information. Setting `showContrastInfo` to `false` hides the entire contrast
 section; showing it again uses the latest foreground and background colors.
 
+The following SwiftUI rendering on macOS shows available values, hidden contrast,
+an unavailable foreground conversion, and an unavailable background conversion:
+
+![Inspector output for available, hidden, and unavailable conversions](../../../docs/images/inspector-presentation.png)
+
 ## Usage
 
 ### Basic Usage

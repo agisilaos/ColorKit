@@ -4,6 +4,9 @@ ColorKit describes, compares, blends, and interpolates colors across color space
 
 ## Language
 
+**Unavailable inspector conversion**:
+A color representation or contrast ratio that cannot be obtained from the current color inputs. It is neither a zero value nor a failed contrast threshold, and says nothing about earlier inputs.
+
 **Color identity**:
 The original color space and complete component values, including opacity, that distinguish a color input. Equal component values in different color spaces do not establish the same color identity.
 _Avoid_: Visual equivalence
