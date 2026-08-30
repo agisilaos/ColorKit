@@ -141,10 +141,10 @@ public extension Color {
         let a = components.count >= 4 ? components[3] : 1.0
 
         return String(format: "#%02X%02X%02X%02X",
-                      Int(r * 255),
-                      Int(g * 255),
-                      Int(b * 255),
-                      Int(a * 255))
+                      Int(round(r * 255)),
+                      Int(round(g * 255)),
+                      Int(round(b * 255)),
+                      Int(round(a * 255)))
     }
 
     /// Returns the hexadecimal representation of the color.
@@ -210,10 +210,10 @@ public extension Color {
         let a = components.count >= 4 ? components[3] : 1.0
 
         return (
-            red: String(format: "%02X", Int(r * 255)),
-            green: String(format: "%02X", Int(g * 255)),
-            blue: String(format: "%02X", Int(b * 255)),
-            alpha: String(format: "%02X", Int(a * 255))
+            red: String(format: "%02X", Int(round(r * 255))),
+            green: String(format: "%02X", Int(round(g * 255))),
+            blue: String(format: "%02X", Int(round(b * 255))),
+            alpha: String(format: "%02X", Int(round(a * 255)))
         )
     }
 }

@@ -109,6 +109,13 @@ final class ColorSpaceConverterTests: XCTestCase {
         XCTAssertTrue(description.contains("XYZ"))
     }
 
+    func testHexCodeRoundtripping() {
+        let hex = "#232323FF" // known to cause rounding issues when round tripping
+        let color = Color(hex: hex)
+        let hex2 = color?.hexString() ?? ""
+        XCTAssertEqual(hex, hex2)
+    }
+
     func testXYZConversion() {
         let white = Color(red: 1.0, green: 1.0, blue: 1.0, opacity: 1.0) // White with known RGB values
         let components = white.colorSpaceComponents()

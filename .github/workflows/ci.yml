@@ -13,7 +13,7 @@ concurrency:
 jobs:
   swiftlint:
     name: SwiftLint
-    runs-on: macos-latest
+    runs-on: macos-26
     if: github.event.pull_request.draft == false
     steps:
       - name: Checkout Repository
@@ -27,78 +27,78 @@ jobs:
 
   test:
     name: Build and Test
-    runs-on: macos-15 # Latest macOS runner with Xcode 16.2
+    runs-on: macos-26
     if: github.event.pull_request.draft == false
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app
-
-      # Ensure no corrupt or missing SwiftPM dependencies
-      - name: Reset SPM Cache (if needed)
-        run: rm -rf .build && swift package reset
-
-      - name: Resolve Swift Package Dependencies
-        run: swift package resolve
-
-      # Bypass Xcode plugin and macro validation
-      - name: Disable Plugin Validation
+      - name: Show Xcode and Available Simulators
         run: |
-          defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidation -bool YES
-          defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+          xcodebuild -version
+          xcrun simctl list devices available
 
       # Set up caching of Swift package dependencies
       - name: Cache SPM dependencies
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-
+
+      - name: Resolve Swift Package Dependencies
+        run: swift package resolve
 
       # Set up build cache
       - name: Cache Build
         uses: actions/cache@v4
         with:
           path: ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-derived-data-${{ hashFiles('**/Package.resolved') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-derived-data-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-derived-data-
+            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-derived-data-
 
       - name: Build and Test iOS
         run: |
+          mkdir -p TestResults
           xcodebuild test \
             -scheme ColorKit \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 4 \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            -resultBundlePath TestResults/iOS.xcresult \
             -enableCodeCoverage YES \
             -skipPackagePluginValidation \
             -skipMacroValidation \
-            | xcpretty && exit ${PIPESTATUS[0]}
+            | tee TestResults/iOS.log
 
       - name: Build and Test macOS
         run: |
+          mkdir -p TestResults
           xcodebuild test \
             -scheme ColorKit \
-            -destination 'platform=macOS,arch=arm64' \
+            -destination 'platform=macOS' \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 4 \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData \
+            -resultBundlePath TestResults/macOS.xcresult \
             -enableCodeCoverage YES \
             -skipPackagePluginValidation \
             -skipMacroValidation \
-            | xcpretty && exit ${PIPESTATUS[0]}
+            | tee TestResults/macOS.log
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         if: success() || failure() # Upload even if tests fail
         with:
           name: test-results
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
-          retention-days: 5
+          path: TestResults/
+          retention-days: 14
