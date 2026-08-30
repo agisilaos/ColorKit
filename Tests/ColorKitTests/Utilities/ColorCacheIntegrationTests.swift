@@ -141,6 +141,65 @@ final class ColorCacheIntegrationTests: XCTestCase {
         }
     }
 
+    func testContrastingEndpointMatchesWithColdAndWarmCachesInBothOrders() throws {
+        let cases: [(color: Color, expected: Color)] = try [
+            (cacheTestColor(components: [0.46, 0.46, 0.46, 1]), .white),
+            (cacheTestColor(components: [0.461, 0.461, 0.461, 1]), .black),
+            (cacheTestColor(components: [0.5, 0.5, 0.5, 1]), .black),
+            (cacheTestColor(components: [1, 0, 0, 1]), .black),
+            (cacheTestColor(components: [0, 0, 1, 1]), .white)
+        ]
+
+        for (color, expected) in cases {
+            for level in WCAGContrastLevel.allCases {
+                ColorCache.shared.clearCache()
+                XCTAssertNil(ColorCache.shared.getCachedContrastRatio(for: color, with: .black))
+                XCTAssertNil(ColorCache.shared.getCachedContrastRatio(for: color, with: .white))
+
+                XCTAssertEqual(color.accessibleContrastingColor(for: level), expected)
+
+                XCTAssertNotNil(ColorCache.shared.getCachedContrastRatio(for: color, with: .black))
+                XCTAssertNotNil(ColorCache.shared.getCachedContrastRatio(for: color, with: .white))
+                XCTAssertEqual(color.accessibleContrastingColor(for: level), expected)
+            }
+        }
+
+        for order in [cases, Array(cases.reversed())] {
+            ColorCache.shared.clearCache()
+            for (color, _) in order {
+                // Populate the symmetric contrast keys through the reverse call direction.
+                _ = Color.white.wcagContrastRatio(with: color)
+                _ = Color.black.wcagContrastRatio(with: color)
+            }
+            for (color, expected) in order {
+                for level in WCAGContrastLevel.allCases {
+                    XCTAssertEqual(color.accessibleContrastingColor(for: level), expected)
+                }
+            }
+        }
+    }
+
+    func testContrastingEndpointBreaksExactRatioTiesWithoutRounding() throws {
+        let color = try cacheTestColor(components: [0.4603, 0.4603, 0.4603, 1])
+        let ratio = sqrt(21.0)
+        let cases: [(blackRatio: Double, expected: Color)] = [
+            (ratio.nextDown, .white), (ratio, .black), (ratio.nextUp, .black)
+        ]
+
+        // Seed ratios to exercise exact equality and adjacent Doubles independently
+        // of platform color conversion rounding at the luminance crossover.
+        for (blackRatio, expected) in cases {
+            ColorCache.shared.cacheContrastRatio(for: color, with: .black, ratio: blackRatio)
+            ColorCache.shared.cacheContrastRatio(for: color, with: .white, ratio: ratio)
+            XCTAssertEqual(color.wcagContrastRatio(with: .black), blackRatio)
+            XCTAssertEqual(color.wcagContrastRatio(with: .white), ratio)
+
+            for level in WCAGContrastLevel.allCases {
+                XCTAssertEqual(color.accessibleContrastingColor(for: level), expected)
+            }
+        }
+    }
+
     private func conversionValues(_ color: Color, other: Color) -> [Double?] {
         let lab = color.labComponents()
         let hsl = color.hslComponents()
