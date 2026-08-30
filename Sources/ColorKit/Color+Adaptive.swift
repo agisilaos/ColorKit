@@ -129,11 +129,15 @@ public extension Color {
         return max(l1, l2) / min(l1, l2)
     }
 
-    /// Returns an improved color that meets a minimum contrast ratio requirement.
+    /// Preserves a color that already meets the requested contrast, or attempts to adjust it.
     ///
-    /// This method iteratively adjusts the color's brightness until it meets the specified
-    /// contrast ratio with the background color. If no suitable adjustment is found,
-    /// it falls back to black or white depending on the background.
+    /// Uses the legacy `contrastRatio(with:)` calculation. If the initial ratio meets or
+    /// exceeds the minimum, the original color is returned unchanged, including its opacity.
+    /// Otherwise, the existing greedy search adjusts HSL lightness in steps of 0.05.
+    /// If adjustment is unsuccessful, the fallback is white for a background classified
+    /// as dark by `isDarkColor()`, or black otherwise. The fallback may not meet the minimum.
+    /// If the foreground cannot be converted to HSL, the original color is returned.
+    /// A NaN minimum retains the fallback behavior when foreground conversion succeeds.
     ///
     /// Example:
     /// ```swift
@@ -145,7 +149,7 @@ public extension Color {
     ///         Text("Accessible Text")
     ///             .foregroundColor(textColor.adjustedForAccessibility(
     ///                 with: backgroundColor,
-    ///                 minimumRatio: 4.5 // WCAG AA standard
+    ///                 minimumRatio: 4.5
     ///             ))
     ///             .background(backgroundColor)
     ///     }
@@ -154,13 +158,18 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - background: The background color against which contrast should be checked.
-    ///   - minimumRatio: The minimum contrast ratio required (4.5 for WCAG AA, 7 for AAA).
-    /// - Returns: A `Color` adjusted to meet the contrast ratio requirement.
+    ///   - minimumRatio: The requested minimum under the legacy contrast calculation.
+    /// - Returns: The original color on initial success or HSL conversion failure,
+    ///   the first successful adjustment, or the existing black/white fallback.
     func adjustedForAccessibility(with background: Color, minimumRatio: CGFloat) -> Color {
         guard let foregroundHSL = self.hslComponents() else { return self }
 
         var adjustedLightness = foregroundHSL.lightness
         var contrastRatio = self.contrastRatio(with: background)
+
+        if contrastRatio >= minimumRatio {
+            return self
+        }
 
         while contrastRatio < minimumRatio {
             // Try adjusting in both directions and pick the better one
@@ -194,7 +203,7 @@ public extension Color {
             }
         }
 
-        // if contrast is still too low, return a guaranteed high-contrast color
+        // Preserve the legacy fallback when adjustment does not produce a successful result.
         return background.isDarkColor() ? .white : .black
     }
 }

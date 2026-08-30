@@ -72,6 +72,13 @@ Text("Dynamic Text")
     }
 ```
 
+`adjustedForAccessibility(with:minimumRatio:)` preserves the original color, including
+opacity, when its legacy contrast ratio already meets or exceeds the requested minimum.
+Otherwise, it attempts to adjust lightness. Failed foreground conversion returns the
+original color; unsuccessful adjustment retains the existing black/white fallback,
+which may not meet the requested ratio. `highContrastColor` delegates to this behavior.
+These legacy adjustments do not independently certify WCAG compliance.
+
 ## WCAG Guidelines
 
 ColorKit supports both WCAG 2.1 AA and AAA levels:
