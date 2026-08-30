@@ -40,3 +40,12 @@ _Avoid_: XYZ percentages.
 **D65 reference white**:
 The reference white used for ColorKit's LAB coordinates, with XYZ values (95.047, 100, 108.883) on the Y = 100 scale.
 _Avoid_: White RGB color when referring to the reference white itself.
+
+**Theme registry**:
+The collection of themes available for selection, with each registered name appearing at most once. Registration alone does not select a theme.
+
+**Current theme**:
+The theme selected by the theme manager. A view subtree may use a different theme through a local override.
+
+**Theme override**:
+A theme applied to a view subtree in place of an inherited theme. It does not change the manager's current theme.
