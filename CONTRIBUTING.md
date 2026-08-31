@@ -138,22 +138,30 @@ To run the same platform checks locally with Xcode 26.5 selected:
 swiftlint lint --strict
 scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
   -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
 scripts/run_tests.sh macOS 'platform=macOS' \
   -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
 scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
   -parallel-testing-enabled NO \
   -only-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
 scripts/run_tests.sh macOS 'platform=macOS' \
   -parallel-testing-enabled NO \
   -only-testing:ColorKitTests/ColorCacheIntegrationTests \
+  -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
   -skipPackagePluginValidation -skipMacroValidation
 ```
 
 `ColorCacheIntegrationTests` clears `ColorCache.shared` before and after each test.
 Run it separately without parallel testing; direct cache tests use independent instances.
+`ThemeManagerIntegrationTests` also runs in this serial invocation. It preserves the
+private singleton initializer, registers unique names, uses baseline-relative
+registry assertions, and restores the previous selected value. There is no theme
+reset or removal API, so registered fixtures remain until the test process exits.
 
 The `test-results` workflow artifact retains raw build logs and `.xcresult`
 bundles for 14 days, including logs from failed test commands. Check the

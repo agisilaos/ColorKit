@@ -4,7 +4,11 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Isolate `ThemeManager` and `withThemeManager(_:)` to `MainActor`. Nonisolated callers must adopt actor-aware access; see [the migration guide](MIGRATION.md#unreleased-theme-ownership-f05).
+
 ### Fixed
+- Publish successful theme registrations and refresh the environment theme on selection changes without requiring parent observation, while preserving nested overrides and selection semantics.
 - Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
 - Preserve already-compliant colors, including opacity, in `adjustedForAccessibility` and `highContrastColor` instead of replacing them with black or white.
 

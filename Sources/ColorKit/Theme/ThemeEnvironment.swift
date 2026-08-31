@@ -59,12 +59,15 @@ public extension View {
         environment(\.colorTheme, theme)
     }
 
-    /// Uses the theme manager to dynamically update the theme
+    /// Observes the manager and supplies its current theme to this view and its descendants.
+    ///
+    /// The enclosing view does not need to observe the manager. Descendants can
+    /// override the inherited theme with `applyTheme(_:)` without changing the
+    /// manager's selection. Call this modifier from the main actor.
     /// - Parameter manager: The theme manager to use
     /// - Returns: A view that updates when the theme changes
+    @MainActor
     func withThemeManager(_ manager: ThemeManager) -> some View {
-        environmentObject(manager)
-            .environment(\.colorTheme, manager.currentTheme)
-            .environment(\.themeManager, manager)
+        ThemeManagerProvider(manager: manager, content: self)
     }
 }
