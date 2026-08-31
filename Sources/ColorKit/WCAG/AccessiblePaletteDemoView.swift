@@ -35,15 +35,16 @@ public struct AccessiblePaletteDemoView: View {
     @State private var isGenerating: Bool = false
 
     // Export States
-    @State private var showingExportSheet = false
-    @State private var exportingTheme = false
+    @StateObject private var export = AccessiblePaletteExport()
     @State private var selectedExportFormat: PaletteExportFormat = .json
-    @State private var showExportResult = false
-    @State private var exportResultMessage = ""
 
     // MARK: - Initialization
 
     public init() {}
+
+    init(export: AccessiblePaletteExport) {
+        _export = StateObject(wrappedValue: export)
+    }
 
     // MARK: - Body
 
@@ -62,15 +63,10 @@ public struct AccessiblePaletteDemoView: View {
         .onAppear {
             generatePaletteAndTheme()
         }
-        .modifier(ExportResultModifier(
-            showExportResult: $showExportResult,
-            exportResultMessage: exportResultMessage
-        ))
+        .modifier(ExportResultModifier(export: export))
         #if os(iOS)
-        .sheet(isPresented: $showingExportSheet) {
-            if let exportData = prepareExportData() {
-                ShareSheet(items: [exportData])
-            }
+        .sheet(item: $export.shareItem) { item in
+            ShareSheet(items: [item.url])
         }
         #endif
     }
@@ -262,7 +258,7 @@ public struct AccessiblePaletteDemoView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
-            .disabled(palette.isEmpty)
+            .disabled(palette.isEmpty || export.shareItem != nil)
 
             Button(action: showThemeExport) {
                 HStack {
@@ -276,7 +272,7 @@ public struct AccessiblePaletteDemoView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
-            .disabled(theme == nil)
+            .disabled(theme == nil || export.shareItem != nil)
         }
         .padding(.horizontal)
     }
@@ -391,80 +387,33 @@ public struct AccessiblePaletteDemoView: View {
         }
     }
 
-    private func prepareExportData() -> Any? {
-        let exportData: Data?
-        let filename: String
-
-        if exportingTheme, let theme = theme {
-            exportData = PaletteExporter.export(
-                palette: PaletteExporter.createPalette(from: theme),
-                to: selectedExportFormat,
-                paletteName: "Generated Theme"
-            )
-            filename = "Generated Theme"
-        } else {
-            exportData = PaletteExporter.export(
-                palette: PaletteExporter.createPalette(from: palette),
-                to: selectedExportFormat,
-                paletteName: "Accessible Palette"
-            )
-            filename = "Accessible Palette"
-        }
-
-        guard let data = exportData else {
-            exportResultMessage = "Failed to prepare data for export"
-            showExportResult = true
-            return nil
-        }
-
-        #if os(iOS)
-        let tempDir = FileManager.default.temporaryDirectory
-        let fileExtension = selectedExportFormat.fileExtension
-        let fileURL = tempDir.appendingPathComponent("\(filename).\(fileExtension)")
-
-        do {
-            try data.write(to: fileURL)
-            return fileURL
-        } catch {
-            exportResultMessage = "Failed to create temporary file: \(error.localizedDescription)"
-            showExportResult = true
-            return nil
-        }
-        #else
-        let savePanel = NSSavePanel()
-        savePanel.allowedContentTypes = [UTType(filenameExtension: selectedExportFormat.fileExtension) ?? .data]
-        savePanel.nameFieldStringValue = "\(filename).\(selectedExportFormat.fileExtension)"
-
-        let response = savePanel.runModal()
-        if response == .OK, let url = savePanel.url {
-            do {
-                try data.write(to: url)
-                exportResultMessage = "Palette exported successfully"
-                showExportResult = true
-            } catch {
-                exportResultMessage = "Failed to save file: \(error.localizedDescription)"
-                showExportResult = true
-            }
-        }
-        return nil
-        #endif
-    }
-
     private func showPaletteExport() {
-        exportingTheme = false
-        #if os(macOS)
-        _ = prepareExportData()
-        #else
-        showingExportSheet = true
-        #endif
+        exportSnapshot(AccessiblePaletteExport.Snapshot(
+            entries: PaletteExporter.createPalette(from: palette),
+            name: "Accessible Palette",
+            format: selectedExportFormat
+        ))
     }
 
     private func showThemeExport() {
-        exportingTheme = true
+        guard let theme else { return }
+        exportSnapshot(AccessiblePaletteExport.Snapshot(
+            entries: PaletteExporter.createPalette(from: theme),
+            name: "Generated Theme",
+            format: selectedExportFormat
+        ))
+    }
+
+    private func exportSnapshot(_ snapshot: AccessiblePaletteExport.Snapshot) {
         #if os(macOS)
-        _ = prepareExportData()
+        export.save(snapshot) {
+            let savePanel = NSSavePanel()
+            savePanel.allowedContentTypes = [UTType(filenameExtension: snapshot.format.fileExtension) ?? .data]
+            savePanel.nameFieldStringValue = snapshot.filename
+            return savePanel.runModal() == .OK ? savePanel.url : nil
+        }
         #else
-        showingExportSheet = true
+        export.share(snapshot)
         #endif
     }
 }
@@ -472,30 +421,29 @@ public struct AccessiblePaletteDemoView: View {
 // MARK: - Export Result Modifier
 
 private struct ExportResultModifier: ViewModifier {
-    @Binding var showExportResult: Bool
-    let exportResultMessage: String
+    @ObservedObject var export: AccessiblePaletteExport
 
     func body(content: Content) -> some View {
         content
             #if os(iOS)
-            .alert(isPresented: $showExportResult) {
+            .alert(isPresented: $export.showResult) {
                 Alert(
                     title: Text("Export Result"),
-                    message: Text(exportResultMessage),
+                    message: Text(export.resultMessage),
                     dismissButton: .default(Text("OK"))
                 )
             }
             #elseif os(macOS)
-            .onChange(of: showExportResult) { show in
+            .onChange(of: export.showResult) { show in
                 if show {
                     DispatchQueue.main.async {
                         let alert = NSAlert()
                         alert.messageText = "Export Result"
-                        alert.informativeText = exportResultMessage
+                        alert.informativeText = export.resultMessage
                         alert.addButton(withTitle: "OK")
                         alert.alertStyle = .informational
                         alert.runModal()
-                        showExportResult = false
+                        export.showResult = false
                     }
                 }
             }
