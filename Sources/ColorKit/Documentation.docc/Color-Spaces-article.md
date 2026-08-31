@@ -64,6 +64,18 @@ if let components = color.labComponents() {
 
 ## Color Space Conversion
 
+Hex and CMYK extraction resolve fixed RGB and grayscale colors to nonlinear sRGB.
+This includes linear RGB and Display P3 inputs; their raw components are not treated
+as sRGB. Hex includes unpremultiplied alpha, and CMYK ignores alpha without compositing
+against a background. CMYK uses an arithmetic approximation, not a printer profile.
+
+These optional methods return `nil` for unresolved appearance-dependent colors,
+patterns, other source color models, failed conversions, nonfinite components, invalid
+alpha, or resolved RGB outside 0–1. They do not clip or apply a range tolerance, even
+when platform conversion produces a tiny overshoot near white. Supply an already-resolved
+fixed color when appearance matters. Existing nonoptional conversion fallbacks and
+cached conversions retain their previous behavior.
+
 ColorKit handles color space conversions automatically. When you create a color in one color space and request components in another, the conversion is done for you:
 
 ```swift

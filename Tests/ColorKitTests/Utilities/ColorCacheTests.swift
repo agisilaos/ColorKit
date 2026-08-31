@@ -6,7 +6,7 @@ import XCTest
 final class ColorCacheTests: XCTestCase {
     func testSupportedSpacesHaveSeparateEntriesInEveryStore() throws {
         let cache = ColorCache()
-        let other = try cacheTestColor(components: [0.9, 0.1, 0.3, 1])
+        let other = try fixedTestColor(components: [0.9, 0.1, 0.3, 1])
         let names = [
             CGColorSpace.sRGB, CGColorSpace.linearSRGB, CGColorSpace.extendedSRGB,
             CGColorSpace.extendedLinearSRGB, CGColorSpace.displayP3,
@@ -15,7 +15,7 @@ final class ColorCacheTests: XCTestCase {
         ]
         let colors = try names.map { name in
             let space = try XCTUnwrap(CGColorSpace(name: name))
-            return try cacheTestColor(space: space, components: space.model == .rgb ? [0.2, 0.4, 0.6, 0.8] : [0.2, 0.8])
+            return try fixedTestColor(space: space, components: space.model == .rgb ? [0.2, 0.4, 0.6, 0.8] : [0.2, 0.8])
         }
 
         for (index, color) in colors.enumerated() {
@@ -29,13 +29,13 @@ final class ColorCacheTests: XCTestCase {
 
     func testGrayscaleComponentsAndAlphaAreNotAliasedToRGB() throws {
         let cache = ColorCache()
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         let colors = try [
-            cacheTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.25, 1]),
-            cacheTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.75, 1]),
-            cacheTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.25, 0.5]),
-            cacheTestColor(components: [0.25, 0.25, 0.25, 1]),
-            cacheTestColor(components: [0.25, 0.25, 0.25, 0.5])
+            fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.25, 1]),
+            fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.75, 1]),
+            fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [0.25, 0.5]),
+            fixedTestColor(components: [0.25, 0.25, 0.25, 1]),
+            fixedTestColor(components: [0.25, 0.25, 0.25, 0.5])
         ]
         for (index, color) in colors.enumerated() {
             XCTAssertEqual(cachePresence(cache, color: color, other: other), Array(repeating: false, count: 6))
@@ -47,7 +47,7 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testUnsupportedColorsMissAndCannotInsertInAnyStore() throws {
-        let supported = try cacheTestColor()
+        let supported = try fixedTestColor()
         #if canImport(AppKit)
         let dynamic = Color(NSColor(name: nil) { _ in .red })
         #else
@@ -57,10 +57,10 @@ final class ColorCacheTests: XCTestCase {
         let customSpace = try XCTUnwrap(CGColorSpace(calibratedGrayWhitePoint: [0.9505, 1, 1.089], blackPoint: nil, gamma: 1.8))
         let unsupported = try [
             Color.primary, Color.secondary, dynamic,
-            cacheTestColor(space: CGColorSpace.adobeRGB1998),
-            cacheTestColor(space: CGColorSpaceCreateDeviceRGB(), components: [0.2, 0.4, 0.6, 0.8]),
-            cacheTestColor(space: CGColorSpaceCreateDeviceGray(), components: [0.2, 0.8]),
-            cacheTestColor(space: customSpace, components: [0.2, 0.8])
+            fixedTestColor(space: CGColorSpace.adobeRGB1998),
+            fixedTestColor(space: CGColorSpaceCreateDeviceRGB(), components: [0.2, 0.4, 0.6, 0.8]),
+            fixedTestColor(space: CGColorSpaceCreateDeviceGray(), components: [0.2, 0.8]),
+            fixedTestColor(space: customSpace, components: [0.2, 0.8])
         ]
         XCTAssertNil(Color.primary.cgColor)
         XCTAssertNil(Color.secondary.cgColor)
@@ -80,30 +80,9 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testPatternColorCannotUseAnOrdinaryColorEntry() throws {
-        var callbacks = CGPatternCallbacks(
-            version: 0,
-            drawPattern: { _, context in
-                context.setFillColor(CGColor(red: 1, green: 0, blue: 0, alpha: 1))
-                context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-            },
-            releaseInfo: nil
-        )
-        let pattern = try XCTUnwrap(CGPattern(
-            info: nil,
-            bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
-            matrix: .identity,
-            xStep: 1,
-            yStep: 1,
-            tiling: .constantSpacing,
-            isColored: true,
-            callbacks: &callbacks
-        ))
-        let space = try XCTUnwrap(CGColorSpace(patternBaseSpace: nil))
-        let cgColor = try XCTUnwrap(CGColor(patternSpace: space, pattern: pattern, components: [1]))
-        let color = Color(cgColor)
-        XCTAssertEqual(color.cgColor?.colorSpace?.model, .pattern)
+        let color = try patternTestColor()
         let cache = ColorCache()
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         populateCache(cache, color: other, other: other)
         populateCache(cache, color: color, other: other)
         XCTAssertEqual(cachePresence(cache, color: color, other: other), Array(repeating: false, count: 6))
@@ -114,10 +93,10 @@ final class ColorCacheTests: XCTestCase {
 
     func testFiniteComponentBitsRemainDistinct() throws {
         let cache = ColorCache()
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         let values: [CGFloat] = [-0.0, 0.0, 0.5001, 0.5004, -0.25, 1.25]
         let colors = try values.map { value in
-            try cacheTestColor(space: CGColorSpace.extendedSRGB, components: [value, 0.2, 0.3, 1])
+            try fixedTestColor(space: CGColorSpace.extendedSRGB, components: [value, 0.2, 0.3, 1])
         }
         for (index, color) in colors.enumerated() {
             XCTAssertEqual(cachePresence(cache, color: color, other: other), Array(repeating: false, count: 6))
@@ -129,9 +108,9 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testNonfiniteComponentsBypassEveryStore() throws {
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         for value: CGFloat in [.nan, .infinity, -.infinity] {
-            let color = try cacheTestColor(space: CGColorSpace.extendedSRGB, components: [value, 0.2, 0.3, 1])
+            let color = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: [value, 0.2, 0.3, 1])
             let cache = ColorCache()
             populateCache(cache, color: color, other: other)
             XCTAssertEqual(cachePresence(cache, color: color, other: other), Array(repeating: false, count: 6))
@@ -142,8 +121,8 @@ final class ColorCacheTests: XCTestCase {
 
     func testContrastIsSymmetricButBlendAndInterpolationAreOrdered() throws {
         let cache = ColorCache()
-        let first = try cacheTestColor(components: [0.8, 0.1, 0.2, 1])
-        let second = try cacheTestColor(components: [0.2, 0.6, 0.9, 0.5])
+        let first = try fixedTestColor(components: [0.8, 0.1, 0.2, 1])
+        let second = try fixedTestColor(components: [0.2, 0.6, 0.9, 0.5])
         populateCache(cache, color: first, other: second)
         XCTAssertEqual(cache.getCachedContrastRatio(for: second, with: first), 0.25)
         XCTAssertNil(cache.getCachedBlendedColor(color1: second, with: first, blendMode: "normal"))
@@ -158,8 +137,8 @@ final class ColorCacheTests: XCTestCase {
 
     func testOperationNamesAreKeptExact() throws {
         let cache = ColorCache()
-        let first = try cacheTestColor()
-        let second = try cacheTestColor(components: [0.8, 0.7, 0.1, 1])
+        let first = try fixedTestColor()
+        let second = try fixedTestColor(components: [0.8, 0.7, 0.1, 1])
         let names = ["rgb", "RGB", "rgb|hsl", "", "normal"]
         for (index, name) in names.enumerated() {
             let result = index.isMultiple(of: 2) ? first : second
@@ -176,8 +155,8 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testInterpolationAmountsAreExactInBothInsertionOrders() throws {
-        let first = try cacheTestColor()
-        let second = try cacheTestColor(components: [0.8, 0.7, 0.1, 1])
+        let first = try fixedTestColor()
+        let second = try fixedTestColor(components: [0.8, 0.7, 0.1, 1])
         let amounts: [CGFloat] = [0.5001, 0.5004, -0.0, 0.0, -0.25, 1.25]
         for order in [amounts, amounts.reversed().map { $0 }] {
             let cache = ColorCache()
@@ -193,7 +172,7 @@ final class ColorCacheTests: XCTestCase {
 
     func testNonfiniteInterpolationAmountsCannotInsert() throws {
         let cache = ColorCache()
-        let color = try cacheTestColor()
+        let color = try fixedTestColor()
         for amount: CGFloat in [.nan, .infinity, -.infinity] {
             cache.cacheInterpolatedColor(color1: color, with: color, amount: amount, colorSpace: "rgb", result: color)
             XCTAssertNil(cache.getCachedInterpolatedColor(color1: color, with: color, amount: amount, colorSpace: "rgb"))
@@ -203,7 +182,7 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testEachClearOnlyRemovesItsOwnStore() throws {
-        let color = try cacheTestColor()
+        let color = try fixedTestColor()
         let clearOperations: [(ColorCache) -> Void] = [
             { $0.clearLABCache() }, { $0.clearHSLCache() }, { $0.clearLuminanceCache() },
             { $0.clearContrastCache() }, { $0.clearBlendedColorCache() }, { $0.clearInterpolatedColorCache() }
@@ -220,7 +199,7 @@ final class ColorCacheTests: XCTestCase {
     }
 
     func testGlobalClearRemovesEveryStoreWithoutAffectingOtherInstances() throws {
-        let color = try cacheTestColor()
+        let color = try fixedTestColor()
         let first = ColorCache()
         let second = ColorCache()
         populateCache(first, color: color, other: color)

@@ -129,13 +129,13 @@ final class ColorInspectorPresentationTests: XCTestCase {
         XCTAssertNil(inspector.presentation.hexValue)
     }
 
-    func testTooFewComponentsAreUnavailable() throws {
+    func testGrayscaleHexIsAvailableWithoutMigratingOtherInspectorFields() throws {
         let color = Color(CGColor(gray: 0.5, alpha: 1))
         XCTAssertEqual(try XCTUnwrap(color.cgColor?.components).count, 2)
 
         let presentation = ColorInspectorView(color: color, backgroundColor: white).presentation
 
-        XCTAssertNil(presentation.hexValue)
+        XCTAssertNotNil(presentation.hexValue)
         XCTAssertNil(presentation.rgbValues)
         XCTAssertNil(presentation.hslValues)
         XCTAssertEqual(presentation.contrast, .unavailable)
