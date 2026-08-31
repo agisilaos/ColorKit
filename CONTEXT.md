@@ -28,6 +28,10 @@ A contrast adjustment attempt that ends without finding a color that meets the r
 The black or white color selected when contrast adjustment is unsuccessful. It is not guaranteed to meet every requested minimum.
 _Avoid_: Guaranteed compliant color
 
+**Best available contrasting endpoint**:
+Whichever of black or white has the greater WCAG contrast ratio against a given color. This choice may still fall short of the requested contrast level, including AAA.
+_Avoid_: Guaranteed compliant color
+
 **LAB**:
 CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.
 _Avoid_: RGB brightness when referring to L*.
