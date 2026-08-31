@@ -128,6 +128,17 @@ let palette = [
 PaletteExportView(palette: palette, paletteName: "My Palette")
 ```
 
+The available actions depend on the platform:
+
+- **iOS:** Copy to the clipboard or Share through the system share sheet.
+- **macOS:** Copy to the clipboard or Export using the system save panel.
+
+Sharing prepares the selected format before presenting the sheet. Dismissing it
+discards that payload; sharing again uses the currently selected format. Copying
+and saving run directly without retaining a share payload. Cancelling the save
+panel shows no result alert. Export preparation and file-write failures show an
+error alert.
+
 ### Adding Export to Your Views
 
 You can easily add export functionality to any view using the provided view modifiers:
@@ -191,4 +202,4 @@ The ASE format is compatible with Adobe design tools like Photoshop, Illustrator
 
 ### PNG Image
 
-The PNG format creates a visual image of the palette for easy sharing and documentation. 
+The PNG format creates a visual image of the palette for easy sharing and documentation.

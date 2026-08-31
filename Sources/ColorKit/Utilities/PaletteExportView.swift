@@ -36,14 +36,15 @@ public struct PaletteExportView: View {
     /// The selected export format
     @State private var selectedFormat: PaletteExportFormat = .json
 
-    /// Whether the export sheet is presented
-    @State private var isExportSheetPresented = false
+    #if os(iOS)
+    /// Prepared data for the current share presentation; dismissal clears it.
+    @State private var sharePayload: SharePayload?
 
-    /// Whether the share sheet is presented
-    @State private var isShareSheetPresented = false
-
-    /// The exported data
-    @State private var exportedData: Data?
+    private struct SharePayload: Identifiable {
+        let id = UUID()
+        let data: Data
+    }
+    #endif
 
     /// The export action result message
     @State private var resultMessage: String?
@@ -74,10 +75,8 @@ public struct PaletteExportView: View {
         .padding()
         .frame(minWidth: 300, maxWidth: 600)
         #if os(iOS)
-        .sheet(isPresented: $isShareSheetPresented) {
-            if let data = exportedData {
-                ShareSheet(items: [data])
-            }
+        .sheet(item: $sharePayload) { payload in
+            ShareSheet(items: [payload.data])
         }
         #endif
         .alert(isPresented: $showResultMessage) {
@@ -137,6 +136,7 @@ public struct PaletteExportView: View {
                     .cornerRadius(8)
             }
 
+            #if os(macOS)
             Spacer()
 
             Button(action: exportToFile) {
@@ -147,6 +147,7 @@ public struct PaletteExportView: View {
                     .cornerRadius(8)
             }
 
+            #elseif os(iOS)
             Spacer()
 
             Button(action: share) {
@@ -156,6 +157,7 @@ public struct PaletteExportView: View {
                     .background(Color.accentColor.opacity(0.1))
                     .cornerRadius(8)
             }
+            #endif
         }
     }
 
@@ -171,6 +173,7 @@ public struct PaletteExportView: View {
         showResultMessage = true
     }
 
+    #if os(macOS)
     /// Export the palette to a file
     private func exportToFile() {
         guard let data = PaletteExporter.export(
@@ -183,10 +186,6 @@ public struct PaletteExportView: View {
             return
         }
 
-        exportedData = data
-        isExportSheetPresented = true
-
-        #if os(macOS)
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [UTType(filenameExtension: selectedFormat.fileExtension) ?? .data]
         savePanel.nameFieldStringValue = "\(paletteName).\(selectedFormat.fileExtension)"
@@ -202,9 +201,10 @@ public struct PaletteExportView: View {
                 showResultMessage = true
             }
         }
-        #endif
     }
+    #endif
 
+    #if os(iOS)
     /// Share the palette
     private func share() {
         guard let data = PaletteExporter.export(
@@ -217,9 +217,9 @@ public struct PaletteExportView: View {
             return
         }
 
-        exportedData = data
-        isShareSheetPresented = true
+        sharePayload = SharePayload(data: data)
     }
+    #endif
 }
 
 #if os(iOS)
