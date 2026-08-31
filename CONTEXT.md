@@ -63,3 +63,9 @@ A theme applied to a view subtree in place of an inherited theme. It does not ch
 
 **Palette share payload**:
 A snapshot of a palette in the export format selected for one sharing session. A later sharing session has its own snapshot, even when the palette and format are unchanged.
+
+**Palette export snapshot**:
+The palette or theme entries, export name, and format selected for one export action. Later generation or format changes do not change that selection.
+
+**Palette export artifact**:
+The prepared output of one palette export snapshot, ready to share or save in the selected format.
