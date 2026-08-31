@@ -126,26 +126,6 @@ final class ColorInspectorTests: XCTestCase {
         XCTAssertNotNil(inspectorViewWithDifferentParams)
     }
 
-    func testContrastRatioCalculation() throws {
-        // Test contrast ratio calculation
-        // Using known values instead of trying to extract components from Color
-
-        // White has luminance of 1.0, black has luminance of 0.0
-        let whiteL = 1.0
-        let blackL = 0.0
-
-        // Calculate contrast ratio
-        let contrastRatio = (whiteL + 0.05) / (blackL + 0.05)
-
-        // Test with a tolerance for floating point comparison
-        XCTAssertEqual(contrastRatio, 21.0, accuracy: 0.1, "Contrast ratio between white and black should be approximately 21:1")
-
-        // Test WCAG compliance levels
-        XCTAssertTrue(contrastRatio >= 7.0, "Should pass AAA level for normal text")
-        XCTAssertTrue(contrastRatio >= 4.5, "Should pass AA level for normal text")
-        XCTAssertTrue(contrastRatio >= 3.0, "Should pass AA level for large text")
-    }
-
     @MainActor
     func testColorInspectorDemoView() throws {
         // Test that the demo view can be created
