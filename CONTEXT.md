@@ -56,3 +56,6 @@ The theme selected by the theme manager. A view subtree may use a different them
 
 **Theme override**:
 A theme applied to a view subtree in place of an inherited theme. It does not change the manager's current theme.
+
+**Palette share payload**:
+A snapshot of a palette in the export format selected for one sharing session. A later sharing session has its own snapshot, even when the palette and format are unchanged.
