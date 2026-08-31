@@ -16,8 +16,8 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testNearbyInterpolationAmountsMatchColdResultsInBothCallOrders() throws {
-        let first = try cacheTestColor(components: [0.8, 0.1, 0.2, 1])
-        let second = try cacheTestColor(components: [0.1, 0.6, 0.9, 1])
+        let first = try fixedTestColor(components: [0.8, 0.1, 0.2, 1])
+        let second = try fixedTestColor(components: [0.1, 0.6, 0.9, 1])
         let amounts: [CGFloat] = [0.5001, 0.5004]
         for space: GradientColorSpace in [.rgb, .hsl, .lab] {
             let cold = amounts.map { amount in
@@ -39,9 +39,9 @@ final class ColorCacheIntegrationTests: XCTestCase {
 
     func testColorSpaceOrderDoesNotChangeColdOrWarmConversions() throws {
         let colors = try [CGColorSpace.sRGB, CGColorSpace.linearSRGB, CGColorSpace.displayP3].map {
-            try cacheTestColor(space: $0)
+            try fixedTestColor(space: $0)
         }
-        let other = try cacheTestColor(components: [0.9, 0.8, 0.7, 1])
+        let other = try fixedTestColor(components: [0.9, 0.8, 0.7, 1])
         let cold = colors.map { color in
             ColorCache.shared.clearCache()
             return conversionValues(color, other: other)
@@ -58,8 +58,8 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testBlendAndInterpolationPreserveOperandOrderWhenWarm() throws {
-        let first = try cacheTestColor(components: [0.8, 0.1, 0.2, 1])
-        let second = try cacheTestColor(components: [0.1, 0.6, 0.9, 0.5])
+        let first = try fixedTestColor(components: [0.8, 0.1, 0.2, 1])
+        let second = try fixedTestColor(components: [0.1, 0.6, 0.9, 0.5])
         let pairs = [(first, second), (second, first)]
         let coldBlends = pairs.map { base, blend in
             ColorCache.shared.clearCache()
@@ -84,9 +84,9 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testGrayscaleFallbacksDoNotChangeWhenCacheIsWarm() throws {
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         let grays = try [0.25, 0.75].map { value in
-            try cacheTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [value, 1])
+            try fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [value, 1])
         }
         let cold = grays.map { color in
             ColorCache.shared.clearCache()
@@ -108,7 +108,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testUnresolvedColorsKeepTheirFallbacksAfterOtherCalls() throws {
-        let other = try cacheTestColor()
+        let other = try fixedTestColor()
         let colors = [Color.primary, Color.secondary]
         let cold = colors.map { color in
             ColorCache.shared.clearCache()
@@ -130,8 +130,8 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testInterpolationKeepsExistingClampingBeforeCacheLookup() throws {
-        let first = try cacheTestColor()
-        let second = try cacheTestColor(components: [0.8, 0.7, 0.1, 1])
+        let first = try fixedTestColor()
+        let second = try fixedTestColor(components: [0.8, 0.7, 0.1, 1])
         for (amount, clamped): (CGFloat, CGFloat) in [(-0.25, 0), (1.25, 1)] {
             ColorCache.shared.clearCache()
             let cold = first.interpolated(with: second, amount: clamped)
@@ -143,11 +143,11 @@ final class ColorCacheIntegrationTests: XCTestCase {
 
     func testContrastingEndpointMatchesWithColdAndWarmCachesInBothOrders() throws {
         let cases: [(color: Color, expected: Color)] = try [
-            (cacheTestColor(components: [0.46, 0.46, 0.46, 1]), .white),
-            (cacheTestColor(components: [0.461, 0.461, 0.461, 1]), .black),
-            (cacheTestColor(components: [0.5, 0.5, 0.5, 1]), .black),
-            (cacheTestColor(components: [1, 0, 0, 1]), .black),
-            (cacheTestColor(components: [0, 0, 1, 1]), .white)
+            (fixedTestColor(components: [0.46, 0.46, 0.46, 1]), .white),
+            (fixedTestColor(components: [0.461, 0.461, 0.461, 1]), .black),
+            (fixedTestColor(components: [0.5, 0.5, 0.5, 1]), .black),
+            (fixedTestColor(components: [1, 0, 0, 1]), .black),
+            (fixedTestColor(components: [0, 0, 1, 1]), .white)
         ]
 
         for (color, expected) in cases {
@@ -180,7 +180,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
     }
 
     func testContrastingEndpointBreaksExactRatioTiesWithoutRounding() throws {
-        let color = try cacheTestColor(components: [0.4603, 0.4603, 0.4603, 1])
+        let color = try fixedTestColor(components: [0.4603, 0.4603, 0.4603, 1])
         let ratio = sqrt(21.0)
         let cases: [(blackRatio: Double, expected: Color)] = [
             (ratio.nextDown, .white), (ratio, .black), (ratio.nextUp, .black)

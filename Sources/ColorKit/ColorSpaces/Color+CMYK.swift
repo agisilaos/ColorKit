@@ -63,6 +63,11 @@ public extension Color {
     /// 2. Calculates CMY values accounting for the black component
     /// 3. Handles special cases like pure black
     ///
+    /// Fixed RGB and grayscale colors are converted to nonlinear sRGB first.
+    /// Unresolved colors, failed conversions, invalid alpha, and RGB outside 0–1
+    /// return `nil` without clipping. Alpha is ignored, with no background compositing.
+    /// This is an arithmetic CMYK approximation, not a printer-profile conversion.
+    ///
     /// Example:
     /// ```swift
     /// let color = Color.blue
@@ -91,10 +96,10 @@ public extension Color {
     ///           yellow (0.0-1.0), and key/black (0.0-1.0), or `nil` if
     ///           conversion fails.
     func cmykComponents() -> (cyan: CGFloat, magenta: CGFloat, yellow: CGFloat, key: CGFloat)? {
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let r = components[0]
-        let g = components[1]
-        let b = components[2]
+        guard let rgba = ResolvedSRGBA.resolve(self), rgba.isInSRGBGamut else { return nil }
+        let r = rgba.red
+        let g = rgba.green
+        let b = rgba.blue
 
         let k = 1 - max(r, g, b)
 

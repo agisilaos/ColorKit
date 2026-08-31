@@ -3,24 +3,6 @@ import XCTest
 
 @testable import ColorKit
 
-func cacheTestColor(
-    space name: CFString = CGColorSpace.sRGB,
-    components: [CGFloat] = [0.2, 0.4, 0.6, 0.8]
-) throws -> Color {
-    let space = try XCTUnwrap(CGColorSpace(name: name))
-    return try cacheTestColor(space: space, components: components)
-}
-
-func cacheTestColor(space: CGColorSpace, components: [CGFloat]) throws -> Color {
-    let cgColor = try XCTUnwrap(CGColor(colorSpace: space, components: components))
-    let color = Color(cgColor)
-    let represented = try XCTUnwrap(color.cgColor)
-    XCTAssertTrue(CFEqual(try XCTUnwrap(represented.colorSpace), space))
-    let representedBits = try XCTUnwrap(represented.components).map { Double($0).bitPattern }
-    XCTAssertEqual(representedBits, components.map { Double($0).bitPattern })
-    return color
-}
-
 func assertCacheColorEqual(
     _ actual: Color?, _ expected: Color,
     file: StaticString = #filePath, line: UInt = #line

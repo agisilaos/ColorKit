@@ -111,6 +111,9 @@ public extension Color {
     ///
     /// This method converts the color's RGB(A) components to a hexadecimal string
     /// in the format #RRGGBBAA. The alpha channel is always included for consistency.
+    /// Fixed RGB and grayscale colors are converted to nonlinear sRGB first.
+    /// Unresolved colors, failed conversions, invalid alpha, and RGB outside 0–1
+    /// return `nil`; values are not clipped or composited against a background.
     ///
     /// Example:
     /// ```swift
@@ -134,17 +137,8 @@ public extension Color {
     /// - Returns: A hexadecimal string in the format `#RRGGBBAA` representing
     ///           the color, or `nil` if conversion fails.
     func hexValue() -> String? {
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let r = components[0]
-        let g = components[1]
-        let b = components[2]
-        let a = components.count >= 4 ? components[3] : 1.0
-
-        return String(format: "#%02X%02X%02X%02X",
-                      Int(round(r * 255)),
-                      Int(round(g * 255)),
-                      Int(round(b * 255)),
-                      Int(round(a * 255)))
+        guard let hex = hexComponents() else { return nil }
+        return "#\(hex.red)\(hex.green)\(hex.blue)\(hex.alpha)"
     }
 
     /// Returns the hexadecimal representation of the color.
@@ -171,6 +165,9 @@ public extension Color {
     }
 
     /// Returns the RGBA components of the color as hexadecimal values.
+    ///
+    /// Uses the same fixed-color resolution and failure policy as `hexValue()`.
+    /// Each channel is rounded to the nearest byte; alpha does not alter RGB.
     ///
     /// This method provides access to individual color components in hexadecimal
     /// format, useful for:
@@ -203,17 +200,13 @@ public extension Color {
     /// - Returns: A tuple containing the red, green, blue, and alpha components
     ///           as hexadecimal values, or `nil` if conversion fails.
     func hexComponents() -> (red: String, green: String, blue: String, alpha: String)? {
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let r = components[0]
-        let g = components[1]
-        let b = components[2]
-        let a = components.count >= 4 ? components[3] : 1.0
+        guard let rgba = ResolvedSRGBA.resolve(self), rgba.isInSRGBGamut else { return nil }
 
         return (
-            red: String(format: "%02X", Int(round(r * 255))),
-            green: String(format: "%02X", Int(round(g * 255))),
-            blue: String(format: "%02X", Int(round(b * 255))),
-            alpha: String(format: "%02X", Int(round(a * 255)))
+            red: String(format: "%02X", Int(round(rgba.red * 255))),
+            green: String(format: "%02X", Int(round(rgba.green * 255))),
+            blue: String(format: "%02X", Int(round(rgba.blue * 255))),
+            alpha: String(format: "%02X", Int(round(rgba.alpha * 255)))
         )
     }
 }

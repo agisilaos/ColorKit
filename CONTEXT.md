@@ -4,6 +4,10 @@ ColorKit describes, compares, blends, and interpolates colors across color space
 
 ## Language
 
+**Resolved sRGBA snapshot**:
+A fixed representation of a color in nonlinear sRGB with separate, unpremultiplied alpha in 0–1. All components are finite; RGB values may extend outside 0–1 to preserve colors beyond the sRGB gamut, and an unavailable conversion has no snapshot.
+_Avoid_: Clamped RGB, color identity
+
 **Unavailable inspector conversion**:
 A color representation or contrast ratio that cannot be obtained from the current color inputs. It is neither a zero value nor a failed contrast threshold, and says nothing about earlier inputs.
 
