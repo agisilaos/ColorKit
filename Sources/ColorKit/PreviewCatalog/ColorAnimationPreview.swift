@@ -30,9 +30,11 @@ public struct ColorAnimationPreview: View {
     @State private var isAnimating = false
     @State private var selectedInterpolation: ColorInterpolation = .rgb
     @State private var showPerformanceMetrics = false
-    @State private var frameCount: Int = 0
-    @State private var lastFrameTime = Date()
-    @State private var fps: Double = 0
+    @StateObject private var monitor: AnimationPerformanceMonitor
+
+    init(monitor: @autoclosure @escaping () -> AnimationPerformanceMonitor = AnimationPerformanceMonitor()) {
+        _monitor = StateObject(wrappedValue: monitor())
+    }
 
     // MARK: - Constants
 
@@ -77,7 +79,11 @@ public struct ColorAnimationPreview: View {
             .padding()
         }
         .onAppear {
-            startPerformanceMonitoring()
+            let animationState = $isAnimating
+            monitor.start { animationState.wrappedValue }
+        }
+        .onDisappear {
+            monitor.stop()
         }
     }
 
@@ -196,7 +202,7 @@ public struct ColorAnimationPreview: View {
                 VStack(alignment: .leading) {
                     Text("FPS")
                         .font(.subheadline)
-                    Text(String(format: "%.1f", fps))
+                    Text(String(format: "%.1f", monitor.fps))
                         .font(.system(.title, design: .monospaced))
                 }
 
@@ -205,7 +211,7 @@ public struct ColorAnimationPreview: View {
                 VStack(alignment: .leading) {
                     Text("Frame Count")
                         .font(.subheadline)
-                    Text("\(frameCount)")
+                    Text("\(monitor.frameCount)")
                         .font(.system(.title, design: .monospaced))
                 }
             }
@@ -252,19 +258,6 @@ public struct ColorAnimationPreview: View {
         } else {
             withAnimation(.easeInOut(duration: animationDuration)) {
                 currentColor = startColor
-            }
-        }
-    }
-
-    private func startPerformanceMonitoring() {
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            Task { @MainActor in
-                guard self.isAnimating else { return }
-                self.frameCount += 1
-                let currentTime = Date()
-                let timeInterval = currentTime.timeIntervalSince(self.lastFrameTime)
-                self.fps = 1.0 / timeInterval
-                self.lastFrameTime = currentTime
             }
         }
     }

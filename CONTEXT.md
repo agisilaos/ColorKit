@@ -69,3 +69,6 @@ The palette or theme entries, export name, and format selected for one export ac
 
 **Palette export artifact**:
 The prepared output of one palette export snapshot, ready to share or save in the selected format.
+
+**Animation monitoring session**:
+One continuous visit to the animation preview, with fresh performance metrics for each visit. Pausing animation or hiding metrics does not begin or end the session.
