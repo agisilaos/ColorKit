@@ -45,7 +45,11 @@ public struct PerformanceBenchmark: View {
         .navigationTitle("Performance Insights")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button(action: runBenchmark) {
+                Button {
+                    Task {
+                        await runBenchmark()
+                    }
+                } label: {
                     if isRunningBenchmark {
                         ProgressView()
                             .progressViewStyle(.circular)
@@ -107,7 +111,7 @@ public struct PerformanceBenchmark: View {
     // MARK: - Actions
 
     @MainActor
-    private func runBenchmark() {
+    private func runBenchmark() async {
         guard !isRunningBenchmark else { return }
 
         isRunningBenchmark = true
@@ -116,31 +120,35 @@ public struct PerformanceBenchmark: View {
         let operation = selectedOperation
         let iterations = iterationCount
 
-        // Run benchmark in background
-        Task.detached {
-            var results: [BenchmarkResult] = []
+        // This detached boundary intentionally keeps synchronous CPU loops off MainActor.
+        // Keep its closure limited to Sendable captured inputs and returned results.
+        let results = await Task.detached(priority: .userInitiated) { [operation, iterations] in
+            Self.benchmark(operation: operation, iterations: iterations)
+        }.value
 
-            switch operation {
-            case .blending:
-                results = await self.benchmarkBlending(iterations: iterations)
-            case .conversion:
-                results = await self.benchmarkConversion(iterations: iterations)
-            case .gradient:
-                results = await self.benchmarkGradient(iterations: iterations)
-            case .accessibility:
-                results = await self.benchmarkAccessibility(iterations: iterations)
-            }
-
-            // Update UI on main thread
-            await MainActor.run {
-                benchmarkResults = results
-                isRunningBenchmark = false
-            }
-        }
+        benchmarkResults = results
+        isRunningBenchmark = false
     }
 
     // MARK: - Benchmark Methods
-    private func benchmarkBlending(iterations: Int) async -> [BenchmarkResult] {
+
+    nonisolated static func benchmark(
+        operation: BenchmarkOperation,
+        iterations: Int
+    ) -> [BenchmarkResult] {
+        switch operation {
+        case .blending:
+            benchmarkBlending(iterations: iterations)
+        case .conversion:
+            benchmarkConversion(iterations: iterations)
+        case .gradient:
+            benchmarkGradient(iterations: iterations)
+        case .accessibility:
+            benchmarkAccessibility(iterations: iterations)
+        }
+    }
+
+    nonisolated private static func benchmarkBlending(iterations: Int) -> [BenchmarkResult] {
         let color1 = Color.blue
         let color2 = Color.red
         var results: [BenchmarkResult] = []
@@ -172,7 +180,7 @@ public struct PerformanceBenchmark: View {
         return results
     }
 
-    private func benchmarkConversion(iterations: Int) async -> [BenchmarkResult] {
+    nonisolated private static func benchmarkConversion(iterations: Int) -> [BenchmarkResult] {
         let color = Color.blue
         var results: [BenchmarkResult] = []
 
@@ -197,7 +205,7 @@ public struct PerformanceBenchmark: View {
         return results
     }
 
-    private func benchmarkGradient(iterations: Int) async -> [BenchmarkResult] {
+    nonisolated private static func benchmarkGradient(iterations: Int) -> [BenchmarkResult] {
         let colors = [Color.blue, Color.purple, Color.red]
         var results: [BenchmarkResult] = []
 
@@ -249,7 +257,7 @@ public struct PerformanceBenchmark: View {
         return results
     }
 
-    private func benchmarkAccessibility(iterations: Int) async -> [BenchmarkResult] {
+    nonisolated private static func benchmarkAccessibility(iterations: Int) -> [BenchmarkResult] {
         let color1 = Color.white
         let color2 = Color.black
         var results: [BenchmarkResult] = []
@@ -278,7 +286,7 @@ public struct PerformanceBenchmark: View {
 
 // MARK: - Supporting Types
 
-enum BenchmarkOperation: String, CaseIterable {
+enum BenchmarkOperation: String, CaseIterable, Sendable {
     case blending
     case conversion
     case gradient
@@ -289,7 +297,7 @@ enum BenchmarkOperation: String, CaseIterable {
     }
 }
 
-struct BenchmarkResult: Identifiable {
+struct BenchmarkResult: Identifiable, Sendable {
     let id = UUID()
     let name: String
     let duration: TimeInterval
