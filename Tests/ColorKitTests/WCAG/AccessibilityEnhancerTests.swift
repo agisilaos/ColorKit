@@ -196,6 +196,40 @@ final class AccessibilityEnhancerTests: XCTestCase {
         }
     }
 
+    func testSuggestAccessibleVariantsReturnsNoVariantsForNonpositiveCounts() {
+        let enhancer = AccessibilityEnhancer()
+        let zeroCountVariants = enhancer.suggestAccessibleVariants(for: .blue, against: .black, count: 0)
+        let negativeCountVariants = enhancer.suggestAccessibleVariants(for: .blue, against: .black, count: -1)
+
+        XCTAssertTrue(zeroCountVariants.isEmpty)
+        XCTAssertTrue(negativeCountVariants.isEmpty)
+    }
+
+    func testSuggestAccessibleVariantsReturnsOnlyDistinctAvailableVariants() {
+        let enhancer = AccessibilityEnhancer()
+        let requestedCount = 10
+        let distinctnessThreshold = 5.0
+        let variants = enhancer.suggestAccessibleVariants(
+            for: .blue,
+            against: .black,
+            count: requestedCount
+        )
+
+        XCTAssertFalse(variants.isEmpty)
+        XCTAssertLessThan(variants.count, requestedCount)
+
+        for index in variants.indices {
+            for otherIndex in variants.indices where otherIndex > index {
+                XCTAssertFalse(
+                    variants[index].isPerceptuallySimilar(
+                        to: variants[otherIndex],
+                        threshold: distinctnessThreshold
+                    )
+                )
+            }
+        }
+    }
+
     // MARK: - Test Color Extension Methods
 
     func testColorEnhancedExtension() {
