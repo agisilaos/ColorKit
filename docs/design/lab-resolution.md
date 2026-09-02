@@ -11,7 +11,7 @@ Status: implemented.
 
 ## Agreed gamut policy
 
-- Derive LAB from the finite nonlinear sRGB channels supplied by the resolved-sRGBA snapshot.
+- Derive LAB from the finite nonlinear sRGB channels supplied by the resolved sRGBA snapshot.
 - Preserve extended-range sRGB channel values, including values below zero or above one. Do not clamp, reject, or otherwise gamut-map them before the sRGB-to-XYZ-to-LAB conversion.
 - This deliberately differs from bounded representations such as Hex and CMYK. LAB can describe colors outside the sRGB gamut, while those consumers reject snapshots they cannot represent without clipping.
 - Return no LAB value when a fixed color cannot be resolved or the resolved snapshot is invalid.
