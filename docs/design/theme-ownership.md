@@ -13,7 +13,7 @@ Status: accepted for implementation.
 
 ## Existing selection behavior to preserve
 
-Registration rejects duplicate names and does not change the current theme. Switching by name selects the registered value; switching by instance checks that its name is registered but selects the supplied value, even if its colors differ from the registered value. Failed switches leave the current theme unchanged.
+Registration rejects duplicate names and does not change the current theme. At the time of F05, switching by name selected the registered value while switching by instance selected the supplied value after checking its name. [F06 canonical theme selection](theme-selection.md) supersedes that instance-selection behavior. Failed switches still leave the current theme unchanged.
 
 ## Required validation
 

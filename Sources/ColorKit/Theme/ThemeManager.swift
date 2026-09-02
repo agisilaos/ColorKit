@@ -213,10 +213,12 @@ public class ThemeManager: ObservableObject {
         return true
     }
 
-    /// Switches to a specific theme instance.
+    /// Switches to the registered theme identified by a theme instance.
     ///
-    /// This method attempts to activate the provided theme. The theme must be
-    /// registered with the manager for the switch to succeed.
+    /// This method uses the provided theme's name to find and activate the
+    /// registered theme. The provided value does not replace the registered
+    /// value, even when its colors differ. If no matching name is registered,
+    /// the current theme remains unchanged.
     ///
     /// Example:
     /// ```swift
@@ -236,15 +238,10 @@ public class ThemeManager: ObservableObject {
     /// }
     /// ```
     ///
-    /// - Parameter theme: The theme to switch to
-    /// - Returns: `true` if the theme was found and applied, `false` otherwise
+    /// - Parameter theme: A theme whose name identifies the registered theme to select
+    /// - Returns: `true` if a registered theme was found and applied, `false` otherwise
     @discardableResult
     public func switchTo(theme: ColorTheme) -> Bool {
-        guard availableThemes.contains(where: { $0.name == theme.name }) else {
-            return false
-        }
-
-        currentTheme = theme
-        return true
+        switchToTheme(named: theme.name)
     }
 }
