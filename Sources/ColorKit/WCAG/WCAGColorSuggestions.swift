@@ -57,13 +57,6 @@ public struct WCAGColorSuggestions {
     /// the original saturation.
     private static let initialSaturationFactor: CGFloat = 0.8
 
-    /// Step size for reducing saturation.
-    ///
-    /// The amount by which saturation is reduced in each iteration when
-    /// searching for a compliant color. Value of 0.2 means reducing
-    /// saturation by 20% each step.
-    private static let saturationStepSize: CGFloat = 0.2
-
     /// The base color that will remain unchanged (typically the background).
     private let baseColor: Color
 
@@ -205,29 +198,20 @@ public struct WCAGColorSuggestions {
     /// Generates suggestions by adjusting both saturation and lightness.
     ///
     /// This method is used when lightness adjustments alone cannot achieve
-    /// the required contrast ratio. It progressively reduces saturation
-    /// while setting lightness to either minimum or maximum.
+    /// the required contrast ratio. It checks the directional lightness endpoint
+    /// using the initial saturation adjustment.
     private func generateSaturationAdjustedSuggestions(
         from hsl: (hue: CGFloat, saturation: CGFloat, lightness: CGFloat),
         needsDarkening: Bool
     ) -> [Color] {
-        var saturationFactor = Self.initialSaturationFactor
-        while saturationFactor > 0 {
-            let adjustedSaturation = hsl.saturation * saturationFactor
-            let adjustedLightness = needsDarkening ? 0.0 : 1.0
+        let adjustedSaturation = hsl.saturation * Self.initialSaturationFactor
+        let adjustedLightness = needsDarkening ? 0.0 : 1.0
+        let adjustedColor = Color(
+            hue: hsl.hue,
+            saturation: adjustedSaturation,
+            lightness: CGFloat(adjustedLightness)
+        )
 
-            let adjustedColor = Color(
-                hue: hsl.hue,
-                saturation: adjustedSaturation,
-                lightness: CGFloat(adjustedLightness)
-            )
-
-            if isColorCompliant(adjustedColor) {
-                return [adjustedColor]
-            }
-
-            saturationFactor -= Self.saturationStepSize
-        }
-        return []
+        return isColorCompliant(adjustedColor) ? [adjustedColor] : []
     }
 }

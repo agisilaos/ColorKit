@@ -28,6 +28,12 @@ A foreground color whose existing contrast against the specified background meet
 **Exhausted adjustment**:
 A contrast adjustment attempt that ends without finding a color that meets the requested minimum. It does not establish that no suitable color exists.
 
+**Directional endpoint attempt**:
+A contrast adjustment candidate at the lightness endpoint selected by the existing direction: zero when darkening and one when lightening. Failure preserves that direction and does not cause the opposite endpoint to be considered.
+
+**Successful directional endpoint attempt**:
+A directional endpoint attempt whose contrast meets the requested level. It is distinct from an already-compliant input, which succeeds before any adjustment is attempted.
+
 **Contrast fallback**:
 The black or white color selected when contrast adjustment is unsuccessful. It is not guaranteed to meet every requested minimum.
 _Avoid_: Guaranteed compliant color
