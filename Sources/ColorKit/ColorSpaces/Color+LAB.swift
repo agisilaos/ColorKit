@@ -60,6 +60,11 @@ public extension Color {
     /// 2. Converts linear RGB to CIE XYZ
     /// 3. Converts CIE XYZ to CIE L*a*b*
     ///
+    /// Fixed RGB and grayscale colors are first resolved to nonlinear sRGB. Finite
+    /// extended-range channels are preserved without gamut mapping, so LAB can describe
+    /// colors outside the sRGB gamut. Alpha does not affect the LAB coordinates.
+    /// Dynamic colors must be resolved for a specific appearance before conversion.
+    ///
     /// The results are cached for performance in subsequent calls.
     ///
     /// Example:
@@ -80,20 +85,21 @@ public extension Color {
     /// }
     /// ```
     ///
-    /// - Returns: A tuple containing L* (0-100), a* (-128-127), and b* (-128-127),
-    ///           or `nil` if conversion fails.
+    /// - Returns: A tuple containing L*, a*, and b*, or `nil` if the color cannot be
+    ///            resolved or conversion does not produce finite coordinates.
     func labComponents() -> (L: CGFloat, a: CGFloat, b: CGFloat)? {
-        // Check cache first
         if let cachedComponents = ColorCache.shared.getCachedLABComponents(for: self) {
             return cachedComponents
         }
 
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let xyz = SRGBColorConversion.xyz(from: (Double(components[0]), Double(components[1]), Double(components[2])))
+        guard let resolved = ResolvedSRGBA.resolve(self) else { return nil }
+        let xyz = SRGBColorConversion.xyz(
+            from: (Double(resolved.red), Double(resolved.green), Double(resolved.blue))
+        )
         let lab = SRGBColorConversion.lab(from: xyz)
+        guard lab.l.isFinite, lab.a.isFinite, lab.b.isFinite else { return nil }
         let result = (L: CGFloat(lab.l), a: CGFloat(lab.a), b: CGFloat(lab.b))
 
-        // Cache the result
         ColorCache.shared.cacheLABComponents(for: self, L: result.L, a: result.a, b: result.b)
 
         return result
