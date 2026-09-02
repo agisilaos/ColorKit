@@ -5,10 +5,10 @@
 //  Created by Agisilaos Tsaraboulidis on 20.03.2025.
 //
 //  Description:
-//  A preview component for testing and simulating color accessibility features.
+//  A preview component for testing color accessibility features.
 //
 //  Features:
-//  - Color blindness simulation for different types (TBD)
+//  - Fixed-color dichromacy simulation for supported deficiencies
 //  - Interactive contrast ratio checker
 //  - WCAG compliance testing (AA/AAA)
 //  - Accessibility enhancement suggestions
@@ -19,14 +19,14 @@
 
 import SwiftUI
 
-/// A preview component for testing and simulating color accessibility features
+/// A preview component for testing fixed-color simulation and color accessibility features.
 public struct AccessibilityLabPreview: View {
     // MARK: - State Properties
 
-    @State private var selectedTab = AccessibilityTab.colorBlindness
+    @State private var selectedTab = AccessibilityTab.colorVisionDeficiency
     @State private var foregroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
     @State private var backgroundColor = Color(.sRGB, red: 0, green: 0.478, blue: 1)
-    @State private var selectedSimulation = ColorBlindnessType.protanopia
+    @State private var selectedSimulation = ColorVisionDeficiency.protanopia
     @State private var fontSize: CGFloat = 16
     @State private var isBold = false
     @State private var showEnhancedColors = false
@@ -36,31 +36,15 @@ public struct AccessibilityLabPreview: View {
     // MARK: - Constants
 
     private enum AccessibilityTab: String, CaseIterable {
-        case colorBlindness = "Color Blindness"
+        case colorVisionDeficiency = "CVD Simulation"
         case contrast = "Contrast"
         case guidelines = "Guidelines"
 
         var icon: String {
             switch self {
-            case .colorBlindness: return "eye"
+            case .colorVisionDeficiency: return "eye"
             case .contrast: return "circle.lefthalf.filled"
             case .guidelines: return "checklist"
-            }
-        }
-    }
-
-    private enum ColorBlindnessType: String, CaseIterable {
-        case protanopia = "Protanopia"
-        case deuteranopia = "Deuteranopia"
-        case tritanopia = "Tritanopia"
-        case achromatopsia = "Achromatopsia"
-
-        var description: String {
-            switch self {
-            case .protanopia: return "Red-blind (1% of males)"
-            case .deuteranopia: return "Green-blind (1% of males)"
-            case .tritanopia: return "Blue-blind (0.003% of population)"
-            case .achromatopsia: return "Complete color blindness"
             }
         }
     }
@@ -86,8 +70,8 @@ public struct AccessibilityLabPreview: View {
             // Content
             ScrollView {
                 switch selectedTab {
-                case .colorBlindness:
-                    colorBlindnessSection
+                case .colorVisionDeficiency:
+                    colorVisionDeficiencySection
                 case .contrast:
                     contrastCheckerSection
                 case .guidelines:
@@ -100,7 +84,7 @@ public struct AccessibilityLabPreview: View {
 
     // MARK: - Sections
 
-    private var colorBlindnessSection: some View {
+    private var colorVisionDeficiencySection: some View {
         VStack(alignment: .leading, spacing: 20) {
             // Simulation Type Selection
             VStack(alignment: .leading, spacing: 10) {
@@ -108,13 +92,13 @@ public struct AccessibilityLabPreview: View {
                     .font(.headline)
 
                 Picker("Select Type", selection: $selectedSimulation) {
-                    ForEach(ColorBlindnessType.allCases, id: \.self) { type in
-                        Text(type.rawValue).tag(type)
+                    ForEach(ColorVisionDeficiency.allCases) { deficiency in
+                        Text(deficiency.previewPresentation.name).tag(deficiency)
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
 
-                Text(selectedSimulation.description)
+                Text(selectedSimulation.previewPresentation.description)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -138,9 +122,12 @@ public struct AccessibilityLabPreview: View {
                     VStack(alignment: .leading) {
                         Text("Simulated View")
                             .font(.subheadline)
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(simulatedColor)
+                        AccessibilityLabSimulationSwatch(
+                            color: backgroundColor,
+                            deficiency: selectedSimulation
+                        )
                             .frame(width: 44, height: 44)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary, lineWidth: 1))
                     }
                 }
@@ -166,7 +153,11 @@ public struct AccessibilityLabPreview: View {
                     VStack {
                         Text("Simulated")
                             .font(.subheadline)
-                        previewCard(color: simulatedColor)
+                        if let simulatedColor {
+                            previewCard(color: simulatedColor)
+                        } else {
+                            simulationUnavailableCard
+                        }
                     }
                 }
             }
@@ -366,7 +357,7 @@ public struct AccessibilityLabPreview: View {
                     Text("• Don't rely on color alone")
                     Text("• Provide text alternatives")
                     Text("• Support high contrast mode")
-                    Text("• Test with color blindness simulators")
+                    Text("• Test fixed colors with CVD simulators")
                 }
             }
             .padding()
@@ -410,6 +401,26 @@ public struct AccessibilityLabPreview: View {
         }
     }
 
+    private var simulationUnavailableCard: some View {
+        VStack(spacing: 10) {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.secondary.opacity(0.1))
+                .frame(height: 100)
+                .overlay(
+                    Label(
+                        "Simulation unavailable for this color",
+                        systemImage: "exclamationmark.triangle.fill"
+                    )
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                )
+
+            Text("No simulated color")
+                .foregroundColor(.secondary)
+        }
+    }
+
     private func previewBox(text: String, textColor: Color) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
@@ -444,10 +455,8 @@ public struct AccessibilityLabPreview: View {
 
     // MARK: - Computed Properties
 
-    private var simulatedColor: Color {
-        // Note: Color blindness simulation is not yet implemented in ColorKit's public interface
-        // For now, return the original color
-        backgroundColor
+    private var simulatedColor: Color? {
+        backgroundColor.simulated(for: selectedSimulation)
     }
 
     private var contrastRatio: Double {

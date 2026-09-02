@@ -20,6 +20,7 @@ ColorKit provides a comprehensive set of tools for working with colors in your S
 - <doc:Accessibility-article>
 - ``WCAGContrastLevel``
 - ``AccessibilityEnhancer``
+- ``ColorVisionDeficiency``
 
 ### Theming
 - <doc:Theming-article>

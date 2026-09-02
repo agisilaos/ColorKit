@@ -81,6 +81,29 @@ A translucent foreground is composited over that background. Dynamic colors and
 translucent backgrounds return `unavailable` because their contrast needs context
 that the API was not given.
 
+### Fixed-Color CVD Simulation
+
+Use ``ColorVisionDeficiency`` with `Color.simulated(for:)` to transform a fixed
+color for full-severity protanopia, deuteranopia, or tritanopia:
+
+```swift
+let source = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.6)
+
+if let simulated = source.simulated(for: .deuteranopia) {
+    Rectangle().fill(simulated)
+}
+```
+
+The transformation uses the Machado–Oliveira–Fernandes severity-1 matrices in
+linear sRGB, clips output channels to the sRGB gamut, and preserves opacity. It
+returns `nil` when the input is dynamic, semantic, pattern-based, unsupported,
+nonfinite, or outside the sRGB gamut.
+
+This API transforms fixed colors, not arbitrary rendered content. The deprecated
+`colorBlindnessPreview(type:)` modifier remains source compatible but leaves its
+content unchanged. Achromatopsia is not supported because a generic grayscale
+conversion is not established by the selected model.
+
 ### Adaptive Colors
 
 Create colors that adapt to light and dark mode:
@@ -129,6 +152,10 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 - ``WCAGContrastLevel``
 - ``WCAGComplianceResult``
 - ``ColorAccessibilityResult``
+
+### Color Vision Deficiency Simulation
+- ``ColorVisionDeficiency``
+- `Color.simulated(for:)`
 
 ### Color Enhancement
 - `Color.enhanced(with:targetLevel:)`

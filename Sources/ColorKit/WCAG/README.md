@@ -7,7 +7,7 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 - **Real-time Contrast Ratio Calculation**: Calculate the contrast ratio between text and background colors according to WCAG 2.1 standards.
 - **Compliance Level Checking**: Check if your color combinations meet WCAG AA and AAA compliance levels for both normal and large text.
 - **Live Previews**: See how your text looks with different color combinations in real-time.
-- **Color Blindness Simulation**: Preview how your content appears to users with different types of color blindness.
+- **Fixed-Color CVD Simulation**: Transform fixed sRGB colors using a published full-severity dichromacy model.
 - **Suggestions**: Get suggestions for colors that would meet WCAG compliance levels.
 - **Palette Generation**: Generate candidate palettes around a requested WCAG contrast level.
 - **Verifiable Results**: Distinguish measured passes, best effort, and unavailable assessment.
@@ -31,19 +31,34 @@ struct MyView: View {
 }
 ```
 
-### Color Blindness Simulation
+### Fixed-Color CVD Simulation
 
 ```swift
 import SwiftUI
 import ColorKit
 
-struct MyView: View {
-    var body: some View {
-        Text("Hello, World!")
-            .colorBlindnessPreview(type: .protanopia)
-    }
+let source = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.6)
+
+if let simulated = source.simulated(for: .protanopia) {
+    RoundedRectangle(cornerRadius: 8)
+        .fill(simulated)
 }
 ```
+
+`Color.simulated(for:)` implements the full-severity matrices from the
+Machado–Oliveira–Fernandes model for protanopia, deuteranopia, and tritanopia.
+It resolves the input to finite, in-gamut sRGB, transforms it in linear light,
+clips the result to the sRGB gamut, and preserves opacity.
+
+The method returns `nil` for dynamic, semantic, pattern, unsupported, nonfinite,
+or out-of-gamut colors. It transforms fixed colors only; it does not transform
+arbitrary rendered SwiftUI content and is not a diagnostic tool or an exact
+representation of every person's perception.
+
+`colorBlindnessPreview(type:)`, `ColorBlindnessPreviewModifier`, and `ColorEffect`
+remain available as deprecated source-compatibility APIs. The modifier now leaves
+content unchanged; migrate each fixed foreground or background color to
+`Color.simulated(for:)`.
 
 ### Checking Compliance Programmatically
 
@@ -215,14 +230,16 @@ The WCAG defines several levels of compliance for contrast ratios:
 - **AAA Large**: Requires a contrast ratio of at least 4.5:1 for large text.
 - **AAA**: Requires a contrast ratio of at least 7:1 for normal text.
 
-## Color Blindness Types
+## Supported Color Vision Deficiencies
 
-The color blindness simulation supports the following types:
+The fixed-color simulation supports these full-severity dichromacies:
 
-- **Protanopia**: Red-blindness
-- **Deuteranopia**: Green-blindness
-- **Tritanopia**: Blue-blindness
-- **Achromatopsia**: Complete color blindness (grayscale vision)
+- **Protanopia**: absent long-wavelength cone response
+- **Deuteranopia**: absent medium-wavelength cone response
+- **Tritanopia**: absent short-wavelength cone response
+
+Achromatopsia is not supported. A generic grayscale conversion is not a
+verifiable achromatopsia simulation under the selected model.
 
 ## Additional Documentation
 
@@ -231,4 +248,5 @@ The color blindness simulation supports the following types:
 ## References
 
 - [WCAG 2.1 Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
-- [Color Blindness Simulation](https://www.color-blindness.com/types-of-color-blindness/)
+- [Machado, Oliveira, and Fernandes (2009)](https://doi.org/10.1109/TVCG.2009.113)
+- [Published severity matrices](https://www.inf.ufrgs.br/~oliveira/students_dissertations/Masters/Gustavo_Machado_Masters_thesis_UFRGS_2010.pdf)

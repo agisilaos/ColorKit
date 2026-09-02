@@ -78,7 +78,7 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
         case .gradients:
             return "Create and customize beautiful gradients"
         case .accessibility:
-            return "Check color contrast and simulate color blindness"
+            return "Check color contrast and simulate fixed colors for CVD"
         case .themes:
             return "Build and preview custom color themes"
         case .performance:
@@ -90,7 +90,7 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
         case .animation:
             return "Experiment with color transitions and animations"
         case .accessibilityLab:
-            return "Test and simulate color accessibility features"
+            return "Test contrast and fixed-color CVD simulation"
         }
     }
 

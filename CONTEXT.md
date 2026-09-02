@@ -94,3 +94,15 @@ The prepared output of one palette export snapshot, ready to share or save in th
 
 **Animation monitoring session**:
 One continuous visit to the animation preview, with fresh performance metrics for each visit. Pausing animation or hiding metrics does not begin or end the session.
+
+**Dichromacy simulation**:
+An approximation of how a fixed color may appear when one cone class is absent, limited to protanopia, deuteranopia, or tritanopia. It is neither a diagnosis nor an exact representation of every person's perception.
+_Avoid_: Full color-blindness simulation, achromatopsia simulation
+
+**Simulatable fixed color**:
+An identifiable color with a finite, in-gamut sRGB representation. Its opacity is part of the input and remains unchanged by dichromacy simulation.
+_Avoid_: Any SwiftUI color, resolved dynamic color
+
+**Unavailable dichromacy simulation**:
+A simulation request for which ColorKit cannot establish a simulatable fixed color. It has no simulated-color result and is not a substitute using guessed components.
+_Avoid_: Identity simulation, best-effort simulation
