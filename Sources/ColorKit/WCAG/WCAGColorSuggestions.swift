@@ -50,19 +50,11 @@ public struct WCAGColorSuggestions {
     /// A higher number of steps provides more granular adjustments but may impact performance.
     private static let defaultLightnessSteps = 10
 
-    /// Starting saturation factor for adjustments.
+    /// Saturation factor for the directional endpoint attempt.
     ///
-    /// The initial saturation multiplier when attempting to achieve compliance
-    /// through saturation adjustments. Value of 0.8 means starting at 80% of
-    /// the original saturation.
+    /// The multiplier used to construct the single directional endpoint candidate.
+    /// A value of 0.8 uses 80% of the original saturation.
     private static let initialSaturationFactor: CGFloat = 0.8
-
-    /// Step size for reducing saturation.
-    ///
-    /// The amount by which saturation is reduced in each iteration when
-    /// searching for a compliant color. Value of 0.2 means reducing
-    /// saturation by 20% each step.
-    private static let saturationStepSize: CGFloat = 0.2
 
     /// The base color that will remain unchanged (typically the background).
     private let baseColor: Color
@@ -202,32 +194,23 @@ public struct WCAGColorSuggestions {
         return []
     }
 
-    /// Generates suggestions by adjusting both saturation and lightness.
+    /// Generates a suggestion by adjusting both saturation and lightness.
     ///
     /// This method is used when lightness adjustments alone cannot achieve
-    /// the required contrast ratio. It progressively reduces saturation
-    /// while setting lightness to either minimum or maximum.
+    /// the required contrast ratio. It checks the directional lightness endpoint
+    /// using the initial saturation adjustment.
     private func generateSaturationAdjustedSuggestions(
         from hsl: (hue: CGFloat, saturation: CGFloat, lightness: CGFloat),
         needsDarkening: Bool
     ) -> [Color] {
-        var saturationFactor = Self.initialSaturationFactor
-        while saturationFactor > 0 {
-            let adjustedSaturation = hsl.saturation * saturationFactor
-            let adjustedLightness = needsDarkening ? 0.0 : 1.0
+        let adjustedSaturation = hsl.saturation * Self.initialSaturationFactor
+        let adjustedLightness = needsDarkening ? 0.0 : 1.0
+        let adjustedColor = Color(
+            hue: hsl.hue,
+            saturation: adjustedSaturation,
+            lightness: CGFloat(adjustedLightness)
+        )
 
-            let adjustedColor = Color(
-                hue: hsl.hue,
-                saturation: adjustedSaturation,
-                lightness: CGFloat(adjustedLightness)
-            )
-
-            if isColorCompliant(adjustedColor) {
-                return [adjustedColor]
-            }
-
-            saturationFactor -= Self.saturationStepSize
-        }
-        return []
+        return isColorCompliant(adjustedColor) ? [adjustedColor] : []
     }
 }
