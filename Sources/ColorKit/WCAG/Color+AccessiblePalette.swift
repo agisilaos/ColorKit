@@ -168,4 +168,31 @@ public extension Color {
         let whiteRatio = wcagContrastRatio(with: .white)
         return blackRatio >= whiteRatio ? .black : .white
     }
+
+    /// Returns the stronger black-or-white endpoint with its measured outcome.
+    ///
+    /// A measurable endpoint below the requested level is reported as best effort.
+    /// If this background cannot be resolved for strict measurement, the returned
+    /// color preserves ``accessibleContrastingColor(for:)`` compatibility and the
+    /// result is unavailable.
+    ///
+    /// - Parameter level: The WCAG contrast level to assess.
+    /// - Returns: The stronger endpoint and its measured outcome.
+    func accessibleContrastingColorResult(
+        for level: WCAGContrastLevel = .AA
+    ) -> ColorAccessibilityResult {
+        let black = Color.black.accessibilityResult(against: self, targetLevel: level)
+        let white = Color.white.accessibilityResult(against: self, targetLevel: level)
+
+        guard let blackRatio = black.contrastRatio,
+              let whiteRatio = white.contrastRatio else {
+            return ColorAccessibilityResult(
+                color: accessibleContrastingColor(for: level),
+                targetLevel: level,
+                contrastRatio: nil
+            )
+        }
+
+        return blackRatio >= whiteRatio ? black : white
+    }
 }

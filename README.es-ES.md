@@ -30,6 +30,7 @@ ColorKit es compatible con **Swift Package Manager (SPM)**.
 ✅ **Soporte para color LAB**  
 ✅ **Colores adaptables (Modo Claro/Oscuro)**  
 ✅ **Verificación de contraste WCAG para accesibilidad**  
+✅ **Resultados de accesibilidad verificables**
 ✅ **Generación automática de paletas de colores accesibles**  
 ✅ **Exportar y compartir paletas de colores**  
 ✅ **Modificadores de SwiftUI para colores dinámicos**  
@@ -157,9 +158,21 @@ let theme = seedColor.generateAccessibleTheme(
     targetLevel: .AA
 )
 
-// Encontrar un color de contraste que cumpla con los estándares de accesibilidad
+// Encontrar el extremo blanco o negro con mayor contraste e inspeccionar el resultado
 let backgroundColor = Color.purple
-let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
+let textColor = textResult.color
+
+switch textResult.status {
+case .meetsTarget:
+    if let ratio = textResult.contrastRatio {
+        print("Contraste: \(ratio):1")
+    }
+case .bestEffort:
+    print("El mejor extremo disponible no alcanza el objetivo")
+case .unavailable:
+    print("Resuelve los colores con una apariencia explícita antes de evaluarlos")
+}
 
 // Usar la vista de demostración para experimentar con la generación de paletas
 struct ContentView: View {
@@ -363,10 +376,10 @@ Valida y mejora la accesibilidad de los colores:
 // Verificar cumplimiento WCAG
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
-// Obtener alternativas accesibles sugeridas
-let suggestions = backgroundColor.suggestedAccessibleColors(
-    for: textColor, 
-    level: .AA
+// Obtener candidatos con resultados explícitos: aprobado, mejor esfuerzo o no disponible
+let suggestions = textColor.suggestAccessibleVariantResults(
+    with: backgroundColor,
+    targetLevel: .AA
 )
 ```
 

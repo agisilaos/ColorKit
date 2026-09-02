@@ -30,6 +30,7 @@ ColorKit supports **Swift Package Manager (SPM)**.
 ✅ **LAB Color Support**  
 ✅ **Adaptive Colors (Light/Dark Mode)**  
 ✅ **WCAG Contrast Checking for Accessibility**  
+✅ **Verifiable Accessibility Results**
 ✅ **Auto-Generate Accessible Color Palettes**  
 ✅ **Export & Share Color Palettes**  
 ✅ **SwiftUI Modifiers for Dynamic Colors**  
@@ -157,9 +158,21 @@ let theme = seedColor.generateAccessibleTheme(
     targetLevel: .AA
 )
 
-// Find a contrasting color that meets accessibility standards
+// Find the stronger black-or-white endpoint and inspect its measured outcome
 let backgroundColor = Color.purple
-let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
+let textColor = textResult.color
+
+switch textResult.status {
+case .meetsTarget:
+    if let ratio = textResult.contrastRatio {
+        print("Contrast: \(ratio):1")
+    }
+case .bestEffort:
+    print("Best available endpoint is below the requested target")
+case .unavailable:
+    print("Resolve the colors in an explicit appearance before assessment")
+}
 
 // Use the demo view to experiment with palette generation
 struct ContentView: View {
@@ -243,13 +256,22 @@ For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](
 
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
 ```swift
-// Enhance a color to meet accessibility requirements while preserving brand identity
+// Generate a candidate while preserving brand identity, then inspect its outcome
 let originalColor = Color.blue
 let backgroundColor = Color.white
 let targetLevel = WCAGContrastLevel.AA
 
-// Simple enhancement with default settings (preserves hue)
-let enhancedColor = originalColor.enhanced(with: backgroundColor)
+let result = originalColor.enhancementResult(
+    with: backgroundColor,
+    targetLevel: targetLevel
+)
+let enhancedColor = result.color
+
+if result.meetsTarget {
+    if let ratio = result.contrastRatio {
+        print("Measured contrast: \(ratio):1")
+    }
+}
 ```
 
 ### **1️⃣5️⃣ Preview Catalog**
@@ -363,10 +385,10 @@ Validate and improve color accessibility:
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
-// Get suggested accessible alternatives
-let suggestions = backgroundColor.suggestedAccessibleColors(
-    for: textColor, 
-    level: .AA
+// Get candidates with explicit pass, best-effort, or unavailable outcomes
+let suggestions = textColor.suggestAccessibleVariantResults(
+    with: backgroundColor,
+    targetLevel: .AA
 )
 ```
 

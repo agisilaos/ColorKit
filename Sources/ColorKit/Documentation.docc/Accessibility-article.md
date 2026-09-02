@@ -51,6 +51,36 @@ let theme = seedColor.generateAccessibleTheme(
 )
 ```
 
+### Verifiable Results
+
+Color-returning helpers remain available for compatibility. When correctness depends
+on knowing the outcome, use the assessed interfaces. They distinguish a measured pass,
+a measurable best effort below the target, and a result that cannot be measured from
+the supplied colors.
+
+```swift
+let result = textColor.enhancementResult(
+    with: backgroundColor,
+    targetLevel: .AAA
+)
+
+switch result.status {
+case .meetsTarget:
+    if let ratio = result.contrastRatio {
+        Text("Measured contrast: \(ratio):1")
+    }
+case .bestEffort:
+    Text("Candidate is below \(result.minimumContrastRatio):1")
+case .unavailable:
+    Text("Resolve the colors in an explicit appearance before assessment")
+}
+```
+
+Assessment accepts finite, in-gamut sRGB colors and requires an opaque background.
+A translucent foreground is composited over that background. Dynamic colors and
+translucent backgrounds return `unavailable` because their contrast needs context
+that the API was not given.
+
 ### Adaptive Colors
 
 Create colors that adapt to light and dark mode:
@@ -95,17 +125,23 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 ### Contrast Checking
 - `Color.contrastRatio(with:)`
 - `Color.wcagCompliance(with:)`
+- `Color.accessibilityResult(against:targetLevel:)`
 - ``WCAGContrastLevel``
 - ``WCAGComplianceResult``
+- ``ColorAccessibilityResult``
 
 ### Color Enhancement
 - `Color.enhanced(with:targetLevel:)`
+- `Color.enhancementResult(with:targetLevel:strategy:)`
 - ``AccessibilityEnhancer``
 - `Color.suggestedAccessibleColors(for:level:)`
+- `Color.suggestAccessibleVariantResults(with:targetLevel:count:)`
+- `Color.accessibleContrastingColorResult(for:)`
 
 ### Palette Generation
 - `Color.generateAccessiblePalette(targetLevel:paletteSize:includeBlackAndWhite:)`
 - `Color.generateAccessibleTheme(name:targetLevel:)`
+- `AccessiblePaletteGenerator.generateAssessedPalette(from:against:)`
 
 ### Adaptive Colors
 - `Color.adaptiveColor(light:dark:)`

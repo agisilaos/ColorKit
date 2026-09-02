@@ -52,7 +52,7 @@ extension Color {
         return (Double(red), Double(green), Double(blue), Double(alpha))
     }
 
-    /// Gets suggested colors that would comply with the specified WCAG level when paired with this color.
+    /// Gets color candidates that target the specified WCAG level when paired with this color.
     ///
     /// This method generates accessible color alternatives that maintain visual harmony
     /// while meeting WCAG contrast requirements. It provides options for preserving
@@ -83,9 +83,9 @@ extension Color {
     ///   - level: The WCAG compliance level to achieve (defaults to AA)
     ///   - preserveHue: Whether to try preserving the original hue. If true, will first try to achieve compliance
     ///                  by only adjusting lightness. If false or if lightness adjustment fails, will also adjust saturation.
-    /// - Returns: An array of suggested colors that meet the compliance level.
-    ///           Returns the original color if it already meets the requirements.
-    ///           Falls back to black or white if no other suggestions are found.
+    /// - Returns: Suggested color candidates. The result may include a black-or-white
+    ///   fallback that does not meet the requested level. Assess a selected candidate
+    ///   with ``Color/accessibilityResult(against:targetLevel:)`` before use.
     func suggestedAccessibleColors(for color: Color, level: WCAGContrastLevel = .AA, preserveHue: Bool = true) -> [Color] {
         let suggestions = WCAGColorSuggestions(baseColor: self, targetColor: color, targetLevel: level)
         return suggestions.generateSuggestions(preserveHue: preserveHue)

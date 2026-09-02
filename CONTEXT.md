@@ -46,6 +46,15 @@ _Avoid_: Guaranteed compliant color
 A request for up to a specified number of perceptually distinct adjusted colors. A nonpositive count requests no suggestions; a positive request may return fewer when no additional distinct suggestions are available.
 _Avoid_: Required variant count
 
+**Accessibility result**:
+The assessment of one foreground candidate against one explicit background and requested WCAG contrast level. It distinguishes a measured pass, a measurable best-effort result below the target, and an unavailable measurement.
+
+**Best-effort accessibility result**:
+A color candidate with a measurable contrast ratio below the requested level. It records a shortfall rather than claiming success or conversion failure.
+
+**Unavailable accessibility result**:
+An assessment for which ColorKit cannot establish a contrast ratio from the supplied inputs. This includes unresolved colors, out-of-gamut snapshots, and translucent backgrounds without a supplied backing color.
+
 **LAB**:
 CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.
 _Avoid_: RGB brightness when referring to L*.

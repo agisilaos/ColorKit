@@ -181,12 +181,11 @@ public class AccessibilityEnhancer {
         self.configuration = configuration
     }
 
-    /// Enhances a color to meet accessibility requirements against a background color.
+    /// Attempts to enhance a color for a requested accessibility target.
     ///
-    /// This method adjusts the input color to ensure it meets the configured WCAG
-    /// contrast requirements when used with the specified background color. The
-    /// adjustment preserves as much of the original color's character as possible
-    /// while achieving the required contrast ratio.
+    /// This compatibility method preserves the original color-returning behavior.
+    /// Use ``enhanceColorResult(_:against:)`` when the caller needs to distinguish
+    /// a passing candidate from best effort or unavailable measurement.
     ///
     /// Example:
     /// ```swift
@@ -204,7 +203,7 @@ public class AccessibilityEnhancer {
     /// - Parameters:
     ///   - color: The color to enhance
     ///   - backgroundColor: The background color to check against
-    /// - Returns: An enhanced color that meets accessibility requirements
+    /// - Returns: The selected enhanced color candidate.
     public func enhanceColor(_ color: Color, against backgroundColor: Color) -> Color {
         // Check if the color already meets requirements
         let contrastRatio = color.wcagContrastRatio(with: backgroundColor)
@@ -225,11 +224,32 @@ public class AccessibilityEnhancer {
         }
     }
 
-    /// Suggests multiple accessible color variants that maintain harmony with the original.
+    /// Enhances and assesses a color against the configured WCAG target.
     ///
-    /// This method generates a set of alternative colors that all meet accessibility
-    /// requirements while maintaining different aspects of the original color's character.
-    /// It's useful when you want to provide multiple options to choose from.
+    /// Candidate selection preserves ``enhanceColor(_:against:)`` behavior. The result
+    /// reports whether that candidate meets the target, is only the best available
+    /// effort, or cannot be measured from the supplied colors.
+    ///
+    /// - Parameters:
+    ///   - color: The foreground color to enhance.
+    ///   - backgroundColor: The background against which the candidate is assessed.
+    /// - Returns: The selected candidate and its measured outcome.
+    public func enhanceColorResult(
+        _ color: Color,
+        against backgroundColor: Color
+    ) -> ColorAccessibilityResult {
+        enhanceColor(color, against: backgroundColor).accessibilityResult(
+            against: backgroundColor,
+            targetLevel: configuration.targetLevel
+        )
+    }
+
+    /// Suggests multiple color variants that target the configured contrast level.
+    ///
+    /// This compatibility method generates alternative candidates while maintaining
+    /// different aspects of the original color's character. Use
+    /// ``suggestAccessibleVariantResults(for:against:count:)`` to inspect the measured
+    /// outcome for each candidate.
     ///
     /// Example:
     /// ```swift
@@ -256,7 +276,7 @@ public class AccessibilityEnhancer {
     ///   - backgroundColor: The background color to check against
     ///   - requestedCount: The maximum number of variants to generate. Nonpositive values
     ///     request no variants (default: 3)
-    /// - Returns: Up to `count` accessible color variants
+    /// - Returns: Up to `count` color candidates targeting the configured level.
     public func suggestAccessibleVariants(
         for color: Color,
         against backgroundColor: Color,
@@ -308,6 +328,30 @@ public class AccessibilityEnhancer {
         }
 
         return Array(variants.prefix(requestedCount))
+    }
+
+    /// Suggests variants and assesses each one against the configured WCAG target.
+    ///
+    /// - Parameters:
+    ///   - color: The original color on which to base the variants.
+    ///   - backgroundColor: The background against which every variant is assessed.
+    ///   - requestedCount: The maximum number of variants to return.
+    /// - Returns: Up to `requestedCount` candidates with their measured outcomes.
+    public func suggestAccessibleVariantResults(
+        for color: Color,
+        against backgroundColor: Color,
+        count requestedCount: Int = 3
+    ) -> [ColorAccessibilityResult] {
+        suggestAccessibleVariants(
+            for: color,
+            against: backgroundColor,
+            count: requestedCount
+        ).map {
+            $0.accessibilityResult(
+                against: backgroundColor,
+                targetLevel: configuration.targetLevel
+            )
+        }
     }
 
     // MARK: - Private Methods
@@ -496,12 +540,32 @@ public class AccessibilityEnhancer {
 // MARK: - Color Extensions
 
 public extension Color {
-    /// Enhances this color to meet accessibility requirements against a background color
+    /// Enhances and assesses this color against a background and WCAG target.
+    ///
+    /// - Parameters:
+    ///   - backgroundColor: The background against which the candidate is assessed.
+    ///   - targetLevel: The WCAG contrast level to target.
+    ///   - strategy: The adjustment strategy used to select a candidate.
+    /// - Returns: The selected candidate and its measured outcome.
+    func enhancementResult(
+        with backgroundColor: Color,
+        targetLevel: WCAGContrastLevel = .AA,
+        strategy: AdjustmentStrategy = .preserveHue
+    ) -> ColorAccessibilityResult {
+        let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
+            targetLevel: targetLevel,
+            strategy: strategy
+        ))
+        return enhancer.enhanceColorResult(self, against: backgroundColor)
+    }
+
+    /// Attempts to enhance this color for a requested accessibility target.
     /// - Parameters:
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
-    /// - Returns: An enhanced color that meets accessibility requirements
+    /// - Returns: The selected enhanced color candidate. Use ``enhancementResult(with:targetLevel:strategy:)``
+    ///   when the measured outcome is required.
     func enhanced(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
@@ -514,13 +578,14 @@ public extension Color {
         return enhancer.enhanceColor(self, against: backgroundColor)
     }
 
-    /// Suggests accessible color variants that maintain harmony with this color
+    /// Suggests color variants that target a contrast level while maintaining harmony.
     /// - Parameters:
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - count: The maximum number of variants to suggest. Nonpositive values
     ///     request no variants (default: 3)
-    /// - Returns: Up to `count` accessible color variants
+    /// - Returns: Up to `count` color candidates. Use
+    ///   ``suggestAccessibleVariantResults(with:targetLevel:count:)`` for measured outcomes.
     func suggestAccessibleVariants(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
@@ -530,6 +595,28 @@ public extension Color {
             targetLevel: targetLevel
         ))
         return enhancer.suggestAccessibleVariants(for: self, against: backgroundColor, count: count)
+    }
+
+    /// Suggests color variants with measured outcomes for the requested WCAG target.
+    ///
+    /// - Parameters:
+    ///   - backgroundColor: The background against which every variant is assessed.
+    ///   - targetLevel: The WCAG contrast level to target.
+    ///   - count: The maximum number of variants to return.
+    /// - Returns: Up to `count` candidates with their measured outcomes.
+    func suggestAccessibleVariantResults(
+        with backgroundColor: Color,
+        targetLevel: WCAGContrastLevel = .AA,
+        count: Int = 3
+    ) -> [ColorAccessibilityResult] {
+        let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
+            targetLevel: targetLevel
+        ))
+        return enhancer.suggestAccessibleVariantResults(
+            for: self,
+            against: backgroundColor,
+            count: count
+        )
     }
 
     /// Determines if this color is perceptually similar to another color

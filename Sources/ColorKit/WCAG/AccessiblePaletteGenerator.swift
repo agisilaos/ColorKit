@@ -218,6 +218,29 @@ public struct AccessiblePaletteGenerator {
         return palette
     }
 
+    /// Generates the existing palette and assesses every entry against a background.
+    ///
+    /// Ordering and candidate generation are identical to ``generatePalette(from:)``.
+    /// Results are not filtered, so callers retain evidence for passing, best-effort,
+    /// and unavailable entries. This method does not imply pairwise contrast between
+    /// palette entries.
+    ///
+    /// - Parameters:
+    ///   - seedColor: The color used by the existing palette-generation algorithm.
+    ///   - backgroundColor: The explicit background against which every entry is assessed.
+    /// - Returns: The generated palette with a measured result for each entry.
+    public func generateAssessedPalette(
+        from seedColor: Color,
+        against backgroundColor: Color
+    ) -> [ColorAccessibilityResult] {
+        generatePalette(from: seedColor).map {
+            $0.accessibilityResult(
+                against: backgroundColor,
+                targetLevel: configuration.targetLevel
+            )
+        }
+    }
+
     /// Generates a theme from a seed color with accessible color combinations.
     ///
     /// This method creates a color theme that:

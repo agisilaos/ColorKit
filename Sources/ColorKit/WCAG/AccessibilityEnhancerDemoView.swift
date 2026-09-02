@@ -117,16 +117,18 @@ public struct AccessibilityEnhancerDemoView: View {
                                     .fontWeight(.bold)
                             }
 
-                            let originalRatio = originalColor.wcagContrastRatio(with: backgroundColor)
-                            let originalPasses = originalRatio >= targetLevel.minimumRatio
+                            let originalResult = originalColor.accessibilityResult(
+                                against: backgroundColor,
+                                targetLevel: targetLevel
+                            )
 
-                            Text("Ratio: \(String(format: "%.2f", originalRatio))")
+                            Text(ratioText(for: originalResult))
                                 .font(.caption)
-                                .foregroundColor(originalPasses ? .green : .red)
+                                .foregroundColor(statusColor(for: originalResult.status))
 
-                            Text(originalPasses ? "Passes" : "Fails")
+                            Text(statusText(for: originalResult.status))
                                 .font(.caption)
-                                .foregroundColor(originalPasses ? .green : .red)
+                                .foregroundColor(statusColor(for: originalResult.status))
                                 .fontWeight(.bold)
                         }
 
@@ -135,7 +137,7 @@ public struct AccessibilityEnhancerDemoView: View {
                             Text("Enhanced")
                                 .font(.subheadline)
 
-                            let enhancedColor = originalColor.enhanced(
+                            let enhancedResult = originalColor.enhancementResult(
                                 with: backgroundColor,
                                 targetLevel: targetLevel,
                                 strategy: strategy
@@ -148,24 +150,21 @@ public struct AccessibilityEnhancerDemoView: View {
                                     .shadow(radius: 2)
 
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(enhancedColor)
+                                    .fill(enhancedResult.color)
                                     .frame(width: 100, height: 60)
 
                                 Text("Text")
-                                    .foregroundColor(enhancedColor)
+                                    .foregroundColor(enhancedResult.color)
                                     .fontWeight(.bold)
                             }
 
-                            let enhancedRatio = enhancedColor.wcagContrastRatio(with: backgroundColor)
-                            let enhancedPasses = enhancedRatio >= targetLevel.minimumRatio
-
-                            Text("Ratio: \(String(format: "%.2f", enhancedRatio))")
+                            Text(ratioText(for: enhancedResult))
                                 .font(.caption)
-                                .foregroundColor(enhancedPasses ? .green : .red)
+                                .foregroundColor(statusColor(for: enhancedResult.status))
 
-                            Text(enhancedPasses ? "Passes" : "Fails")
+                            Text(statusText(for: enhancedResult.status))
                                 .font(.caption)
-                                .foregroundColor(enhancedPasses ? .green : .red)
+                                .foregroundColor(statusColor(for: enhancedResult.status))
                                 .fontWeight(.bold)
                         }
                     }
@@ -191,21 +190,21 @@ public struct AccessibilityEnhancerDemoView: View {
                     )
 
                     if showVariants {
-                        let variants = originalColor.suggestAccessibleVariants(
+                        let results = originalColor.suggestAccessibleVariantResults(
                             with: backgroundColor,
                             targetLevel: targetLevel,
                             count: 4
                         )
 
-                        Text("These variants maintain harmony with your original color while meeting accessibility requirements:")
+                        Text("Each variant reports whether it meets the selected target:")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.horizontal)
 
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 15) {
-                                ForEach(0..<variants.count, id: \.self) { index in
-                                    let variant = variants[index]
+                                ForEach(0..<results.count, id: \.self) { index in
+                                    let result = results[index]
 
                                     VStack {
                                         ZStack {
@@ -215,17 +214,19 @@ public struct AccessibilityEnhancerDemoView: View {
                                                 .shadow(radius: 2)
 
                                             RoundedRectangle(cornerRadius: 4)
-                                                .fill(variant)
+                                                .fill(result.color)
                                                 .frame(width: 80, height: 50)
 
                                             Text("Aa")
-                                                .foregroundColor(variant)
+                                                .foregroundColor(result.color)
                                                 .fontWeight(.bold)
                                         }
 
-                                        let ratio = variant.wcagContrastRatio(with: backgroundColor)
-                                        Text("Ratio: \(String(format: "%.2f", ratio))")
+                                        Text(ratioText(for: result))
                                             .font(.caption)
+                                        Text(statusText(for: result.status))
+                                            .font(.caption2)
+                                            .foregroundColor(statusColor(for: result.status))
                                     }
                                 }
                             }
@@ -239,7 +240,7 @@ public struct AccessibilityEnhancerDemoView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("How It Works")
                         .font(.headline)
-                    Text("The AccessibilityEnhancer intelligently adjusts colors to meet WCAG contrast requirements while preserving brand identity. It uses perceptual color models to make the smallest possible changes needed to meet accessibility standards.")
+                    Text("The enhancer adjusts colors toward a WCAG target while preserving visual identity. Assessed results report a pass, a measurable best effort, or an unavailable measurement.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -248,6 +249,33 @@ public struct AccessibilityEnhancerDemoView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+        }
+    }
+
+    private func ratioText(for result: ColorAccessibilityResult) -> String {
+        guard let ratio = result.contrastRatio else { return "Ratio: Unavailable" }
+        return "Ratio: \(String(format: "%.2f", ratio))"
+    }
+
+    private func statusText(for status: ColorAccessibilityResult.Status) -> String {
+        switch status {
+        case .meetsTarget:
+            return "Meets target"
+        case .bestEffort:
+            return "Best effort"
+        case .unavailable:
+            return "Unavailable"
+        }
+    }
+
+    private func statusColor(for status: ColorAccessibilityResult.Status) -> Color {
+        switch status {
+        case .meetsTarget:
+            return .green
+        case .bestEffort:
+            return .orange
+        case .unavailable:
+            return .secondary
         }
     }
 }
