@@ -39,28 +39,40 @@ final class ThemeManagerIntegrationTests: XCTestCase {
         XCTAssertEqual(objectChanges, 1)
     }
 
-    func testSelectionPreservesNameAndInstanceSemantics() {
+    func testSelectionOverloadsResolveToRegisteredTheme() throws {
         let manager = ThemeManager.shared
         let originalTheme = manager.currentTheme
-        defer { manager.switchTo(theme: originalTheme) }
-        let registeredTheme = makeTheme()
-        let suppliedTheme = makeTheme(name: registeredTheme.name, primary: .red)
+        let originalRegistry = manager.availableThemes
+        defer { manager.switchToTheme(named: originalTheme.name) }
+        let lightTheme = try XCTUnwrap(originalRegistry.first { $0.name == "Default Light" })
+        let darkTheme = try XCTUnwrap(originalRegistry.first { $0.name == "Default Dark" })
+        let suppliedDarkTheme = makeTheme(name: darkTheme.name, primary: .red)
+
+        XCTAssertNotEqual(suppliedDarkTheme, darkTheme)
+        XCTAssertTrue(manager.switchToTheme(named: lightTheme.name))
+        XCTAssertEqual(manager.currentTheme, lightTheme)
+        XCTAssertTrue(manager.switchToTheme(named: darkTheme.name))
+        XCTAssertEqual(manager.currentTheme, darkTheme)
+
+        XCTAssertTrue(manager.switchToTheme(named: lightTheme.name))
+        XCTAssertEqual(manager.currentTheme, lightTheme)
+        XCTAssertTrue(manager.switchTo(theme: suppliedDarkTheme))
+        XCTAssertEqual(manager.currentTheme, darkTheme)
+        XCTAssertEqual(manager.availableThemes, originalRegistry)
+    }
+
+    func testSelectionOverloadsPreserveStateWhenNameIsMissing() {
+        let manager = ThemeManager.shared
+        let originalTheme = manager.currentTheme
+        let originalRegistry = manager.availableThemes
+        defer { manager.switchToTheme(named: originalTheme.name) }
         let missingTheme = makeTheme()
 
-        XCTAssertTrue(manager.availableThemes.contains { $0.name == "Default Light" })
-        XCTAssertTrue(manager.availableThemes.contains { $0.name == "Default Dark" })
-        XCTAssertTrue(manager.register(theme: registeredTheme))
-        XCTAssertNotEqual(registeredTheme, suppliedTheme)
-        XCTAssertTrue(manager.switchTo(theme: suppliedTheme))
-        XCTAssertEqual(manager.currentTheme, suppliedTheme)
-        XCTAssertEqual(manager.availableThemes.last, registeredTheme)
-
         XCTAssertFalse(manager.switchToTheme(named: missingTheme.name))
+        XCTAssertEqual(manager.currentTheme, originalTheme)
         XCTAssertFalse(manager.switchTo(theme: missingTheme))
-        XCTAssertEqual(manager.currentTheme, suppliedTheme)
-
-        XCTAssertTrue(manager.switchToTheme(named: registeredTheme.name))
-        XCTAssertEqual(manager.currentTheme, registeredTheme)
+        XCTAssertEqual(manager.currentTheme, originalTheme)
+        XCTAssertEqual(manager.availableThemes, originalRegistry)
     }
 
     func testEnvironmentThemeUpdatesWithoutParentObservation() async {

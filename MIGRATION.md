@@ -1,5 +1,33 @@
 # Migration Guide
 
+## Unreleased: Canonical theme selection (F06)
+
+`switchTo(theme:)` now treats its argument as a selection request identified by
+name. When that name is registered, the manager selects the canonical registered
+theme rather than installing the supplied value.
+
+Previously, a caller could pass altered colors under an existing registered name
+and make that unregistered value current. Code relying on that behavior must give
+the variant a unique name, register it, and then select it:
+
+```swift
+let variant = ColorTheme(
+    name: "Custom Variant",
+    primary: .red,
+    secondary: .gray,
+    accent: .orange,
+    background: .white,
+    text: .black
+)
+
+manager.register(theme: variant)
+manager.switchTo(theme: variant)
+```
+
+The public method signatures and return values are unchanged. Both selection
+overloads return `false` and preserve the current theme when the requested name
+is not registered. F06 does not add replacement semantics for registered themes.
+
 ## Unreleased: Theme ownership (F05)
 
 `ThemeManager` is now isolated to `MainActor` as a whole. Previously only
@@ -39,10 +67,11 @@ publishes successful registrations. `withThemeManager(_:)` observes the manager
 itself, so parents no longer need to observe it just to refresh the environment.
 Local `applyTheme(_:)` overrides retain their normal subtree precedence.
 
-Selection behavior is unchanged: registration rejects duplicate names, switching
-by name selects the registered value, and switching by instance selects the
-supplied value if its name is registered. A failed switch leaves the selection
-unchanged. Changes to those semantics belong to F06.
+At the time of F05, selection behavior was unchanged: registration rejected
+duplicate names, switching by name selected the registered value, and switching
+by instance selected the supplied value if its name was registered. F06 now
+supersedes those instance-selection semantics; see
+[Canonical theme selection](#unreleased-canonical-theme-selection-f06).
 
 ## ColorKit 1.5.0
 

@@ -55,6 +55,9 @@ _Avoid_: White RGB color when referring to the reference white itself.
 **Theme registry**:
 The collection of themes available for selection, with each registered name appearing at most once. Registration alone does not select a theme.
 
+**Registered theme**:
+The canonical theme value associated with a unique name in the theme registry. A same-name theme supplied for selection identifies this value and does not replace it.
+
 **Current theme**:
 The theme selected by the theme manager. A view subtree may use a different theme through a local override.
 
