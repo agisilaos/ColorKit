@@ -7,7 +7,7 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 - **Real-time Contrast Ratio Calculation**: Calculate the contrast ratio between text and background colors according to WCAG 2.1 standards.
 - **Compliance Level Checking**: Check if your color combinations meet WCAG AA and AAA compliance levels for both normal and large text.
 - **Live Previews**: See how your text looks with different color combinations in real-time.
-- **Fixed-Color CVD Simulation**: Transform fixed sRGB colors using a published full-severity dichromacy model.
+- **Fixed-Color CVD Simulation**: Transform fixed colors with in-gamut sRGB representations using a published full-severity dichromacy model.
 - **Suggestions**: Get suggestions for colors that would meet WCAG compliance levels.
 - **Palette Generation**: Generate candidate palettes around a requested WCAG contrast level.
 - **Verifiable Results**: Distinguish measured passes, best effort, and unavailable assessment.

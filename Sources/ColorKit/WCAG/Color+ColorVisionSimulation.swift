@@ -66,13 +66,13 @@ struct ColorVisionMatrix: Sendable {
 }
 
 public extension Color {
-    /// Simulates this fixed sRGB color for a supported color vision deficiency.
+    /// Simulates this fixed color for a supported color vision deficiency.
     ///
     /// Returns `nil` for dynamic, semantic, pattern, unsupported, nonfinite, or
     /// out-of-gamut colors. The simulation preserves the input color's opacity.
     ///
     /// - Parameter deficiency: The color vision deficiency to simulate.
-    /// - Returns: The simulated fixed sRGB color, or `nil` when the input cannot be resolved safely.
+    /// - Returns: The simulated color in sRGB, or `nil` when the input cannot be resolved safely.
     func simulated(for deficiency: ColorVisionDeficiency) -> Color? {
         guard let source = ResolvedSRGBA.resolve(self), source.isInSRGBGamut else { return nil }
         let transformed = deficiency.matrix.applying(
