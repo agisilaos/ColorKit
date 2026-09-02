@@ -4,8 +4,10 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-09-02
+
 ### Fixed
-- Report the current 2.0.0 release from `ColorKit.version`.
+- Report the current 2.0.1 release from `ColorKit.version`.
 - Correct documentation examples that referenced unavailable APIs and clarify the palette generator's contrast guarantees.
 
 ### Tooling
