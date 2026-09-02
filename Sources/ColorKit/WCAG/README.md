@@ -9,7 +9,7 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 - **Live Previews**: See how your text looks with different color combinations in real-time.
 - **Color Blindness Simulation**: Preview how your content appears to users with different types of color blindness.
 - **Suggestions**: Get suggestions for colors that would meet WCAG compliance levels.
-- **Accessible Palette Generation**: Automatically generate accessible color palettes that meet WCAG guidelines.
+- **Palette Generation**: Generate candidate palettes around a requested WCAG contrast level.
 
 ## Usage
 
@@ -134,7 +134,7 @@ struct MyView: View {
             Button("Action") {}
                 .padding()
                 .background(theme.accent.base)
-                .foregroundColor(theme.accent.base.accessibleContrastingColor(with: theme.background.base))
+                .foregroundColor(theme.accent.base.accessibleContrastingColor(for: .AA))
                 .cornerRadius(8)
         }
         .padding()
@@ -168,7 +168,7 @@ struct ContentView: View {
                 showPaletteDemo = true
             }
             .sheet(isPresented: $showPaletteDemo) {
-                ColorKit.WCAG.accessiblePaletteDemoView()
+                ColorKit.ColorInspector.accessiblePaletteDemoView()
             }
         }
     }
@@ -200,4 +200,4 @@ The color blindness simulation supports the following types:
 ## References
 
 - [WCAG 2.1 Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
-- [Color Blindness Simulation](https://www.color-blindness.com/types-of-color-blindness/) 
+- [Color Blindness Simulation](https://www.color-blindness.com/types-of-color-blindness/)

@@ -1,6 +1,6 @@
 # Accessible Palette Generator
 
-The Accessible Palette Generator is a powerful feature in ColorKit that helps you create color palettes that meet WCAG (Web Content Accessibility Guidelines) accessibility standards.
+The Accessible Palette Generator helps you create candidate palettes around a seed color and requested WCAG (Web Content Accessibility Guidelines) contrast level. Generated candidates target that level against the seed color, but included and fallback colors are not guaranteed to pass every pairwise comparison. Validate the combinations you intend to use.
 
 ## Why Accessible Color Palettes Matter
 
@@ -11,9 +11,9 @@ The Accessible Palette Generator is a powerful feature in ColorKit that helps yo
 
 ## Features
 
-- Generate accessible color palettes from a seed color
-- Create complete themes with accessible color combinations
-- Find contrasting colors that meet specific WCAG levels
+- Generate candidate color palettes from a seed color
+- Create themes with a high-contrast text and background pairing
+- Find contrasting candidates that target specific WCAG levels
 - Customize palette size and accessibility requirements
 
 ## Usage Examples
@@ -21,7 +21,7 @@ The Accessible Palette Generator is a powerful feature in ColorKit that helps yo
 ### Generating an Accessible Palette
 
 ```swift
-// Generate a palette from a blue color that meets AA standards
+// Generate a palette targeting AA contrast against the seed color
 let blue = Color.blue
 let palette = blue.generateAccessiblePalette(targetLevel: .AA, paletteSize: 5)
 
@@ -55,7 +55,7 @@ Text("Body text")
 ```swift
 // Find a color that contrasts well with a background color
 let backgroundColor = Color.blue
-let textColor = backgroundColor.accessibleContrastingColor(with: backgroundColor, targetLevel: .AA)
+let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
 
 // Use the colors in your UI
 Text("This text is readable")
@@ -71,7 +71,7 @@ ColorKit includes a demo view that lets you experiment with the Accessible Palet
 // Show the demo view
 struct ContentView: View {
     var body: some View {
-        ColorKit.WCAG.accessiblePaletteDemoView()
+        ColorKit.ColorInspector.accessiblePaletteDemoView()
     }
 }
 ```
@@ -116,5 +116,5 @@ let theme = primaryColor.generateAccessibleTheme(name: "Brand Theme")
 ThemeManager.shared.register(theme: theme)
 
 // Use it in your app
-ThemeManager.shared.applyTheme(name: "Brand Theme")
-``` 
+ThemeManager.shared.switchToTheme(named: "Brand Theme")
+```

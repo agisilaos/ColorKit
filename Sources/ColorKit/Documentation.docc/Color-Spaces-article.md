@@ -88,26 +88,26 @@ let cmyk = color.cmykComponents()
 let lab = color.labComponents()
 ```
 
-## Topics
+## Interface Overview
 
 ### RGB
-- ``Color/rgbComponents()``
-- ``Color/init(red:green:blue:)``
+- `Color.rgbComponents()`
+- `Color.init(red:green:blue:)`
 
 ### HSL
-- ``Color/hslComponents()``
-- ``Color/init(hue:saturation:lightness:)``
-- ``Color/hslString()``
+- `Color.hslComponents()`
+- `Color.init(hue:saturation:lightness:)`
+- `Color.hslString()`
 
 ### CMYK
-- ``Color/cmykComponents()``
-- ``Color/init(cyan:magenta:yellow:key:)``
-- ``Color/cmykString()``
+- `Color.cmykComponents()`
+- `Color.init(cyan:magenta:yellow:key:)`
+- `Color.cmykString()`
 
 ### LAB
-- ``Color/labComponents()``
-- ``Color/init(L:a:b:)``
-- ``Color/labString()``
+- `Color.labComponents()`
+- `Color.init(L:a:b:)`
+- `Color.labString()`
 
 ### Utilities
 - ``ColorSpaceConverter``

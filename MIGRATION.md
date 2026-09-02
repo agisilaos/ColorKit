@@ -154,7 +154,7 @@ color.monochromaticGradient(amount: 0.5)
    ```swift
    // In your Package.swift
    dependencies: [
-       .package(url: "https://github.com/yourusername/ColorKit.git", from: "1.5.0")
+       .package(url: "https://github.com/agisilaos/ColorKit.git", from: "1.5.0")
    ]
    ```
 
@@ -187,8 +187,8 @@ color.monochromaticGradient(amount: 0.5)
 ## Support
 
 If you encounter any issues during migration:
-1. Check the [ColorKit documentation](https://github.com/yourusername/ColorKit/wiki)
-2. Open an issue on the [GitHub repository](https://github.com/yourusername/ColorKit/issues)
+1. Check the documentation included with the ColorKit package in Xcode
+2. Open an issue on the [GitHub repository](https://github.com/agisilaos/ColorKit/issues)
 3. Contact the maintainers through the project's communication channels
 
 ## Next Steps

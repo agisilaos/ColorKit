@@ -99,7 +99,7 @@ let screen = color1.blended(with: color2, mode: .screen)
 let overlay = color1.blended(with: color2, mode: .overlay)
 ```
 
-## Topics
+## Interface Overview
 
 ### Caching
 - ``ColorCache``
@@ -111,10 +111,10 @@ let overlay = color1.blended(with: color2, mode: .overlay)
 - ``PaletteExporter/export(palette:to:paletteName:)``
 
 ### Gradients
-- ``Color/linearGradient(to:in:steps:)``
-- ``Color/monochromaticGradient(steps:)``
+- `Color.linearGradient(to:in:steps:)`
+- `Color.monochromaticGradient(steps:)`
 
 ### Blending
-- ``Color/blended(with:mode:amount:)``
+- `Color.blended(with:mode:amount:)`
 - ``BlendMode``
-- ``Color/interpolated(with:amount:in:)``
+- `Color.interpolated(with:amount:in:)`

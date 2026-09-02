@@ -159,12 +159,12 @@ let theme = seedColor.generateAccessibleTheme(
 
 // Find a contrasting color that meets accessibility standards
 let backgroundColor = Color.purple
-let textColor = backgroundColor.accessibleContrastingColor(with: backgroundColor, targetLevel: .AA)
+let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
 
 // Use the demo view to experiment with palette generation
 struct ContentView: View {
     var body: some View {
-        ColorKit.WCAG.accessiblePaletteDemoView()
+        ColorKit.ColorInspector.accessiblePaletteDemoView()
     }
 }
 ```

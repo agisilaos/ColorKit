@@ -4,6 +4,13 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Report the current 2.0.0 release from `ColorKit.version`.
+- Correct documentation examples that referenced unavailable APIs and clarify the palette generator's contrast guarantees.
+
+### Tooling
+- Build DocC documentation with warnings treated as errors in pull-request CI.
+
 ## [2.0.0] - 2026-09-02
 
 ### Added

@@ -127,8 +127,9 @@ func testColorInitialization() {
 
 ### CI Validation
 
-CI runs strict SwiftLint checks and tests on both iOS and macOS. The test job uses
-the `macos-26` runner with Xcode 26.5 and an iPhone 17 simulator running iOS 26.5.
+CI runs strict SwiftLint checks, builds the DocC catalog with warnings treated as
+errors, and tests on both iOS and macOS. The jobs use the `macos-26` runner with
+Xcode 26.5 and an iPhone 17 simulator running iOS 26.5.
 When changing Xcode versions, also check the simulator runtime against the
 [runner image inventory](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
 
@@ -136,6 +137,10 @@ To run the same platform checks locally with Xcode 26.5 selected:
 
 ```sh
 swiftlint lint --strict
+xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
+  -derivedDataPath /tmp/ColorKitDocumentation \
+  -skipPackagePluginValidation -skipMacroValidation \
+  'OTHER_DOCC_FLAGS=--warnings-as-errors'
 scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
   -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
   -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \

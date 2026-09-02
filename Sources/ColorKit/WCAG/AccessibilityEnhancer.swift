@@ -254,7 +254,7 @@ public class AccessibilityEnhancer {
     /// - Parameters:
     ///   - color: The original color to base variants on
     ///   - backgroundColor: The background color to check against
-    ///   - count: The maximum number of variants to generate. Nonpositive values
+    ///   - requestedCount: The maximum number of variants to generate. Nonpositive values
     ///     request no variants (default: 3)
     /// - Returns: Up to `count` accessible color variants
     public func suggestAccessibleVariants(
