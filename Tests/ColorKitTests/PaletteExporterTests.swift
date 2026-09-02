@@ -74,6 +74,18 @@ final class PaletteExporterTests: XCTestCase {
         }
     }
 
+    func testExportToJSONRejectsNonfiniteAlpha() {
+        let palette = [
+            PaletteExporter.PaletteEntry(
+                name: "Invalid Alpha",
+                color: Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75, opacity: .nan)
+            )
+        ]
+
+        XCTAssertTrue(palette[0].color.rgbaComponents().alpha.isNaN)
+        XCTAssertNil(PaletteExporter.export(palette: palette, to: .json, paletteName: "Invalid"))
+    }
+
     func testExportToCSS() {
         // Export to CSS
         guard let cssData = PaletteExporter.export(
