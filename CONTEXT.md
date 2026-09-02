@@ -42,6 +42,10 @@ _Avoid_: Guaranteed compliant color
 Whichever of black or white has the greater WCAG contrast ratio against a given color. This choice may still fall short of the requested contrast level, including AAA.
 _Avoid_: Guaranteed compliant color
 
+**Accessible variant request**:
+A request for up to a specified number of perceptually distinct adjusted colors. A nonpositive count requests no suggestions; a positive request may return fewer when no additional distinct suggestions are available.
+_Avoid_: Required variant count
+
 **LAB**:
 CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.
 _Avoid_: RGB brightness when referring to L*.

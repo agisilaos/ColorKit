@@ -136,12 +136,15 @@ public class AccessibilityEnhancer {
         /// The strategy to use when adjusting colors.
         public let strategy: AdjustmentStrategy
 
-        /// The maximum allowed perceptual difference from the original color.
+        /// The requested maximum perceptual difference from the original color.
         ///
         /// Values range from 0 to 100, where:
         /// - 0-20: Subtle changes
         /// - 20-40: Moderate changes
         /// - 40+: Significant changes
+        ///
+        /// This value is retained for source compatibility. Current enhancement
+        /// strategies do not enforce it.
         public let maxPerceptualDistance: Double
 
         /// Whether to prefer darker adjustments when possible.
@@ -152,7 +155,8 @@ public class AccessibilityEnhancer {
         /// - Parameters:
         ///   - targetLevel: The WCAG level to target (default: .AA)
         ///   - strategy: The adjustment strategy to use (default: .preserveHue)
-        ///   - maxPerceptualDistance: The maximum perceptual distance allowed (default: 30)
+        ///   - maxPerceptualDistance: The requested perceptual-distance limit. Current
+        ///     enhancement strategies do not enforce it (default: 30)
         ///   - preferDarker: Whether to prioritize darker adjustments (default: false)
         public init(
             targetLevel: WCAGContrastLevel = .AA,
@@ -250,9 +254,17 @@ public class AccessibilityEnhancer {
     /// - Parameters:
     ///   - color: The original color to base variants on
     ///   - backgroundColor: The background color to check against
-    ///   - count: The number of variants to generate (default: 3)
-    /// - Returns: An array of accessible color variants
-    public func suggestAccessibleVariants(for color: Color, against backgroundColor: Color, count: Int = 3) -> [Color] {
+    ///   - count: The maximum number of variants to generate. Nonpositive values
+    ///     request no variants (default: 3)
+    /// - Returns: Up to `count` accessible color variants
+    public func suggestAccessibleVariants(
+        for color: Color,
+        against backgroundColor: Color,
+        count requestedCount: Int = 3
+    ) -> [Color] {
+        guard requestedCount > 0 else { return [] }
+
+        let distinctnessThreshold = 5.0
         var variants: [Color] = []
 
         // Create variants with different strategies
@@ -267,39 +279,35 @@ public class AccessibilityEnhancer {
             ))
 
             let variant = enhancer.enhanceColor(color, against: backgroundColor)
-            if !variants.contains(where: { $0.isPerceptuallySimilar(to: variant, threshold: 5) }) {
+            if !variants.contains(where: {
+                $0.isPerceptuallySimilar(to: variant, threshold: distinctnessThreshold)
+            }) {
                 variants.append(variant)
             }
 
-            if variants.count >= count {
+            if variants.count >= requestedCount {
                 break
             }
         }
 
-        // If we don't have enough variants, create more with different perceptual distances
-        if variants.count < count {
-            let distances = [15.0, 20.0, 25.0, 35.0, 40.0]
+        // If needed, try the configured strategy once in the opposite direction.
+        if variants.count < requestedCount {
+            let enhancer = AccessibilityEnhancer(configuration: Configuration(
+                targetLevel: configuration.targetLevel,
+                strategy: configuration.strategy,
+                maxPerceptualDistance: configuration.maxPerceptualDistance,
+                preferDarker: !configuration.preferDarker
+            ))
 
-            for distance in distances {
-                let enhancer = AccessibilityEnhancer(configuration: Configuration(
-                    targetLevel: configuration.targetLevel,
-                    strategy: configuration.strategy,
-                    maxPerceptualDistance: distance,
-                    preferDarker: !configuration.preferDarker
-                ))
-
-                let variant = enhancer.enhanceColor(color, against: backgroundColor)
-                if !variants.contains(where: { $0.isPerceptuallySimilar(to: variant, threshold: 5) }) {
-                    variants.append(variant)
-                }
-
-                if variants.count >= count {
-                    break
-                }
+            let variant = enhancer.enhanceColor(color, against: backgroundColor)
+            if !variants.contains(where: {
+                $0.isPerceptuallySimilar(to: variant, threshold: distinctnessThreshold)
+            }) {
+                variants.append(variant)
             }
         }
 
-        return Array(variants.prefix(count))
+        return Array(variants.prefix(requestedCount))
     }
 
     // MARK: - Private Methods
@@ -510,8 +518,9 @@ public extension Color {
     /// - Parameters:
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
-    ///   - count: The number of variants to suggest (default: 3)
-    /// - Returns: An array of accessible color variants
+    ///   - count: The maximum number of variants to suggest. Nonpositive values
+    ///     request no variants (default: 3)
+    /// - Returns: Up to `count` accessible color variants
     func suggestAccessibleVariants(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
