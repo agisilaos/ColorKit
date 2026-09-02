@@ -15,16 +15,15 @@ let backgroundColor = Color.white
 let textColor = Color.gray
 
 // Check contrast ratio
-if let ratio = backgroundColor.contrastRatio(with: textColor) {
-    print("Contrast ratio: \(ratio)")
-}
+let ratio = backgroundColor.contrastRatio(with: textColor)
+print("Contrast ratio: \(ratio)")
 
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
-print("AA Large Text: \(compliance.passesAA(isLargeText: true))")
-print("AA Normal Text: \(compliance.passesAA(isLargeText: false))")
-print("AAA Large Text: \(compliance.passesAAA(isLargeText: true))")
-print("AAA Normal Text: \(compliance.passesAAA(isLargeText: false))")
+print("AA Large Text: \(compliance.passesAALarge)")
+print("AA Normal Text: \(compliance.passesAA)")
+print("AAA Large Text: \(compliance.passesAAALarge)")
+print("AAA Normal Text: \(compliance.passesAAA)")
 ```
 
 ### Accessible Color Generation

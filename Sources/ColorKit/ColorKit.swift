@@ -41,7 +41,7 @@ public enum ColorKit {
     /// - MAJOR version for incompatible API changes
     /// - MINOR version for added functionality in a backward compatible manner
     /// - PATCH version for backward compatible bug fixes
-    public static let version = "1.6.0"
+    public static let version = "2.0.0"
 
     /// WCAG Compliance Checker namespace.
     ///
@@ -137,11 +137,12 @@ public enum ColorKit {
 
         /// Generates an accessible color palette based on a seed color.
         ///
-        /// This method creates a harmonious color palette that meets WCAG
-        /// accessibility guidelines. The generated colors are guaranteed to:
-        /// - Meet the specified contrast level when used together
-        /// - Maintain visual harmony with the seed color
-        /// - Work well in both light and dark modes
+        /// This method creates a harmonious color palette around a requested WCAG
+        /// contrast level. Generated candidates target the requested
+        /// contrast level against the seed color while remaining visually distinct.
+        /// The seed color, optional black and white entries, and fallback colors are
+        /// included without a pairwise contrast guarantee, so validate combinations
+        /// in the context where they will be used.
         ///
         /// Example:
         /// ```swift
@@ -181,15 +182,16 @@ public enum ColorKit {
 
         /// Generates an accessible theme based on a seed color.
         ///
-        /// This method creates a complete color theme that meets WCAG
-        /// accessibility guidelines. The generated theme includes:
+        /// This method creates a complete color theme around a requested WCAG
+        /// contrast level. The generated theme includes:
         /// - Primary and secondary colors
         /// - Background colors
         /// - Text colors
         /// - Accent colors
         ///
-        /// All color combinations in the theme are guaranteed to meet
-        /// the specified WCAG contrast level.
+        /// The generated text and background colors use a black-and-white pairing.
+        /// Other role combinations are not certified against the requested WCAG
+        /// level and should be checked in their intended context.
         ///
         /// Example:
         /// ```swift
@@ -202,7 +204,7 @@ public enum ColorKit {
         ///
         /// // Apply theme
         /// ContentView()
-        ///     .environmentObject(theme)
+        ///     .applyTheme(theme)
         /// ```
         ///
         /// - Parameters:

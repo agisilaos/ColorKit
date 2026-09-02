@@ -8,9 +8,9 @@
 //  Extends Color with methods to generate accessible color palettes and themes.
 //
 //  Features:
-//  - Generate accessible color palettes from any color
-//  - Create accessible themes with proper contrast ratios
-//  - Find contrasting colors that meet WCAG guidelines
+//  - Generate candidate color palettes from any color
+//  - Create themes with a high-contrast text and background pairing
+//  - Find the stronger black-or-white contrasting endpoint
 //
 //  License:
 //  MIT License. See LICENSE file for details.
@@ -20,12 +20,12 @@ import SwiftUI
 
 /// Extension providing accessible color palette and theme generation for SwiftUI's Color type.
 ///
-/// This extension adds methods for creating accessible color combinations that meet
-/// WCAG guidelines while maintaining visual harmony. Key features include:
+/// This extension adds methods for creating palette and theme candidates around requested
+/// WCAG contrast levels. Key features include:
 ///
-/// - Generating accessible color palettes
-/// - Creating complete accessible themes
-/// - Finding contrasting colors that meet WCAG requirements
+/// - Generating candidate color palettes
+/// - Creating themes with a high-contrast text and background pairing
+/// - Finding the stronger black-or-white contrasting endpoint
 ///
 /// Example usage:
 /// ```swift
@@ -48,10 +48,9 @@ import SwiftUI
 public extension Color {
     /// Generates an accessible color palette based on this color.
     ///
-    /// This method creates a palette of colors that all meet WCAG contrast
-    /// requirements while maintaining visual harmony with the base color.
-    /// The palette is suitable for use in interfaces where accessibility
-    /// is a priority.
+    /// Generated candidates target the requested contrast level against the base color.
+    /// The base color, optional black and white entries, and fallback colors are not
+    /// pairwise certified. Validate combinations in the context where they will be used.
     ///
     /// Example:
     /// ```swift
@@ -94,8 +93,9 @@ public extension Color {
 
     /// Generates an accessible theme based on this color.
     ///
-    /// This method creates a complete color theme that ensures all color combinations
-    /// meet WCAG contrast requirements. The theme includes colors for:
+    /// This method creates a complete color theme with a black-and-white text and
+    /// background pairing. Other role combinations are not certified against the
+    /// requested WCAG level. The theme includes colors for:
     /// - Primary content
     /// - Secondary content
     /// - Accents

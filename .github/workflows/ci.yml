@@ -25,6 +25,26 @@ jobs:
       - name: Run SwiftLint
         run: swiftlint lint --strict
 
+  documentation:
+    name: Documentation
+    runs-on: macos-26
+    if: github.event.pull_request.draft == false
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build DocC Documentation
+        run: |
+          xcodebuild docbuild \
+            -scheme ColorKit \
+            -destination 'generic/platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/ColorKitDocumentation" \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            DOCC_TREAT_WARNINGS_AS_ERRORS=YES
+
   test:
     name: Build and Test
     runs-on: macos-26

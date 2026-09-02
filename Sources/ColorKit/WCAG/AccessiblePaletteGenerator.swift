@@ -5,11 +5,11 @@
 //  Created by Agisilaos Tsaraboulidis on 12.03.25.
 //
 //  Description:
-//  Provides functionality to generate accessible color palettes that meet WCAG guidelines.
+//  Provides functionality to generate color palettes around requested WCAG contrast levels.
 //
 //  Features:
-//  - Generates color palettes that meet specific WCAG contrast levels
-//  - Creates accessible themes with proper contrast between elements
+//  - Generates contrast candidates around a seed color
+//  - Creates themes with a high-contrast text and background pairing
 //  - Customizable palette size and accessibility requirements
 //
 //  License:
@@ -18,15 +18,16 @@
 
 import SwiftUI
 
-/// A utility for generating accessible color palettes that meet WCAG guidelines.
+/// A utility for generating color palettes around requested WCAG contrast levels.
 ///
-/// `AccessiblePaletteGenerator` helps create color palettes and themes that are both
-/// aesthetically pleasing and accessible. It ensures that generated color combinations
-/// meet specified WCAG contrast requirements while maintaining visual harmony.
+/// `AccessiblePaletteGenerator` helps create color palettes and themes around a seed color.
+/// Generated candidates target the configured contrast level against the seed. Included
+/// and fallback colors are not pairwise certified, so callers must validate the combinations
+/// they intend to use.
 ///
 /// Key features:
-/// - Generate accessible color palettes from a seed color
-/// - Create complete themes with proper contrast between elements
+/// - Generate contrast candidates from a seed color
+/// - Create themes with a high-contrast text and background pairing
 /// - Customize palette size and accessibility requirements
 /// - Support for different WCAG compliance levels
 ///
@@ -67,8 +68,9 @@ public struct AccessiblePaletteGenerator {
     public struct Configuration {
         /// The minimum contrast ratio to enforce between foreground and background colors.
         ///
-        /// This value is derived from the target WCAG level and ensures that all
-        /// color combinations in the palette meet the required contrast ratio.
+        /// This value is derived from the target WCAG level and is used when
+        /// generating contrast candidates against the seed color. Seed, explicit
+        /// black and white, and fallback entries are not pairwise certified.
         public let minimumContrastRatio: Double
 
         /// The WCAG level to target for accessibility compliance.
@@ -142,10 +144,10 @@ public struct AccessiblePaletteGenerator {
 
     /// Generates an accessible color palette based on a seed color.
     ///
-    /// This method creates a palette of colors that:
-    /// - Meet the specified WCAG contrast requirements
-    /// - Are visually distinct from each other
-    /// - Maintain harmony with the seed color
+    /// This method creates a palette that:
+    /// - Targets the specified WCAG contrast for generated candidates against the seed
+    /// - Attempts to keep entries visually distinct
+    /// - Includes the seed, optional black and white, and fallback colors as configured
     ///
     /// The generation process:
     /// 1. Starts with the seed color
@@ -218,10 +220,10 @@ public struct AccessiblePaletteGenerator {
 
     /// Generates a theme from a seed color with accessible color combinations.
     ///
-    /// This method creates a complete color theme that ensures:
-    /// - All text is readable against its background
-    /// - Primary, secondary, and accent colors work together
-    /// - The theme maintains the character of the seed color
+    /// This method creates a color theme that:
+    /// - Uses a black-and-white text and background pairing
+    /// - Derives primary, secondary, and accent roles from the seed color
+    /// - Requires callers to validate other role combinations in their intended context
     ///
     /// The theme includes:
     /// - Primary color (based on seed)
