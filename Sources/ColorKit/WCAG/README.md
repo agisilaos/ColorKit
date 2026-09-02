@@ -10,6 +10,7 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 - **Color Blindness Simulation**: Preview how your content appears to users with different types of color blindness.
 - **Suggestions**: Get suggestions for colors that would meet WCAG compliance levels.
 - **Palette Generation**: Generate candidate palettes around a requested WCAG contrast level.
+- **Verifiable Results**: Distinguish measured passes, best effort, and unavailable assessment.
 
 ## Usage
 
@@ -106,6 +107,36 @@ struct MyView: View {
     }
 }
 ```
+
+### Inspecting Generated Outcomes
+
+Use result-returning APIs when your code needs evidence that a candidate meets the
+requested target:
+
+```swift
+let result = textColor.enhancementResult(
+    with: backgroundColor,
+    targetLevel: .AAA
+)
+
+switch result.status {
+case .meetsTarget:
+    if let ratio = result.contrastRatio {
+        print("Contrast: \(ratio):1")
+    }
+case .bestEffort:
+    print("Candidate remains below the requested target")
+case .unavailable:
+    print("The supplied colors require additional appearance or background context")
+}
+
+let generator = AccessiblePaletteGenerator(configuration: .init(targetLevel: .AA))
+let paletteResults = generator.generateAssessedPalette(from: .blue, against: .white)
+```
+
+The strict assessment resolves finite, in-gamut sRGB colors, composites a translucent
+foreground over an opaque background, and returns `unavailable` for dynamic colors or
+translucent backgrounds. The legacy color-returning helpers retain their existing behavior.
 
 ### Creating Accessible Themes
 

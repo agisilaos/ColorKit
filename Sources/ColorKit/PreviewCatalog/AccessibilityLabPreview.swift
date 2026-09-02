@@ -24,8 +24,8 @@ public struct AccessibilityLabPreview: View {
     // MARK: - State Properties
 
     @State private var selectedTab = AccessibilityTab.colorBlindness
-    @State private var foregroundColor: Color = .white
-    @State private var backgroundColor: Color = .blue
+    @State private var foregroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+    @State private var backgroundColor = Color(.sRGB, red: 0, green: 0.478, blue: 1)
     @State private var selectedSimulation = ColorBlindnessType.protanopia
     @State private var fontSize: CGFloat = 16
     @State private var isBold = false
@@ -250,7 +250,7 @@ public struct AccessibilityLabPreview: View {
                     .font(.headline)
 
                 if showEnhancedColors {
-                    let enhancedColor = foregroundColor.enhanced(
+                    let enhancedResult = foregroundColor.enhancementResult(
                         with: backgroundColor,
                         targetLevel: targetLevel,
                         strategy: selectedStrategy
@@ -268,7 +268,8 @@ public struct AccessibilityLabPreview: View {
                         VStack {
                             Text("Enhanced")
                                 .font(.subheadline)
-                            previewBox(text: "Sample Text", textColor: enhancedColor)
+                            previewBox(text: "Sample Text", textColor: enhancedResult.color)
+                            resultSummary(enhancedResult)
                         }
                     }
 
@@ -277,16 +278,19 @@ public struct AccessibilityLabPreview: View {
                         Text("Alternative Suggestions:")
                             .font(.subheadline)
 
-                        let variants = foregroundColor.suggestAccessibleVariants(
+                        let results = foregroundColor.suggestAccessibleVariantResults(
                             with: backgroundColor,
                             targetLevel: targetLevel,
                             count: 3
                         )
 
                         HStack {
-                            ForEach(0..<variants.count, id: \.self) { index in
-                                previewBox(text: "Aa", textColor: variants[index])
-                                    .frame(maxWidth: 60)
+                            ForEach(0..<results.count, id: \.self) { index in
+                                VStack {
+                                    previewBox(text: "Aa", textColor: results[index].color)
+                                    resultSummary(results[index])
+                                }
+                                .frame(maxWidth: 80)
                             }
                         }
                     }
@@ -416,6 +420,26 @@ public struct AccessibilityLabPreview: View {
                 .foregroundColor(textColor)
         }
         .frame(height: 100)
+    }
+
+    @ViewBuilder
+    private func resultSummary(_ result: ColorAccessibilityResult) -> some View {
+        switch result.status {
+        case .meetsTarget:
+            Label(ratioText(for: result), systemImage: "checkmark.circle.fill")
+                .foregroundColor(.green)
+        case .bestEffort:
+            Label(ratioText(for: result), systemImage: "exclamationmark.circle.fill")
+                .foregroundColor(.orange)
+        case .unavailable:
+            Label("Unavailable", systemImage: "questionmark.circle.fill")
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private func ratioText(for result: ColorAccessibilityResult) -> String {
+        guard let ratio = result.contrastRatio else { return "Unavailable" }
+        return String(format: "%.2f:1", ratio)
     }
 
     // MARK: - Computed Properties

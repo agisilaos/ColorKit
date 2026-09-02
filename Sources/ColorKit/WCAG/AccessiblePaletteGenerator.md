@@ -33,6 +33,19 @@ ForEach(0..<palette.count, id: \.self) { index in
 }
 ```
 
+To inspect every candidate against the background where it will be used, ask the
+generator for assessed results. Generation order stays unchanged and results below
+the target remain visible.
+
+```swift
+let generator = AccessiblePaletteGenerator(configuration: .init(
+    targetLevel: .AA,
+    paletteSize: 5
+))
+let results = generator.generateAssessedPalette(from: .blue, against: .white)
+let passingColors = results.filter(\.meetsTarget).map(\.color)
+```
+
 ### Creating an Accessible Theme
 
 ```swift
@@ -55,13 +68,17 @@ Text("Body text")
 ```swift
 // Find a color that contrasts well with a background color
 let backgroundColor = Color.blue
-let textColor = backgroundColor.accessibleContrastingColor(for: .AA)
+let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
+let textColor = textResult.color
 
 // Use the colors in your UI
 Text("This text is readable")
     .foregroundColor(textColor)
     .background(backgroundColor)
 ```
+
+`textResult.status` states whether that endpoint meets the target, is only the
+strongest best effort, or could not be measured.
 
 ## Using the Demo View
 

@@ -21,9 +21,10 @@ Examples:
   scripts/run_tests.sh macOS 'platform=macOS,arch=arm64' -skipMacroValidation
   scripts/run_tests.sh --log-file macOS.log macOS 'platform=macOS'
 
-Requires xcodebuild and xcpretty (or tee with --log-file). Exit status is 0 only
-when every test command and output command succeeds, 1 on execution failure,
-and 2 on invalid arguments. Use --help to show this message.
+Requires xcodebuild. Output is formatted with xcpretty when available and remains
+as raw xcodebuild output otherwise. Exit status is 0 only when every test command
+and output command succeeds, 1 on execution failure, and 2 on invalid arguments.
+Use --help to show this message.
 EOF
 }
 
@@ -67,7 +68,11 @@ if [[ $# -eq 1 && $1 == --help ]]; then
     exit 0
 fi
 
-output_command=(xcpretty)
+if command -v xcpretty >/dev/null 2>&1; then
+    output_command=(xcpretty)
+else
+    output_command=(cat)
+fi
 if [[ ${1:-} == --log-file ]]; then
     if [[ $# -lt 4 || -z $2 || $2 == -* ]]; then
         usage >&2

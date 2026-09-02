@@ -175,7 +175,7 @@ public extension Color {
         )
     }
 
-    /// Suggests a color that would meet the specified WCAG level when paired with this color.
+    /// Suggests a black-or-white color to pair with this color.
     ///
     /// This method provides a simple suggestion for an accessible color by recommending
     /// either black or white based on the current color's luminance. For more
@@ -192,8 +192,7 @@ public extension Color {
     /// ```
     ///
     /// - Parameter level: The WCAG compliance level to target
-    /// - Returns: A suggested color (black or white) that meets the specified compliance level
-    /// Get a suggested color that would meet the specified WCAG level when paired with this color
+    /// - Returns: A black-or-white candidate selected from this color's legacy luminance.
     func suggestedColor(for level: WCAGContrastLevel) -> Color {
         let luminance = self.wcagRelativeLuminance()
 

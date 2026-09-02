@@ -161,6 +161,14 @@ scripts/run_tests.sh macOS 'platform=macOS' \
   -skipPackagePluginValidation -skipMacroValidation
 ```
 
+`scripts/run_tests.sh` formats output with `xcpretty` when it is installed and
+otherwise prints raw `xcodebuild` output. Pass `--log-file path` before the platform
+to retain the raw log with `tee`; create the log's parent directory first.
+
+After a release PR is merged, run `scripts/check_release.sh <version>` from `main`
+before tagging. The check fetches `origin/main` and tags, then verifies the working
+tree, release metadata, synchronized commit, and tag availability.
+
 `ColorCacheIntegrationTests` clears `ColorCache.shared` before and after each test.
 Run it separately without parallel testing; direct cache tests use independent instances.
 `ThemeManagerIntegrationTests` also runs in this serial invocation. It preserves the

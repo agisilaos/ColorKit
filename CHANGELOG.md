@@ -4,6 +4,20 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-09-02
+
+### Added
+- Add assessed accessibility results that distinguish a measured pass, best effort below the target, and unavailable measurement.
+- Add result-returning enhancement, contrasting-endpoint, variant, and palette APIs while retaining existing color-returning behavior.
+
+### Changed
+- Show measured accessibility outcomes in the enhancement demos and document the strict sRGB, alpha, and background requirements.
+- Correct legacy API documentation that implied every generated candidate was guaranteed to meet its requested WCAG level.
+
+### Tooling
+- Fall back to raw `xcodebuild` output when `xcpretty` is not installed.
+- Add a release preflight that verifies the release version, changelog, branch, synchronization, and tag state.
+
 ## [2.0.1] - 2026-09-02
 
 ### Fixed
