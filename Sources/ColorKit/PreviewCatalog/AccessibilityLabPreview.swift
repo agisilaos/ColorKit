@@ -24,8 +24,8 @@ public struct AccessibilityLabPreview: View {
     // MARK: - State Properties
 
     @State private var selectedTab = AccessibilityTab.colorBlindness
-    @State private var foregroundColor: Color = .white
-    @State private var backgroundColor: Color = .blue
+    @State private var foregroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+    @State private var backgroundColor = Color(.sRGB, red: 0, green: 0.478, blue: 1)
     @State private var selectedSimulation = ColorBlindnessType.protanopia
     @State private var fontSize: CGFloat = 16
     @State private var isBold = false

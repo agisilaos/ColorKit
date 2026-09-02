@@ -21,8 +21,8 @@ import SwiftUI
 
 /// A demo view that showcases the enhanced accessibility features of ColorKit
 public struct AccessibilityEnhancerDemoView: View {
-    @State private var originalColor: Color = .blue
-    @State private var backgroundColor: Color = .white
+    @State private var originalColor = Color(.sRGB, red: 0, green: 0.478, blue: 1)
+    @State private var backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
     @State private var targetLevel: WCAGContrastLevel = .AA
     @State private var strategy: AdjustmentStrategy = .preserveHue
     @State private var showVariants: Bool = false
