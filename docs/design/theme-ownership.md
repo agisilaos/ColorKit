@@ -1,6 +1,6 @@
 # F05 — Observed theme ownership
 
-Status: accepted for implementation.
+Status: implemented.
 
 ## Requested scope
 
