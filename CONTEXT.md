@@ -71,6 +71,30 @@ _Avoid_: XYZ percentages.
 The reference white used for ColorKit's LAB coordinates, with XYZ values (95.047, 100, 108.883) on the Y = 100 scale.
 _Avoid_: White RGB color when referring to the reference white itself.
 
+**Perceptual color difference**:
+A Delta E 00 measurement between two resolved D65 LAB colors using CIEDE2000 with the reference weighting factors kL, kC, and kH all equal to one. It models color separation and is distinct from RGB distance and WCAG contrast.
+_Avoid_: Perceptual RGB distance, contrast score
+
+**Comparable color**:
+A fixed, opaque color that resolves to finite, in-gamut sRGB components and can be converted to D65 LAB. A translucent color has no standalone perceptual comparison without an explicit backing color, and a wider-gamut color is never clamped into eligibility.
+_Avoid_: Uncomposited translucent color, clamped wide-gamut color
+
+**Unavailable color comparison**:
+A comparison for which either input is not a comparable color or any advertised metric cannot be obtained. It contains neither partial measurements nor fabricated component differences or perceptual scores.
+_Avoid_: Zero difference, failed similarity threshold
+
+**Color comparison input issue**:
+The reason one comparison input is not comparable: it is unresolved, translucent, or outside the sRGB gamut. Issues are retained independently for both inputs so one does not hide the other.
+_Avoid_: Comparison score, ordered failure priority
+
+**Legacy RGB distance**:
+The 2.x compatibility-only RGB approximation returned by the deprecated comparison adapter when an honest color comparison is unavailable. It is explicitly identified and is not a perceptual color difference.
+_Avoid_: CIEDE2000, Delta E 00, perceptual difference
+
+**HSL component difference**:
+The coordinate delta between two resolved HSL representations. Achromatic colors use ColorKit's canonical hue coordinate of zero; this value is not a perceptual hue claim or a failed-conversion fallback.
+_Avoid_: Perceptual hue difference
+
 **Theme registry**:
 The collection of themes available for selection, with each registered name appearing at most once. Registration alone does not select a theme.
 

@@ -357,16 +357,24 @@ ColorSpaceInspectorView(color: myColor)
 
 ### **Comparación de colores**  
 
-Compara dos colores en diferentes espacios de color y observa sus diferencias:
+Compara colores sRGB fijos, opacos y dentro de gama mediante diferencias de componentes, métricas WCAG y CIEDE2000:
 
 ```swift
-// Obtener comparación detallada entre dos colores
-let difference = color1.compare(with: color2)
-print(difference.description)
+let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
+let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
+
+switch color1.comparisonResult(with: color2) {
+case .available(let difference):
+    print("Diferencia CIEDE2000: \(difference.perceptualDifference)")
+case .unavailable(let issues):
+    print("Comparación no disponible: \(issues)")
+}
 
 // Vista de comparación visual
 ColorComparisonView(color1: color1, color2: color2)
 ```
+
+Los colores dinámicos, translúcidos, no finitos o fuera de la gama sRGB devuelven problemas explícitos en vez de mediciones inventadas.
 
 ### **Depuración de accesibilidad WCAG**  
 

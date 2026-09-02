@@ -366,16 +366,24 @@ ColorSpaceInspectorView(color: myColor)
 
 ### **Color Comparison**  
 
-Compare two colors across different color spaces and see their differences:
+Compare fixed, opaque, in-gamut sRGB colors using component differences, WCAG metrics, and CIEDE2000:
 
 ```swift
-// Get detailed comparison between two colors
-let difference = color1.compare(with: color2)
-print(difference.description)
+let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
+let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
+
+switch color1.comparisonResult(with: color2) {
+case .available(let difference):
+    print("CIEDE2000 difference: \(difference.perceptualDifference)")
+case .unavailable(let issues):
+    print("Comparison unavailable: \(issues)")
+}
 
 // Visual comparison view
 ColorComparisonView(color1: color1, color2: color2)
 ```
+
+Dynamic, translucent, nonfinite, and out-of-sRGB inputs return explicit issues instead of fabricated measurements.
 
 ### **WCAG Accessibility Debugging**  
 
