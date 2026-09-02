@@ -61,7 +61,7 @@ final class ThemeManagerIntegrationTests: XCTestCase {
         XCTAssertEqual(manager.availableThemes, originalRegistry)
     }
 
-    func testSelectionOverloadsPreserveStateWhenNameIsMissing() {
+    func testSelectionOverloadsPreserveStateForUnregisteredTheme() {
         let manager = ThemeManager.shared
         let originalTheme = manager.currentTheme
         let originalRegistry = manager.availableThemes
