@@ -9,17 +9,12 @@ ColorKit provides a comprehensive set of tools for working with colors in your S
 ## Topics
 
 ### Essentials
-- ``Color``
 - ``ColorTheme``
 - ``ThemeManager``
 
 ### Color Spaces
 - <doc:Color-Spaces>
 - ``ColorSpaceConverter``
-- ``Color/init(L: CGFloat, a: CGFloat, b: CGFloat)``
-- ``Color/init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat)``
-- ``Color/init?(hex: String)``
-- ``Color/init(cyan: CGFloat, magenta: CGFloat, yellow: CGFloat, key: CGFloat)``
 
 ### Accessibility
 - <doc:Accessibility-article>

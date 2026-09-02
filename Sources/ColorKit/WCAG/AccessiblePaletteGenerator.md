@@ -21,7 +21,7 @@ The Accessible Palette Generator helps you create candidate palettes around a se
 ### Generating an Accessible Palette
 
 ```swift
-// Generate a palette from a blue color that meets AA standards
+// Generate a palette targeting AA contrast against the seed color
 let blue = Color.blue
 let palette = blue.generateAccessiblePalette(targetLevel: .AA, paletteSize: 5)
 

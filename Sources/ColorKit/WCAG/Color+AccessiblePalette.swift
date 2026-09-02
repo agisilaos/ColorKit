@@ -106,24 +106,16 @@ public extension Color {
     /// ```swift
     /// let brandColor = Color.blue
     ///
-    /// // Create a theme with AAA compliance
+    /// // Create a theme targeting AAA contrast
     /// let theme = brandColor.generateAccessibleTheme(
     ///     name: "High Contrast Theme",
     ///     targetLevel: .AAA
     /// )
     ///
     /// // Use in SwiftUI
-    /// VStack {
-    ///     Text("Heading")
-    ///         .foregroundColor(theme.text)
-    ///         .background(theme.primary)
-    ///     Button("Action") {
-    ///         // Action
-    ///     }
-    ///     .foregroundColor(theme.text)
-    ///     .background(theme.accent)
-    /// }
-    /// .background(theme.background)
+    /// Text("Heading")
+    ///     .foregroundColor(theme.text.base)
+    ///     .background(theme.background.base)
     /// ```
     ///
     /// - Parameters:

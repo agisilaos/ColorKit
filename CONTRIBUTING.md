@@ -140,7 +140,7 @@ swiftlint lint --strict
 xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
   -derivedDataPath /tmp/ColorKitDocumentation \
   -skipPackagePluginValidation -skipMacroValidation \
-  DOCC_TREAT_WARNINGS_AS_ERRORS=YES
+  'OTHER_DOCC_FLAGS=--warnings-as-errors'
 scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
   -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
   -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \

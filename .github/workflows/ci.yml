@@ -43,7 +43,7 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/ColorKitDocumentation" \
             -skipPackagePluginValidation \
             -skipMacroValidation \
-            DOCC_TREAT_WARNINGS_AS_ERRORS=YES
+            'OTHER_DOCC_FLAGS=--warnings-as-errors'
 
   test:
     name: Build and Test

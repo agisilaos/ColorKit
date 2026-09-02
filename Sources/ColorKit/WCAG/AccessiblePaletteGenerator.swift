@@ -66,7 +66,7 @@ public struct AccessiblePaletteGenerator {
     /// )
     /// ```
     public struct Configuration {
-        /// The minimum contrast ratio to enforce between foreground and background colors.
+        /// The minimum contrast ratio targeted for generated candidates.
         ///
         /// This value is derived from the target WCAG level and is used when
         /// generating contrast candidates against the seed color. Seed, explicit
@@ -244,8 +244,8 @@ public struct AccessiblePaletteGenerator {
     ///
     /// // Use in SwiftUI
     /// Text("Heading")
-    ///     .foregroundColor(theme.text)
-    ///     .background(theme.background)
+    ///     .foregroundColor(theme.text.base)
+    ///     .background(theme.background.base)
     /// ```
     ///
     /// - Parameters:

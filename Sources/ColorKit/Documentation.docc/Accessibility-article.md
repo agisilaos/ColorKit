@@ -90,24 +90,24 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
   - Normal text: 7:1 minimum contrast ratio
   - Large text: 4.5:1 minimum contrast ratio
 
-## Topics
+## Interface Overview
 
 ### Contrast Checking
-- ``Color/contrastRatio(with:)``
-- ``Color/wcagCompliance(with:)``
+- `Color.contrastRatio(with:)`
+- `Color.wcagCompliance(with:)`
 - ``WCAGContrastLevel``
 - ``WCAGComplianceResult``
 
 ### Color Enhancement
-- ``Color/enhanced(with:targetLevel:)``
+- `Color.enhanced(with:targetLevel:)`
 - ``AccessibilityEnhancer``
-- ``Color/suggestedAccessibleColors(for:level:)``
+- `Color.suggestedAccessibleColors(for:level:)`
 
 ### Palette Generation
-- ``Color/generateAccessiblePalette(targetLevel:paletteSize:includeBlackAndWhite:)``
-- ``Color/generateAccessibleTheme(name:targetLevel:)``
+- `Color.generateAccessiblePalette(targetLevel:paletteSize:includeBlackAndWhite:)`
+- `Color.generateAccessibleTheme(name:targetLevel:)`
 
 ### Adaptive Colors
-- ``Color/adaptiveColor(light:dark:)``
-- ``Color/highContrastColor(base:background:)``
-- ``Color/onAdaptiveColorChange(_:)``
+- `Color.adaptiveColor(light:dark:)`
+- `Color.highContrastColor(base:background:)`
+- `Color.onAdaptiveColorChange(_:)`

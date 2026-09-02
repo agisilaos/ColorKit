@@ -138,20 +138,20 @@ let adaptiveTheme = ColorTheme(
 }
 ```
 
-## Topics
+## Interface Overview
 
 ### Theme Management
 - ``ColorTheme``
 - ``ThemeManager``
-- ``View/withThemeManager(_:)``
+- `View.withThemeManager(_:)`
 
 ### Theme Components
-- ``View/themedText(_:)``
-- ``View/themedButton(_:)``
-- ``View/themedBackground(_:)``
+- `View.themedText(_:)`
+- `View.themedButton(_:)`
+- `View.themedBackground(_:)`
 
 ### Theme Colors
-- ``Color/themed(_:)``
+- `Color.themed(_:)`
 - ``ThemedTextModifier``
 - ``ThemedButtonModifier``
 - ``ThemedBackgroundModifier``
