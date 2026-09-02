@@ -101,7 +101,8 @@ public struct PaletteExporter {
     /// - Parameters:
     ///   - palette: The array of colors to export
     ///   - paletteName: The name of the palette
-    /// - Returns: JSON data representing the palette
+    /// - Returns: JSON data representing the palette, or `nil` if a resolved
+    ///   color component is nonfinite
     private static func exportToJSON(palette: [PaletteEntry], paletteName: String) -> Data? {
         var jsonObject: [String: Any] = [
             "name": paletteName,
@@ -112,6 +113,9 @@ public struct PaletteExporter {
 
         for entry in palette {
             let rgba = entry.color.rgbaComponents()
+            guard [rgba.red, rgba.green, rgba.blue, rgba.alpha].allSatisfy(\.isFinite) else {
+                return nil
+            }
 
             let colorDict: [String: Any] = [
                 "name": entry.name,

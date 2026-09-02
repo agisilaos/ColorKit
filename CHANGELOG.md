@@ -9,6 +9,7 @@ All notable changes to ColorKit will be documented in this file.
 - Make `switchTo(theme:)` select the canonical registered theme with the supplied name instead of installing a same-name replacement payload; see [the migration guide](MIGRATION.md#unreleased-canonical-theme-selection-f06).
 
 ### Fixed
+- Return `nil` from JSON palette export when a resolved RGBA component is nonfinite instead of raising a Foundation exception.
 - Publish successful theme registrations and refresh the environment theme on selection changes without requiring parent observation, while preserving nested overrides.
 - Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
 - Preserve already-compliant colors, including opacity, in `adjustedForAccessibility` and `highContrastColor` instead of replacing them with black or white.

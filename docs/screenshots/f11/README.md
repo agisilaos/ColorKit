@@ -63,9 +63,8 @@ scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
   -skipPackagePluginValidation -skipMacroValidation
 ```
 
-## Existing serializer limitation
+## Serializer follow-up
 
-An exploratory non-finite-alpha JSON fixture raises `NSInvalidArgumentException`
-in `JSONSerialization`, rather than returning nil. That is outside F11's UI scope;
-serializers remain unchanged. Failure-alert checks above use explicit nil/false
-results instead of treating that exception as an ordinary export failure.
+F11 left JSON serialization unchanged. A later focused fix made nonfinite resolved
+RGBA components return `nil` before calling `JSONSerialization`, so the exploratory
+nonfinite-alpha fixture no longer raises `NSInvalidArgumentException`.
