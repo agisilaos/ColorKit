@@ -1,6 +1,6 @@
 # F07 — Fallible resolved-sRGBA snapshot
 
-Status: accepted for implementation.
+Status: implemented.
 
 ## Agreed scope
 

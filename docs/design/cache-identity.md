@@ -1,6 +1,6 @@
 # F03 · S04 — Optional, exact cache identity
 
-Status: accepted for implementation.
+Status: implemented.
 
 ## Agreed scope
 
