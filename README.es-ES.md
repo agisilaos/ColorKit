@@ -70,13 +70,20 @@ let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 
 ### **4️⃣ Conversión LAB**  
 ```swift
-// Convertir de RGB a LAB
-let lab = Color.red.labComponents()
-// (L: 53.24, a: 80.09, b: 67.20)
+// Resolver un color fijo y convertirlo a LAB
+if let lab = Color.red.labComponents() {
+    print(lab) // (L: 53.24, a: 80.09, b: 67.20)
+}
 
 // Crear color a partir de valores LAB
 let labColor = Color(L: 50.0, a: 25.0, b: -30.0)
 ```
+
+`labComponents()` resuelve colores RGB y de escala de grises fijos —incluidos RGB
+lineal y Display P3— a sRGB no lineal antes de la conversión. Los canales finitos
+fuera de gama se conservan sin recorte. El método devuelve `nil` para los colores
+que no puede resolver, como los colores dinámicos sin resolver; el canal alfa no
+afecta a las coordenadas LAB.
 
 ### **5️⃣ Colores adaptables (Modo Claro/Oscuro)**  
 ```swift

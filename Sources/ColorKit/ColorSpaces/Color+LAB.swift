@@ -53,8 +53,9 @@ import SwiftUI
 public extension Color {
     /// Returns the LAB (L*, a*, b*) components of the color.
     ///
-    /// This method converts the color from sRGB to the CIE L*a*b* color space
-    /// using the D65 illuminant as the white point. The conversion process:
+    /// This method resolves a fixed RGB or grayscale color to nonlinear sRGB, then
+    /// converts it to the CIE L*a*b* color space using the D65 illuminant as the
+    /// white point. The conversion process:
     ///
     /// 1. Converts sRGB to linear RGB
     /// 2. Converts linear RGB to CIE XYZ
@@ -65,7 +66,7 @@ public extension Color {
     /// colors outside the sRGB gamut. Alpha does not affect the LAB coordinates.
     /// Dynamic colors must be resolved for a specific appearance before conversion.
     ///
-    /// The results are cached for performance in subsequent calls.
+    /// Results for cache-eligible colors are cached for subsequent calls.
     ///
     /// Example:
     /// ```swift
