@@ -50,11 +50,10 @@ public struct WCAGColorSuggestions {
     /// A higher number of steps provides more granular adjustments but may impact performance.
     private static let defaultLightnessSteps = 10
 
-    /// Starting saturation factor for adjustments.
+    /// Saturation factor for the directional endpoint attempt.
     ///
-    /// The initial saturation multiplier when attempting to achieve compliance
-    /// through saturation adjustments. Value of 0.8 means starting at 80% of
-    /// the original saturation.
+    /// The multiplier used to construct the single directional endpoint candidate.
+    /// A value of 0.8 uses 80% of the original saturation.
     private static let initialSaturationFactor: CGFloat = 0.8
 
     /// The base color that will remain unchanged (typically the background).
@@ -195,7 +194,7 @@ public struct WCAGColorSuggestions {
         return []
     }
 
-    /// Generates suggestions by adjusting both saturation and lightness.
+    /// Generates a suggestion by adjusting both saturation and lightness.
     ///
     /// This method is used when lightness adjustments alone cannot achieve
     /// the required contrast ratio. It checks the directional lightness endpoint
