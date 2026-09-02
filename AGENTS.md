@@ -1,5 +1,9 @@
 ## Agent skills
 
+### Branch naming
+
+Branch names must start with `feature/`, `fix/`, `refactor/`, or `chore/`.
+
 ### Issue tracker
 
 Issues and PRDs live in GitHub Issues for `agisilaos/ColorKit`; external PRs are also a triage surface. See `docs/agents/issue-tracker.md`.
