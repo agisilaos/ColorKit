@@ -4,16 +4,33 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-09-02
+
+### Added
+- Add a Spanish README translation and language links from the main README.
+
 ### Changed
-- Isolate `ThemeManager` and `withThemeManager(_:)` to `MainActor`. Nonisolated callers must adopt actor-aware access; see [the migration guide](MIGRATION.md#unreleased-theme-ownership-f05).
-- Make `switchTo(theme:)` select the canonical registered theme with the supplied name instead of installing a same-name replacement payload; see [the migration guide](MIGRATION.md#unreleased-canonical-theme-selection-f06).
+- Isolate `ThemeManager` and `withThemeManager(_:)` to `MainActor`. Nonisolated callers must adopt actor-aware access; see [the migration guide](MIGRATION.md#theme-ownership).
+- Make `switchTo(theme:)` select the canonical registered theme with the supplied name instead of installing a same-name replacement payload; see [the migration guide](MIGRATION.md#canonical-theme-selection).
+- Resolve Hex and CMYK values through a fallible sRGB snapshot. Fixed grayscale, linear RGB, and Display P3 colors are converted to sRGB; unavailable, nonfinite, or out-of-range values return `nil`.
+- Present only platform-supported palette export actions: Copy and Share on iOS, and Copy and Export on macOS.
+- Derive color-inspector output from its current color and background inputs so reused views cannot display stale conversion or accessibility results.
+- Give each animation preview its own cancellable performance-monitoring session, and keep benchmark CPU work off the main actor.
+- Use exact, color-space-aware cache identities and bypass caching when a stable identity cannot be formed.
+- Use one RGB-to-XYZ conversion path for LAB conversion and public color-space conversion.
 
 ### Fixed
+- Preserve already-compliant colors, including opacity, in `adjustedForAccessibility` and `highContrastColor` instead of replacing them with black or white.
+- Choose the stronger black-or-white contrast endpoint when neither endpoint meets the requested WCAG level.
 - Return no accessible variants for nonpositive counts and avoid repeating identical fallback adjustments when distinct candidates are exhausted.
+- Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
+- Prepare accessible-palette export artifacts once before presentation, retain the presented payload through redraws and dismissal, and create a fresh file for each later share.
 - Return `nil` from JSON palette export when a resolved RGBA component is nonfinite instead of raising a Foundation exception.
 - Publish successful theme registrations and refresh the environment theme on selection changes without requiring parent observation, while preserving nested overrides.
-- Round RGB and alpha channels to the nearest byte when generating hexadecimal colors, preserving round trips such as `#232323FF`.
-- Preserve already-compliant colors, including opacity, in `adjustedForAccessibility` and `highContrastColor` instead of replacing them with black or white.
+- Cancel obsolete animation-monitor callbacks so a previous preview session cannot update current metrics.
+
+### Tooling
+- Centralize iOS and macOS test execution in `scripts/run_tests.sh`, preserve result bundles and logs on failures, and serialize shared cache and theme-manager integration tests.
 
 ## [1.6.0] - 2025-04-01
 
