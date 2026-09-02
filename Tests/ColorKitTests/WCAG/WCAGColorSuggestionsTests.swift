@@ -8,11 +8,12 @@ final class WCAGColorSuggestionsTests: XCTestCase {
         try assertPreservedHueSuggestion(
             baseColor: .white,
             targetColor: Color(.sRGB, red: 1, green: 0.8, blue: 0.2, opacity: 1),
+            knownCompliantIntermediateLightness: 0.24,
             needsDarkening: true
         )
     }
 
-    func testSuccessfulDarkeningEndpointWithoutHuePreservation() throws {
+    func testSuccessfulDirectionalEndpointAttemptWhenDarkeningWithoutHuePreservation() throws {
         let baseColor = Color.white
         let targetColor = Color(.sRGB, red: 1, green: 1, blue: 0.8, opacity: 1)
 
@@ -35,11 +36,12 @@ final class WCAGColorSuggestionsTests: XCTestCase {
         try assertPreservedHueSuggestion(
             baseColor: .black,
             targetColor: Color(.sRGB, red: 0, green: 0, blue: 0.3, opacity: 1),
+            knownCompliantIntermediateLightness: 0.745,
             needsDarkening: false
         )
     }
 
-    func testSuccessfulLighteningEndpointWithoutHuePreservation() throws {
+    func testSuccessfulDirectionalEndpointAttemptWhenLighteningWithoutHuePreservation() throws {
         let baseColor = Color.black
         let targetColor = Color(.sRGB, red: 0, green: 0, blue: 0.3, opacity: 1)
 
@@ -80,7 +82,7 @@ final class WCAGColorSuggestionsTests: XCTestCase {
         }
     }
 
-    func testFailedLighteningEndpointPreservesWhiteFallbackForBothHueSettings() throws {
+    func testFailedDirectionalEndpointAttemptPreservesWhiteContrastFallbackForBothHueSettings() throws {
         let baseColor = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5, opacity: 1)
         let targetColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6, opacity: 1)
 
@@ -124,6 +126,7 @@ final class WCAGColorSuggestionsTests: XCTestCase {
     private func assertPreservedHueSuggestion(
         baseColor: Color,
         targetColor: Color,
+        knownCompliantIntermediateLightness: CGFloat,
         needsDarkening: Bool,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -131,6 +134,22 @@ final class WCAGColorSuggestionsTests: XCTestCase {
         let targetHSL = try XCTUnwrap(targetColor.hslComponents(), file: file, line: line)
         XCTAssertEqual(baseColor.wcagRelativeLuminance() > 0.5, needsDarkening, file: file, line: line)
         XCTAssertFalse(baseColor.wcagCompliance(with: targetColor).passes.contains(.AA), file: file, line: line)
+        XCTAssertEqual(
+            knownCompliantIntermediateLightness < targetHSL.lightness,
+            needsDarkening,
+            file: file,
+            line: line
+        )
+        let knownCompliantIntermediate = Color(
+            hue: targetHSL.hue,
+            saturation: targetHSL.saturation,
+            lightness: knownCompliantIntermediateLightness
+        )
+        XCTAssertTrue(
+            baseColor.wcagCompliance(with: knownCompliantIntermediate).passes.contains(.AA),
+            file: file,
+            line: line
+        )
 
         let suggestions = WCAGColorSuggestions(
             baseColor: baseColor,
