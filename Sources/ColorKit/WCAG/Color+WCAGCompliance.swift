@@ -86,14 +86,9 @@ public extension Color {
         }
 
         let rgba = self.rgbaComponents()
-
-        // Convert sRGB to linear RGB
-        let r = rgba.red <= 0.03928 ? rgba.red / 12.92 : pow((rgba.red + 0.055) / 1.055, 2.4)
-        let g = rgba.green <= 0.03928 ? rgba.green / 12.92 : pow((rgba.green + 0.055) / 1.055, 2.4)
-        let b = rgba.blue <= 0.03928 ? rgba.blue / 12.92 : pow((rgba.blue + 0.055) / 1.055, 2.4)
-
-        // Calculate relative luminance
-        let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        let luminance = SRGBColorConversion.wcagRelativeLuminance(
+            (red: rgba.red, green: rgba.green, blue: rgba.blue)
+        )
 
         // Cache the result
         ColorCache.shared.cacheLuminance(for: self, luminance: luminance)

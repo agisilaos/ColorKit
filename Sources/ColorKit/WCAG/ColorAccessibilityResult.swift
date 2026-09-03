@@ -63,36 +63,10 @@ public extension Color {
         ColorAccessibilityResult(
             color: self,
             targetLevel: targetLevel,
-            contrastRatio: StrictWCAGContrast.ratio(foreground: self, background: backgroundColor)
-        )
-    }
-}
-
-private enum StrictWCAGContrast {
-    static func ratio(foreground: Color, background: Color) -> Double? {
-        guard let foreground = ResolvedSRGBA.resolve(foreground),
-              let background = ResolvedSRGBA.resolve(background),
-              foreground.isInSRGBGamut,
-              background.isInSRGBGamut,
-              background.alpha == 1 else { return nil }
-
-        let inverseAlpha = 1 - foreground.alpha
-        let composited = (
-            red: foreground.red * foreground.alpha + background.red * inverseAlpha,
-            green: foreground.green * foreground.alpha + background.green * inverseAlpha,
-            blue: foreground.blue * foreground.alpha + background.blue * inverseAlpha
-        )
-        return SRGBColorConversion.wcagContrastRatio(
-            between: (
-                red: Double(composited.red),
-                green: Double(composited.green),
-                blue: Double(composited.blue)
-            ),
-            and: (
-                red: Double(background.red),
-                green: Double(background.green),
-                blue: Double(background.blue)
-            )
+            contrastRatio: StrictWCAGContrast.measure(
+                foreground: self,
+                background: backgroundColor
+            ).ratio
         )
     }
 }
