@@ -127,7 +127,8 @@ public extension Color {
     ///
     /// Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to tell
     /// the two apart. Both composite a translucent foreground over an explicit opaque
-    /// background and report an unavailable measurement rather than a sentinel.
+    /// background and return an available measurement. They report an unavailable result
+    /// when either input is unresolved or out of the sRGB gamut, or the background is translucent.
     ///
     /// - Parameter color: The color to compare against
     /// - Returns: The contrast ratio between the two colors, or the sentinel `1` when
