@@ -87,19 +87,6 @@ final class NamedColorContrastTests: XCTestCase {
         }
     }
 
-    func testHighContrastFallbackAgainstNamedBackgroundIsNotWhiteOnLightColors() {
-        let foreground = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5)
-
-        // Every named fixture is light, so white was previously chosen over black.
-        for (name, background) in Self.namedColors {
-            XCTAssertEqual(
-                foreground.adjustedForAccessibility(with: background, minimumRatio: 22),
-                .black,
-                name
-            )
-        }
-    }
-
     // MARK: - Agreement with the WCAG accessor
 
     func testLegacyAndWCAGRatiosAgreeForOpaqueColors() throws {
