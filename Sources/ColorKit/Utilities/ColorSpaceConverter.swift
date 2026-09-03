@@ -184,7 +184,7 @@ enum SRGBColorConversion {
         return (lighter + 0.05) / (darker + 0.05)
     }
 
-    private static func wcagRelativeLuminance(
+    static func wcagRelativeLuminance(
         _ rgb: (red: Double, green: Double, blue: Double)
     ) -> Double {
         0.2126 * wcagLinearized(rgb.red)

@@ -23,7 +23,7 @@ The position between an ordered pair of colors, with zero representing the start
 _Avoid_: Rounded amount
 
 **Already-compliant input**:
-A foreground color whose existing contrast against the specified background meets or exceeds the requested minimum under ColorKit's legacy contrast calculation. It needs no adjustment; this term does not independently certify WCAG compliance.
+A foreground color whose existing WCAG contrast ratio against the specified background meets or exceeds the requested minimum. It needs no adjustment. The measurement ignores opacity and does not composite a translucent foreground.
 
 **Exhausted adjustment**:
 A contrast adjustment attempt that ends without finding a color that meets the requested minimum. It does not establish that no suitable color exists.
@@ -37,6 +37,22 @@ A directional endpoint attempt whose contrast meets the requested level. It is d
 **Contrast fallback**:
 The black or white color selected when contrast adjustment is unsuccessful. It is not guaranteed to meet every requested minimum.
 _Avoid_: Guaranteed compliant color
+
+**WCAG relative luminance**:
+The perceived brightness of a color under WCAG 2.1: each nonlinear sRGB component is linearized, then weighted by 0.2126, 0.7152, and 0.0722. It is not a weighted sum of gamma-encoded components, and opacity is not part of it.
+_Avoid_: Nonlinear luma, brightness
+
+**Unavailable contrast measurement**:
+A contrast measurement ColorKit cannot establish from the supplied inputs, because an input is unresolved or outside the sRGB gamut, or the background is translucent. It is absence, not a ratio of 1 and not a failed threshold.
+_Avoid_: Zero contrast, minimum ratio
+
+**Contrast input issue**:
+The reason one contrast input is not measurable. Issues are retained independently for the foreground and the background so one does not hide the other. A translucent foreground is composited rather than diagnosed; only a background is diagnosed as translucent.
+_Avoid_: Contrast score, ordered failure priority
+
+**White-preference luminance threshold**:
+The relative luminance at which black and white contrast equally against a color, approximately 0.1791. Below it white is the stronger contrasting endpoint; above it black is. It is not the midpoint of the luminance range.
+_Avoid_: Mid gray, luminance 0.5
 
 **Best available contrasting endpoint**:
 Whichever of black or white has the greater WCAG contrast ratio against a given color. This choice may still fall short of the requested contrast level, including AAA.

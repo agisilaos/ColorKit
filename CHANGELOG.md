@@ -7,6 +7,8 @@ All notable changes to ColorKit will be documented in this file.
 ### Added
 - Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.
 - Add CIEDE2000 comparison to the preview catalog's performance benchmark.
+- Add `contrastResult(with:)`, which reports a measured contrast ratio with its relative luminance values and passing WCAG levels, or an unavailable result with independent per-input issues.
+- Add `relativeLuminanceValue()`, which returns `nil` for an unresolvable color instead of the zero that `relativeLuminance()` reports.
 
 ### Changed
 - Deprecate `compare(with:)` in favor of explicit unavailable-result handling while preserving its ColorKit 2.x fallback behavior.
@@ -14,6 +16,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ### Fixed
 - Replace the normalized Euclidean RGB calculation labeled as CIEDE2000 with a reference-validated CIEDE2000 implementation over resolved D65 LAB values.
+- Calculate `relativeLuminance()` according to WCAG 2.1 by linearizing sRGB components before weighting them. The previous calculation weighted gamma-encoded components directly and under-reported contrast for mid-tone colors; `#595959` on white now measures 7.00:1 rather than 2.63:1. `contrastRatio(with:)`, `adjustedForAccessibility(with:minimumRatio:)`, and `highContrastColor` all inherit the correction. See [the migration guide](MIGRATION.md#wcag-relative-luminance).
+- Classify `isDarkColor()` at the luminance where black and white contrast equally (approximately 0.1791) instead of at 0.5, so the black-or-white fallback is always the stronger contrasting endpoint.
+- Resolve luminance inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is no longer read as though its components were sRGB.
 
 ## [2.1.0] - 2026-09-02
 

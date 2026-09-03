@@ -1,5 +1,63 @@
 # Migration Guide
 
+## Unreleased
+
+### WCAG relative luminance
+
+`relativeLuminance()` now follows WCAG 2.1. It linearizes each nonlinear sRGB
+component before applying the 0.2126, 0.7152, and 0.0722 weights. The previous
+implementation applied those weights to gamma-encoded components, which
+under-reported the luminance of every color except pure black and pure white.
+
+`contrastRatio(with:)`, `isDarkColor()`, `adjustedForAccessibility(with:minimumRatio:)`,
+and the `highContrastColor` modifier are all built on that luminance, so their
+results change as well. Ratios were previously understated for mid-tone colors:
+
+| Foreground on white | Before | Now (WCAG) |
+| --- | --- | --- |
+| `#595959` | 2.63:1 | 7.00:1 |
+| `#767676` | 2.05:1 | 4.54:1 |
+| `#008000` | 2.57:1 | 5.14:1 |
+
+**What to change.** If you calibrated a `minimumRatio` against the old numbers,
+re-check it against the WCAG scale. A threshold chosen to compensate for the old
+understatement will now be stricter than you intended. Colors that already met
+their target no longer get adjusted: `#595959` on white passes AAA and is now
+returned unchanged, where it was previously replaced by the black-or-white fallback.
+
+Values from `wcagContrastRatio(with:)` and `accessibilityResult(against:targetLevel:)`
+did not change. `contrastRatio(with:)` now agrees with them for any color that
+resolves to finite, in-gamut sRGB components.
+
+### Dark color classification
+
+`isDarkColor()` now compares relative luminance against approximately 0.1791, the
+luminance at which black and white contrast equally against a color, instead of
+against 0.5. This makes the black-or-white contrast fallback always the stronger
+contrasting endpoint. Colors between the two thresholds change classification;
+mid gray `#808080` is now classified light rather than dark.
+
+### Unavailable measurements
+
+`relativeLuminance()` still returns `0` for a color it cannot resolve, which is
+indistinguishable from a measured black. Two additions report that case honestly:
+
+```swift
+// nil rather than 0 when the color cannot be resolved
+let luminance: Double? = color.relativeLuminanceValue()
+
+switch foreground.contrastResult(with: background) {
+case .available(let measurement):
+    print(measurement.ratio, measurement.passingLevels)
+case .unavailable(let issues):
+    print(issues.foreground, issues.background)
+}
+```
+
+`contrastResult(with:)` composites a translucent foreground over an opaque
+background, and reports a translucent background, an unresolvable color, or a
+wider-gamut color as an issue rather than measuring it anyway.
+
 ## ColorKit 2.0.0
 
 ColorKit 2.0.0 makes theme ownership explicit at compile time and tightens

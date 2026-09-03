@@ -18,6 +18,15 @@ let textColor = Color.gray
 let ratio = backgroundColor.contrastRatio(with: textColor)
 print("Contrast ratio: \(ratio)")
 
+// Or measure it without collapsing an unresolvable input to zero luminance
+switch textColor.contrastResult(with: backgroundColor) {
+case .available(let measurement):
+    print("Contrast ratio: \(measurement.ratio)")
+    print("Passing levels: \(measurement.passingLevels)")
+case .unavailable(let issues):
+    print("Unavailable: \(issues.foreground), \(issues.background)")
+}
+
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 print("AA Large Text: \(compliance.passesAALarge)")
@@ -147,11 +156,18 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 
 ### Contrast Checking
 - `Color.contrastRatio(with:)`
+- `Color.contrastResult(with:)`
+- `Color.relativeLuminance()`
+- `Color.relativeLuminanceValue()`
 - `Color.wcagCompliance(with:)`
 - `Color.accessibilityResult(against:targetLevel:)`
 - ``WCAGContrastLevel``
 - ``WCAGComplianceResult``
 - ``ColorAccessibilityResult``
+- ``ColorContrastResult``
+- ``ContrastMeasurement``
+- ``ContrastIssues``
+- ``ContrastInputIssue``
 
 ### Color Vision Deficiency Simulation
 - ``ColorVisionDeficiency``
