@@ -23,20 +23,24 @@ final class LABResolutionTests: XCTestCase {
     }
 
     func testEncodedAndLinearGrayscaleResolveToEquivalentSRGBLAB() throws {
-        let encoded: CGFloat = 0.5370987304831942
-        let encodedReference = try fixedTestColor(components: [0.5, 0.5, 0.5, 0.25])
-        let linearReference = try fixedTestColor(components: [encoded, encoded, encoded, 0.25])
-        let encodedLAB = try XCTUnwrap(encodedReference.labComponents())
-        let linearLAB = try XCTUnwrap(linearReference.labComponents())
+        // The sRGB encoding of linear 0.25 is 0.5370987304831942.
+        let sRGBEncodingOfLinearQuarter: CGFloat = 0.5370987304831942
+        let encodedGrayLAB = try XCTUnwrap(
+            fixedTestColor(components: [0.5, 0.5, 0.5, 0.25]).labComponents()
+        )
+        let linearQuarterComponents = Array(repeating: sRGBEncodingOfLinearQuarter, count: 3) + [0.25]
+        let linearQuarterLAB = try XCTUnwrap(
+            fixedTestColor(components: linearQuarterComponents).labComponents()
+        )
 
         for name in [CGColorSpace.genericGrayGamma2_2, CGColorSpace.extendedGray] {
             let color = try fixedTestColor(space: name, components: [0.5, 0.25])
-            try assertLABEqual(color.labComponents(), encodedLAB, accuracy: 0.00001)
+            try assertLABEqual(color.labComponents(), encodedGrayLAB, accuracy: 0.00001)
         }
 
         for name in [CGColorSpace.linearGray, CGColorSpace.extendedLinearGray] {
             let color = try fixedTestColor(space: name, components: [0.25, 0.25])
-            try assertLABEqual(color.labComponents(), linearLAB, accuracy: 0.00001)
+            try assertLABEqual(color.labComponents(), linearQuarterLAB, accuracy: 0.00001)
         }
     }
 

@@ -29,9 +29,9 @@ import SwiftUI
 /// - Accessibility calculations
 ///
 /// The components are:
-/// - L*: Lightness (0-100)
-/// - a*: Green to red axis (-128 to +127)
-/// - b*: Blue to yellow axis (-128 to +127)
+/// - L*: Lightness
+/// - a*: Green to red axis
+/// - b*: Blue to yellow axis
 ///
 /// Example usage:
 /// ```swift
@@ -53,18 +53,18 @@ import SwiftUI
 public extension Color {
     /// Returns the LAB (L*, a*, b*) components of the color.
     ///
-    /// This method resolves a fixed RGB or grayscale color to nonlinear sRGB, then
-    /// converts it to the CIE L*a*b* color space using the D65 illuminant as the
-    /// white point. The conversion process:
+    /// This method converts a fixed RGB or grayscale color to the CIE L*a*b* color
+    /// space using the D65 illuminant as the white point. The conversion process:
     ///
-    /// 1. Converts sRGB to linear RGB
-    /// 2. Converts linear RGB to CIE XYZ
-    /// 3. Converts CIE XYZ to CIE L*a*b*
+    /// 1. Resolves the color to nonlinear sRGB
+    /// 2. Converts sRGB to linear RGB
+    /// 3. Converts linear RGB to CIE XYZ
+    /// 4. Converts CIE XYZ to CIE L*a*b*
     ///
-    /// Fixed RGB and grayscale colors are first resolved to nonlinear sRGB. Finite
-    /// extended-range channels are preserved without gamut mapping, so LAB can describe
-    /// colors outside the sRGB gamut. Alpha does not affect the LAB coordinates.
-    /// Dynamic colors must be resolved for a specific appearance before conversion.
+    /// Finite extended-range channels are preserved without gamut mapping, so extracted
+    /// coordinates can fall outside conventional LAB ranges. Alpha does not affect the
+    /// LAB coordinates. Dynamic colors must be resolved for a specific appearance before
+    /// conversion.
     ///
     /// Results for cache-eligible colors are cached for subsequent calls.
     ///
