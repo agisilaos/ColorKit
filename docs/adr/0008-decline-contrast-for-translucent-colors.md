@@ -1,0 +1,3 @@
+# Decline contrast measurement for translucent colors
+
+`wcagContrastRatio(with:)` will report 1 when either color is translucent, rather than measuring its components as though it were opaque. A translucent color's contrast depends on what shows through it, which this two-color method is never given; measuring it anyway reported black at ten percent opacity on white as 21:1 and passed it at AAA. Reporting 1 keeps the ratio symmetric, so `wcagCompliance(with:)` and the suggestion engine need no directional roles, and it fails toward "nothing passes" rather than certifying an unmeasured pair. Callers who want the composited measurement use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)`, which take an explicit opaque background.

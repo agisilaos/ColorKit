@@ -62,7 +62,7 @@ final class WCAGColorSuggestionsTests: XCTestCase {
 
     func testAlreadyCompliantInputsRemainUnchangedForBothHueSettings() throws {
         let fixtures = [
-            (baseColor: Color.white, targetColor: Color.black.opacity(0.8)),
+            (baseColor: Color.white, targetColor: Color.black),
             (baseColor: Color.black, targetColor: Color.white)
         ]
 
@@ -79,6 +79,28 @@ final class WCAGColorSuggestionsTests: XCTestCase {
                 XCTAssertEqual(suggestions.count, 1)
                 XCTAssertEqual(try XCTUnwrap(suggestions.first), fixture.targetColor)
             }
+        }
+    }
+
+    func testTranslucentTargetIsNotTreatedAsAlreadyCompliant() throws {
+        let baseColor = Color.white
+        let targetColor = Color.black.opacity(0.8)
+
+        // A translucent color has no standalone contrast ratio, so it cannot certify
+        // itself as compliant and is replaced by a measurable suggestion.
+        XCTAssertEqual(baseColor.wcagContrastRatio(with: targetColor), 1)
+        XCTAssertFalse(baseColor.wcagCompliance(with: targetColor).passes.contains(.AA))
+
+        for preserveHue in [true, false] {
+            let suggestions = WCAGColorSuggestions(
+                baseColor: baseColor,
+                targetColor: targetColor,
+                targetLevel: .AA
+            ).generateSuggestions(preserveHue: preserveHue)
+
+            XCTAssertEqual(suggestions.count, 1)
+            XCTAssertNotEqual(try XCTUnwrap(suggestions.first), targetColor)
+            XCTAssertTrue(baseColor.wcagCompliance(with: try XCTUnwrap(suggestions.first)).passes.contains(.AA))
         }
     }
 

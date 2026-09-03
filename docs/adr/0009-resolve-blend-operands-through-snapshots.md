@@ -1,0 +1,3 @@
+# Resolve blend operands through resolved sRGBA snapshots
+
+Blending and RGB interpolation will resolve both operands through `ResolvedSRGBA` instead of reading `cgColor.components` directly, and will accept out-of-gamut extended sRGB values rather than requiring the sRGB gamut. Reading raw components required at least three of them, so a grayscale color failed the check and the operation silently returned its receiver unchanged, and it read a Display P3 color's components as though they were sRGB. Requiring the sRGB gamut would replace that second error with a different silent no-op for wider-gamut input, so the extended values flow through the blend arithmetic and preserve the gamut instead.

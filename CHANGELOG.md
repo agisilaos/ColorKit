@@ -4,6 +4,10 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Report a WCAG contrast ratio of 1 when either color is translucent, instead of measuring it as though it were opaque. Black at ten percent opacity on white reported 21:1 and passed AAA against its true composited 1.25:1; `Color.primary`, which resolves to black at 84.7% opacity, did the same. Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to measure a translucent foreground over an explicit opaque background. See [the migration guide](MIGRATION.md#translucent-contrast-measurement).
+- Resolve blending and RGB interpolation operands through the shared sRGBA snapshot. A grayscale color previously failed the component check and both operations silently returned the receiver unchanged, so multiplying a gray by black returned the gray; a Display P3 color was read as though its components were sRGB.
+
 ### Added
 - Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.
 - Add CIEDE2000 comparison to the preview catalog's performance benchmark.

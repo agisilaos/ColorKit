@@ -2,6 +2,58 @@
 
 ## Unreleased
 
+### Translucent contrast measurement
+
+`wcagContrastRatio(with:)` now reports 1 when either color is translucent, rather
+than measuring its components as though it were opaque. `wcagCompliance(with:)`
+forwards to it, so a translucent color no longer passes any WCAG level.
+
+Previously opacity was dropped entirely, which failed open:
+
+| Foreground on white | Before | Now |
+| --- | --- | --- |
+| black at 10% opacity | 21.00:1, passes AAA | 1.00:1, passes nothing |
+| `Color.primary` | 21.00:1, passes AAA | 1.00:1, passes nothing |
+
+`Color.primary` is affected because it resolves to black at 84.7% opacity rather
+than to an opaque black.
+
+**What to change.** To measure a translucent foreground, supply the background it
+sits on and use one of the result APIs, which composite before measuring:
+
+```swift
+switch foreground.contrastResult(with: opaqueBackground) {
+case .available(let measurement):
+    print(measurement.ratio, measurement.passingLevels)
+case .unavailable(let issues):
+    print(issues.foreground, issues.background)
+}
+
+// or, to assess a level directly
+let result = foreground.accessibilityResult(against: opaqueBackground, targetLevel: .AA)
+```
+
+Ratios between opaque colors are unchanged, including every system color that
+resolves through `UIColor`/`NSColor` such as `Color.blue` and `Color.orange`.
+
+### Grayscale and wide-gamut blending
+
+`blended(with:mode:amount:)` and `interpolated(with:amount:)` now resolve their
+operands through the shared sRGBA snapshot.
+
+Grayscale colors previously failed an internal component check, and both
+operations returned the receiver unchanged. Multiplying a gray by black returned
+the gray rather than black. They now blend and interpolate normally.
+
+Display P3 operands were read as though their components were sRGB, so P3 red and
+sRGB red produced identical results. They are now converted, which means a
+wide-gamut operand can produce components outside 0–1 in extended sRGB. Blending
+two colors that were already sRGB is unchanged.
+
+Operands with no fixed components, such as dynamic colors, still return the
+receiver unchanged.
+
+
 ### WCAG relative luminance
 
 `relativeLuminance()` now follows WCAG 2.1. It linearizes each nonlinear sRGB

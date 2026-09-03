@@ -117,21 +117,37 @@ public extension Color {
     /// print("Contrast ratio: \(ratio):1")
     /// ```
     ///
+    /// Both colors must be opaque. A translucent color has no contrast ratio on its
+    /// own, because what shows through it is not supplied here, so this method reports
+    /// 1, the ratio of a color against itself, rather than measuring it as though it
+    /// were fully saturated.
+    ///
+    /// To measure a translucent foreground, use `contrastResult(with:)` or
+    /// `accessibilityResult(against:targetLevel:)`, which composite it over an explicit
+    /// opaque background and distinguish that fallback from a measured 1:1 ratio.
+    ///
     /// - Parameter color: The color to compare against
-    /// - Returns: The contrast ratio between the two colors
+    /// - Returns: The contrast ratio between the two colors, or 1 when either color is
+    ///   translucent.
     func wcagContrastRatio(with color: Color) -> Double {
         // Check cache first
         if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, with: color) {
             return cachedRatio
         }
 
-        let luminance1 = self.wcagRelativeLuminance()
-        let luminance2 = color.wcagRelativeLuminance()
+        let first = self.rgbaComponents()
+        let second = color.rgbaComponents()
 
-        let lighter = max(luminance1, luminance2)
-        let darker = min(luminance1, luminance2)
+        // Fail closed. Measuring a translucent color as though it were opaque reported a
+        // faint overlay as fully saturated: black at ten percent opacity on white
+        // measured 21:1, and passed AAA, against its true composited 1.25:1. This method
+        // has no background to composite over, so it declines to measure instead.
+        guard first.alpha >= 1, second.alpha >= 1 else { return 1 }
 
-        let ratio = (lighter + 0.05) / (darker + 0.05)
+        let ratio = SRGBColorConversion.wcagContrastRatio(
+            between: (red: first.red, green: first.green, blue: first.blue),
+            and: (red: second.red, green: second.green, blue: second.blue)
+        )
 
         // Cache the result
         ColorCache.shared.cacheContrastRatio(for: self, with: color, ratio: ratio)

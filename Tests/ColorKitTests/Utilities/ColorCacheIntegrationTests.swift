@@ -83,7 +83,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
         }
     }
 
-    func testGrayscaleLABResolutionDoesNotChangeOtherFallbacksWhenCacheIsWarm() throws {
+    func testGrayscaleResultsMatchColdValuesInBothCallOrders() throws {
         let other = try fixedTestColor()
         let grays = try [0.25, 0.75].map { value in
             try fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [value, 1])
@@ -92,6 +92,28 @@ final class ColorCacheIntegrationTests: XCTestCase {
             ColorCache.shared.clearCache()
             return conversionValues(color, other: other)
         }
+        let coldBlends = grays.map { color -> Color in
+            ColorCache.shared.clearCache()
+            return color.blended(with: other, mode: .normal)
+        }
+        let coldInterpolations = grays.map { color -> Color in
+            ColorCache.shared.clearCache()
+            return color.interpolated(with: other, amount: 0.3)
+        }
+
+        // Grayscale now resolves for blending and interpolation instead of being
+        // returned unchanged, so these are real results rather than the operand.
+        for index in grays.indices {
+            XCTAssertNotEqual(
+                try XCTUnwrap(coldBlends[index].cgColor?.components),
+                try XCTUnwrap(grays[index].cgColor?.components)
+            )
+            XCTAssertNotEqual(
+                try XCTUnwrap(coldInterpolations[index].cgColor?.components),
+                try XCTUnwrap(grays[index].cgColor?.components)
+            )
+        }
+
         for order in [[0, 1], [1, 0]] {
             ColorCache.shared.clearCache()
             for _ in 0..<2 {
@@ -100,8 +122,8 @@ final class ColorCacheIntegrationTests: XCTestCase {
                     XCTAssertNotNil(gray.labComponents())
                     XCTAssertNil(gray.hslComponents())
                     XCTAssertEqual(conversionValues(gray, other: other), cold[index])
-                    try assertCacheColorEqual(gray.blended(with: other, mode: .normal), gray)
-                    try assertCacheColorEqual(gray.interpolated(with: other, amount: 0.3), gray)
+                    try assertCacheColorEqual(gray.blended(with: other, mode: .normal), coldBlends[index])
+                    try assertCacheColorEqual(gray.interpolated(with: other, amount: 0.3), coldInterpolations[index])
                 }
             }
         }

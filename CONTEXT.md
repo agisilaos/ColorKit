@@ -42,6 +42,18 @@ _Avoid_: Guaranteed compliant color
 The perceived brightness of a color under WCAG 2.1: each nonlinear sRGB component is linearized, then weighted by 0.2126, 0.7152, and 0.0722. It is not a weighted sum of gamma-encoded components, and opacity is not part of it.
 _Avoid_: Nonlinear luma, brightness
 
+**Declined contrast measurement**:
+The ratio of 1 that `wcagContrastRatio(with:)` reports when either color is translucent. It means the pair was not measured, not that the colors are identical, and it satisfies no WCAG level.
+_Avoid_: Equal colors, measured 1:1 ratio, failed threshold
+
+**Resolved blend operand**:
+A blending or interpolation input converted to a resolved sRGBA snapshot before the operation. Grayscale and other RGB spaces resolve; values outside the sRGB gamut are preserved in extended sRGB rather than clamped or rejected.
+_Avoid_: Raw component array, clamped operand
+
+**Unblendable operand**:
+A blending or interpolation input with no fixed components, such as a dynamic color. The operation returns its receiver unchanged, which is indistinguishable from a blend that had no effect.
+_Avoid_: Successful blend, identity blend
+
 **Unavailable contrast measurement**:
 A contrast measurement ColorKit cannot establish from the supplied inputs, because an input is unresolved or outside the sRGB gamut, or the background is translucent. It is absence, not a ratio of 1 and not a failed threshold.
 _Avoid_: Zero contrast, minimum ratio

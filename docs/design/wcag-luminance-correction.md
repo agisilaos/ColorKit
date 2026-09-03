@@ -94,8 +94,11 @@ measurement.
 - **Return an optional from `relativeLuminance()`.** Rejected as source-breaking
   for every caller, including those whose colors always resolve. The optional
   accessor is additive instead.
-- **Route `wcagRelativeLuminance()` through `ResolvedSRGBA` in this change.** It
-  fabricates black through `wcagRGBAComponents()` when resolution fails, which is
-  the same defect class. Deferred because that primitive also backs palette
-  export, LAB round-trips, and comparison, including a test that asserts a NaN
-  alpha survives it; changing its resolution semantics needs its own change.
+- **Route `wcagRelativeLuminance()` through `ResolvedSRGBA` in this change.**
+  Deferred, and on investigation rejected outright. `ResolvedSRGBA` resolves through
+  `cgColor`, which is `nil` for `Color.blue`, `.orange`, `.green`, `.red`, and
+  `.gray`, while `wcagRGBAComponents()` resolves those through `UIColor`/`NSColor`.
+  Switching would have made the most common SwiftUI colors report a contrast ratio
+  of 1. The fail-open behavior that motivated this note came from dropped opacity
+  rather than failed resolution, and is corrected in
+  [opacity-aware WCAG contrast](wcag-contrast-opacity.md).

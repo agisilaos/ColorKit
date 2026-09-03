@@ -98,21 +98,23 @@ public extension Color {
             }
         }
 
-        // Extract RGB components from both colors
-        guard let components1 = cgColor?.components, components1.count >= 3,
-              let components2 = color.cgColor?.components, components2.count >= 3 else {
+        // Resolve both colors through the shared sRGBA snapshot. Reading raw cgColor
+        // components treated a wider-gamut color as though it were sRGB and rejected
+        // grayscale outright, which silently returned this color unblended.
+        guard let base = ResolvedSRGBA.resolve(self),
+              let blend = ResolvedSRGBA.resolve(color) else {
             return self
         }
 
-        let r1 = components1[0]
-        let g1 = components1[1]
-        let b1 = components1[2]
-        let a1 = components1.count >= 4 ? components1[3] : 1.0
+        let r1 = base.red
+        let g1 = base.green
+        let b1 = base.blue
+        let a1 = base.alpha
 
-        let r2 = components2[0]
-        let g2 = components2[1]
-        let b2 = components2[2]
-        let a2 = components2.count >= 4 ? components2[3] : 1.0
+        let r2 = blend.red
+        let g2 = blend.green
+        let b2 = blend.blue
+        let a2 = blend.alpha
 
         // Apply the blending function with amount
         let blendResult = mode.blend(base: (r1, g1, b1), blend: (r2, g2, b2))

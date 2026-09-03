@@ -27,6 +27,9 @@ case .unavailable(let issues):
     print("Unavailable: \(issues.foreground), \(issues.background)")
 }
 
+// Both colors must be opaque. A translucent color reports a ratio of 1, meaning it
+// was not measured; compose it against a background with contrastResult(with:).
+
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 print("AA Large Text: \(compliance.passesAALarge)")
