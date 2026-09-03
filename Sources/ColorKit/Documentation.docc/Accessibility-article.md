@@ -19,7 +19,7 @@ let ratio = backgroundColor.contrastRatio(with: textColor)
 print("Contrast ratio: \(ratio)")
 
 // Or measure it without collapsing an unresolvable input to zero luminance
-switch backgroundColor.contrastResult(with: textColor) {
+switch textColor.contrastResult(with: backgroundColor) {
 case .available(let measurement):
     print("Contrast ratio: \(measurement.ratio)")
     print("Passing levels: \(measurement.passingLevels)")
