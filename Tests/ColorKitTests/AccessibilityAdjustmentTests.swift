@@ -50,16 +50,27 @@ final class AccessibilityAdjustmentTests: XCTestCase {
         }
     }
 
-    func testExhaustedSearchKeepsLegacyFallbackEvenWhenBlackWouldPass() {
+    func testExhaustedSearchFallsBackToStrongerContrastingEndpoint() {
         let foreground = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
-        let background = Color(.sRGB, red: 0.4, green: 0.4, blue: 0.4)
-        XCTAssertLessThan(foreground.contrastRatio(with: background), 7)
-        XCTAssertGreaterThan(Color.black.contrastRatio(with: background), 7)
+        let backgrounds = [
+            Color(.sRGB, red: 0.4, green: 0.4, blue: 0.4),
+            Color(.sRGB, red: 0.1, green: 0.1, blue: 0.1),
+            Color(.sRGB, red: 0.9, green: 0.9, blue: 0.9)
+        ]
 
-        let adjusted = foreground.adjustedForAccessibility(with: background, minimumRatio: 7)
+        for background in backgrounds {
+            let adjusted = foreground.adjustedForAccessibility(with: background, minimumRatio: 22)
+            let blackRatio = Color.black.contrastRatio(with: background)
+            let whiteRatio = Color.white.contrastRatio(with: background)
 
-        XCTAssertEqual(adjusted, .white)
-        XCTAssertLessThan(adjusted.contrastRatio(with: background), 7)
+            // The fallback is never the weaker of the two endpoints.
+            XCTAssertEqual(adjusted, blackRatio >= whiteRatio ? .black : .white)
+            XCTAssertEqual(
+                adjusted.contrastRatio(with: background),
+                max(blackRatio, whiteRatio),
+                accuracy: 1e-9
+            )
+        }
     }
 
     func testFailedForegroundConversionReturnsOriginalColor() {

@@ -40,10 +40,11 @@ public extension Color {
     /// Computes the relative luminance of a color based on WCAG standards.
     ///
     /// Relative luminance represents the perceived brightness of a color, calculated
-    /// according to the WCAG 2.1 specification. The calculation uses the following weights:
-    /// - Red: 0.2126
-    /// - Green: 0.7152
-    /// - Blue: 0.0722
+    /// according to the WCAG 2.1 specification: each nonlinear sRGB component is
+    /// linearized, then weighted by 0.2126 (red), 0.7152 (green), and 0.0722 (blue).
+    ///
+    /// Opacity is not part of relative luminance. Composite a translucent color over
+    /// its background before measuring it.
     ///
     /// Example:
     /// ```swift
@@ -52,10 +53,13 @@ public extension Color {
     /// print("Relative luminance: \(luminance)") // Value between 0 and 1
     /// ```
     ///
-    /// - Returns: A `CGFloat` representing the relative luminance, ranging from 0 (darkest) to 1 (brightest).
+    /// - Returns: A `CGFloat` representing the relative luminance, ranging from 0 (darkest)
+    ///   to 1 (brightest). Returns 0 when the color cannot be resolved to finite, in-gamut
+    ///   sRGB components; use ``relativeLuminanceValue()`` to distinguish that case from
+    ///   a measured black.
     func relativeLuminance() -> CGFloat {
-        guard let components = cgColor?.components, components.count >= 3 else { return 0 }
-        return 0.2126 * components[0] + 0.7152 * components[1] + 0.0722 * components[2]
+        guard let luminance = relativeLuminanceValue() else { return 0 }
+        return CGFloat(luminance)
     }
 
     /// Determines if the color is better suited for a light or dark mode background.
@@ -78,9 +82,11 @@ public extension Color {
     /// }
     /// ```
     ///
-    /// - Returns: `true` if the color is considered dark (luminance < 0.5), `false` otherwise.
+    /// - Returns: `true` when white contrasts better than black against this color,
+    ///   `false` otherwise. An unresolvable color reports `true`, matching the luminance
+    ///   fallback of ``relativeLuminance()``.
     func isDarkColor() -> Bool {
-        return relativeLuminance() < 0.5
+        return relativeLuminance() < Color.whitePreferenceLuminanceThreshold
     }
 
     /// Adjusts color brightness to ensure it contrasts well with Light/Dark mode backgrounds.
@@ -113,6 +119,10 @@ public extension Color {
     /// the relative luminance values of both colors. The ratio ranges from 1:1 (no contrast)
     /// to 21:1 (maximum contrast).
     ///
+    /// Opacity is ignored. This method compares two colors rather than compositing a
+    /// foreground over a background; use ``contrastResult(with:)`` to measure a
+    /// translucent foreground against an opaque background.
+    ///
     /// Example:
     /// ```swift
     /// let textColor = Color.blue
@@ -122,7 +132,9 @@ public extension Color {
     /// ```
     ///
     /// - Parameter other: The color to compare contrast against.
-    /// - Returns: A `CGFloat` representing the contrast ratio (from 1 to 21).
+    /// - Returns: A `CGFloat` representing the contrast ratio (from 1 to 21). An
+    ///   unresolvable color contributes the luminance fallback of ``relativeLuminance()``;
+    ///   use ``contrastResult(with:)`` to distinguish that case from a measured ratio.
     func contrastRatio(with other: Color) -> CGFloat {
         let l1 = self.relativeLuminance() + 0.05
         let l2 = other.relativeLuminance() + 0.05
@@ -131,11 +143,12 @@ public extension Color {
 
     /// Preserves a color that already meets the requested contrast, or attempts to adjust it.
     ///
-    /// Uses the legacy `contrastRatio(with:)` calculation. If the initial ratio meets or
+    /// Uses the WCAG `contrastRatio(with:)` calculation. If the initial ratio meets or
     /// exceeds the minimum, the original color is returned unchanged, including its opacity.
     /// Otherwise, the existing greedy search adjusts HSL lightness in steps of 0.05.
     /// If adjustment is unsuccessful, the fallback is white for a background classified
-    /// as dark by `isDarkColor()`, or black otherwise. The fallback may not meet the minimum.
+    /// as dark by `isDarkColor()`, or black otherwise. That is always the stronger
+    /// contrasting endpoint, but it may still fall short of the requested minimum.
     /// If the foreground cannot be converted to HSL, the original color is returned.
     /// A NaN minimum retains the fallback behavior when foreground conversion succeeds.
     ///
@@ -158,7 +171,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - background: The background color against which contrast should be checked.
-    ///   - minimumRatio: The requested minimum under the legacy contrast calculation.
+    ///   - minimumRatio: The requested minimum WCAG contrast ratio.
     /// - Returns: The original color on initial success or HSL conversion failure,
     ///   the first successful adjustment, or the existing black/white fallback.
     func adjustedForAccessibility(with background: Color, minimumRatio: CGFloat) -> Color {
@@ -203,9 +216,18 @@ public extension Color {
             }
         }
 
-        // Preserve the legacy fallback when adjustment does not produce a successful result.
+        // Preserve the existing fallback when adjustment does not produce a successful result.
         return background.isDarkColor() ? .white : .black
     }
+}
+
+// MARK: - Internal Constants
+extension Color {
+    /// The relative luminance at which black and white contrast equally against a color.
+    ///
+    /// Below this value white is the stronger contrasting endpoint, and above it black is.
+    /// It is the solution to `(L + 0.05) / 0.05 == 1.05 / (L + 0.05)`.
+    static let whitePreferenceLuminanceThreshold: CGFloat = 0.1791287847
 }
 
 // MARK: - Private Helpers
