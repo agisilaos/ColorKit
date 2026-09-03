@@ -39,7 +39,7 @@ resolves through `UIColor`/`NSColor` such as `Color.blue` and `Color.orange`.
 ### Grayscale and wide-gamut blending
 
 `blended(with:mode:amount:)` and `interpolated(with:amount:)` now resolve their
-operands through the shared sRGBA snapshot.
+operands through the resolved sRGBA snapshot.
 
 Grayscale colors previously failed an internal component check, and both
 operations returned the receiver unchanged. Multiplying a gray by black returned

@@ -433,7 +433,7 @@ public extension Color {
 
     /// Interpolates between this color and another color in RGB space.
     private func interpolateRGB(with color: Color, amount: CGFloat) -> Color {
-        // Resolve through the shared sRGBA snapshot. Reading raw cgColor components
+        // Resolve through the resolved sRGBA snapshot. Reading raw cgColor components
         // treated a wider-gamut color as though it were sRGB and rejected grayscale
         // outright, which silently returned this color uninterpolated.
         guard let start = ResolvedSRGBA.resolve(self),

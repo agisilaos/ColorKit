@@ -98,7 +98,7 @@ public extension Color {
             }
         }
 
-        // Resolve both colors through the shared sRGBA snapshot. Reading raw cgColor
+        // Resolve both colors through the resolved sRGBA snapshot. Reading raw cgColor
         // components treated a wider-gamut color as though it were sRGB and rejected
         // grayscale outright, which silently returned this color unblended.
         guard let base = ResolvedSRGBA.resolve(self),
