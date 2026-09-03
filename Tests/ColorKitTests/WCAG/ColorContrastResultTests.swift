@@ -232,6 +232,24 @@ final class ColorContrastResultTests: XCTestCase {
         }
     }
 
+    func testAvailabilityAgreesWithStrictAccessibilityResult() {
+        // Both result APIs derive from one strict measurement, so they never disagree
+        // about whether a pair can be measured.
+        let pairs: [(foreground: Color, background: Color)] = [
+            (.primary, .white),
+            (.white, .primary),
+            (.primary, .primary),
+            (Color(.displayP3, red: 1, green: 0, blue: 0), .white),
+            (.black, Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.5)),
+            (.blue, .white)
+        ]
+
+        for (foreground, background) in pairs {
+            XCTAssertNil(foreground.contrastResult(with: background).ratio)
+            XCTAssertNil(foreground.accessibilityResult(against: background).contrastRatio)
+        }
+    }
+
     func testAgreesWithWCAGContrastRatioForResolvableColors() throws {
         for (hex, _) in Self.referencePairs {
             let color = try XCTUnwrap(Color(hex: hex))
