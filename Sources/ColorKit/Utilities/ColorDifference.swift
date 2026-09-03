@@ -30,6 +30,17 @@ public enum PerceptualDifferenceMetric: Sendable, Equatable {
     case legacyRGBDistance
 }
 
+extension PerceptualDifferenceMetric {
+    var displayLabel: String {
+        switch self {
+        case .ciede2000:
+            "CIEDE2000 Difference (ΔE00)"
+        case .legacyRGBDistance:
+            "Legacy RGB Distance"
+        }
+    }
+}
+
 /// A reason that one input cannot participate in an authoritative color comparison.
 public enum ColorComparisonInputIssue: Sendable, Equatable {
     /// The color cannot be resolved to fixed, finite components.
@@ -94,18 +105,9 @@ public struct ColorDifference: Sendable {
         - Saturation: \(String(format: "%.2f", hslDifference.saturation))%
         - Lightness: \(String(format: "%.2f", hslDifference.lightness))%
 
-        \(perceptualDifferenceLabel): \(String(format: "%.2f", perceptualDifference))
+        \(perceptualDifferenceMetric.displayLabel): \(String(format: "%.2f", perceptualDifference))
         Contrast Ratio: \(String(format: "%.2f", contrastRatio)):1
         WCAG Compliance: \(wcagComplianceLevels.map { $0.rawValue }.joined(separator: ", "))
         """
-    }
-
-    private var perceptualDifferenceLabel: String {
-        switch perceptualDifferenceMetric {
-        case .ciede2000:
-            "CIEDE2000 Difference (ΔE00)"
-        case .legacyRGBDistance:
-            "Legacy RGB Distance"
-        }
     }
 }

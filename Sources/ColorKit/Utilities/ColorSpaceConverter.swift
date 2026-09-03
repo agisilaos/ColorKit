@@ -119,6 +119,31 @@ public struct ColorSpaceConverter {
 
 /// Pure sRGB/D65 conversions. Internal XYZ uses reference-white Y = 1.
 enum SRGBColorConversion {
+    static func hsl(
+        from rgb: (red: Double, green: Double, blue: Double)
+    ) -> (hue: Double, saturation: Double, lightness: Double) {
+        let maximum = max(rgb.red, rgb.green, rgb.blue)
+        let minimum = min(rgb.red, rgb.green, rgb.blue)
+        let chroma = maximum - minimum
+        let lightness = (maximum + minimum) / 2
+
+        guard chroma != 0 else { return (hue: 0, saturation: 0, lightness: lightness) }
+
+        let saturation = lightness > 0.5
+            ? chroma / (2 - maximum - minimum)
+            : chroma / (maximum + minimum)
+        let hue: Double
+        if maximum == rgb.red {
+            hue = ((rgb.green - rgb.blue) / chroma + (rgb.green < rgb.blue ? 6 : 0)) / 6
+        } else if maximum == rgb.green {
+            hue = ((rgb.blue - rgb.red) / chroma + 2) / 6
+        } else {
+            hue = ((rgb.red - rgb.green) / chroma + 4) / 6
+        }
+
+        return (hue: hue, saturation: saturation, lightness: lightness)
+    }
+
     static func xyz(from rgb: (red: Double, green: Double, blue: Double)) -> (x: Double, y: Double, z: Double) {
         func linearize(_ value: Double) -> Double {
             value > 0.04045 ? pow((value + 0.055) / 1.055, 2.4) : value / 12.92
@@ -146,5 +171,30 @@ enum SRGBColorConversion {
         let fz = transform(xyz.z / 1.08883)
 
         return (l: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz))
+    }
+
+    static func wcagContrastRatio(
+        between first: (red: Double, green: Double, blue: Double),
+        and second: (red: Double, green: Double, blue: Double)
+    ) -> Double {
+        let firstLuminance = wcagRelativeLuminance(first)
+        let secondLuminance = wcagRelativeLuminance(second)
+        let lighter = max(firstLuminance, secondLuminance)
+        let darker = min(firstLuminance, secondLuminance)
+        return (lighter + 0.05) / (darker + 0.05)
+    }
+
+    private static func wcagRelativeLuminance(
+        _ rgb: (red: Double, green: Double, blue: Double)
+    ) -> Double {
+        0.2126 * wcagLinearized(rgb.red)
+            + 0.7152 * wcagLinearized(rgb.green)
+            + 0.0722 * wcagLinearized(rgb.blue)
+    }
+
+    private static func wcagLinearized(_ component: Double) -> Double {
+        component <= 0.03928
+            ? component / 12.92
+            : pow((component + 0.055) / 1.055, 2.4)
     }
 }

@@ -31,15 +31,15 @@ enum CIEDE2000 {
 
         let lightnessDifference = second.lightness - first.lightness
         let chromaDifference = adjustedSecondChroma - adjustedFirstChroma
-        let hueDifference = adjustedHueDifference(
+        let hueAngleDifference = adjustedHueAngleDifference(
             firstHue: firstHue,
             secondHue: secondHue,
             firstChroma: adjustedFirstChroma,
             secondChroma: adjustedSecondChroma
         )
-        let adjustedHueDifference = 2
+        let hueDifference = 2
             * sqrt(adjustedFirstChroma * adjustedSecondChroma)
-            * sin(degreesToRadians(hueDifference / 2))
+            * sin(degreesToRadians(hueAngleDifference / 2))
 
         let meanLightness = (first.lightness + second.lightness) / 2
         let meanAdjustedChroma = (adjustedFirstChroma + adjustedSecondChroma) / 2
@@ -69,7 +69,7 @@ enum CIEDE2000 {
 
         let lightnessTerm = lightnessDifference / lightnessWeight
         let chromaTerm = chromaDifference / chromaWeight
-        let hueTerm = adjustedHueDifference / adjustedHueWeight
+        let hueTerm = hueDifference / adjustedHueWeight
 
         return sqrt(
             pow(lightnessTerm, 2)
@@ -85,7 +85,7 @@ enum CIEDE2000 {
         return degrees >= 0 ? degrees : degrees + 360
     }
 
-    private static func adjustedHueDifference(
+    private static func adjustedHueAngleDifference(
         firstHue: Double,
         secondHue: Double,
         firstChroma: Double,

@@ -92,26 +92,12 @@ public extension Color {
         let r = components[0]
         let g = components[1]
         let b = components[2]
-
-        let maxVal = max(r, g, b)
-        let minVal = min(r, g, b)
-        let delta = maxVal - minVal
-
-        var h: CGFloat = 0
-        var s: CGFloat = 0
-        let l = (maxVal + minVal) / 2
-
-        if delta != 0 {
-            s = l > 0.5 ? delta / (2.0 - maxVal - minVal) : delta / (maxVal + minVal)
-            if maxVal == r {
-                h = (g - b) / delta + (g < b ? 6 : 0)
-            } else if maxVal == g {
-                h = (b - r) / delta + 2
-            } else if maxVal == b {
-                h = (r - g) / delta + 4
-            }
-            h /= 6
-        }
+        let hsl = SRGBColorConversion.hsl(
+            from: (red: Double(r), green: Double(g), blue: Double(b))
+        )
+        let h = CGFloat(hsl.hue)
+        let s = CGFloat(hsl.saturation)
+        let l = CGFloat(hsl.lightness)
 
         // Cache the result
         ColorCache.shared.cacheHSLComponents(for: self, hue: h, saturation: s, lightness: l)
