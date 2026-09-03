@@ -39,7 +39,7 @@ switch color1.comparisonResult(with: color2) {
 case .available(let difference):
     let rgbDiff = difference.rgbDifference // Normalized sRGB component differences
     let hslDiff = difference.hslDifference // HSL coordinate differences
-    let deltaE00 = difference.perceptualDifference // Raw, unbounded CIEDE2000 value
+    let deltaE00 = difference.perceptualDifference // Raw value; not normalized or a percentage
     let contrastRatio = difference.contrastRatio // WCAG contrast ratio
     let wcagLevels = difference.wcagComplianceLevels // Passing WCAG levels
     print(difference.description)
