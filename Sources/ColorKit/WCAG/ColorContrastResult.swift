@@ -5,12 +5,13 @@
 //  Created by Agisilaos Tsaraboulidis on 03.09.25.
 //
 //  Description:
-//  Provides result-bearing WCAG relative luminance and contrast ratio measurements.
+//  Provides result-bearing WCAG relative luminance and contrast ratio measurements,
+//  and the strict measurement shared by every result-bearing accessibility API.
 //
 //  Features:
 //  - Distinguishes a measured contrast ratio from an unavailable measurement
 //  - Reports independent per-input reasons for an unavailable measurement
-//  - Reuses the shared resolved sRGBA snapshot and WCAG luminance conversion
+//  - Resolves strictly, so a measurement is reproducible from its inputs alone
 //
 //  License:
 //  MIT License. See LICENSE file for details.
@@ -95,10 +96,7 @@ public extension Color {
     /// - Returns: The relative luminance from 0 to 1, or `nil` when this color cannot
     ///   be resolved to finite, in-gamut sRGB components.
     func relativeLuminanceValue() -> Double? {
-        guard let resolved = ResolvedSRGBA.resolve(self), resolved.isInSRGBGamut else { return nil }
-        return SRGBColorConversion.wcagRelativeLuminance(
-            (red: Double(resolved.red), green: Double(resolved.green), blue: Double(resolved.blue))
-        )
+        StrictWCAGContrast.luminance(of: self)
     }
 
     /// Measures the WCAG contrast ratio between this foreground color and a background.
@@ -121,53 +119,82 @@ public extension Color {
     /// - Parameter backgroundColor: The background behind this foreground color.
     /// - Returns: A result that distinguishes a measured ratio from an unavailable measurement.
     func contrastResult(with backgroundColor: Color) -> ColorContrastResult {
-        let foregroundResolved = ResolvedSRGBA.resolve(self)
-        let backgroundResolved = ResolvedSRGBA.resolve(backgroundColor)
+        StrictWCAGContrast.measure(foreground: self, background: backgroundColor)
+    }
+}
 
-        var foregroundIssues: [ContrastInputIssue] = []
-        var backgroundIssues: [ContrastInputIssue] = []
+/// The strict WCAG contrast measurement shared by the result-bearing APIs.
+///
+/// Strict resolution never consults appearance. A color participates only when it has
+/// fixed, finite, in-gamut sRGB components, which is what lets these measurements be
+/// reproduced from the inputs alone.
+enum StrictWCAGContrast {
+    /// The relative luminance of one strictly resolved color.
+    ///
+    /// - Returns: The luminance, or `nil` when the color does not resolve strictly.
+    static func luminance(of color: Color) -> Double? {
+        guard let resolved = ResolvedSRGBA.resolve(color), resolved.isInSRGBGamut else { return nil }
+        return SRGBColorConversion.wcagRelativeLuminance(components(of: resolved))
+    }
 
-        if let foregroundResolved {
-            if !foregroundResolved.isInSRGBGamut { foregroundIssues.append(.outOfSRGBGamut) }
-        } else {
-            foregroundIssues.append(.unresolved)
-        }
-
-        if let backgroundResolved {
-            if !backgroundResolved.isInSRGBGamut { backgroundIssues.append(.outOfSRGBGamut) }
-            if backgroundResolved.alpha != 1 { backgroundIssues.append(.translucentBackground) }
-        } else {
-            backgroundIssues.append(.unresolved)
-        }
+    /// Measures a foreground against a background, or diagnoses both inputs.
+    ///
+    /// A translucent foreground is composited over the background, which supplies the
+    /// context its contrast depends on. A translucent background has no such context.
+    static func measure(foreground: Color, background: Color) -> ColorContrastResult {
+        let resolvedForeground = ResolvedSRGBA.resolve(foreground)
+        let resolvedBackground = ResolvedSRGBA.resolve(background)
+        let foregroundIssues = issues(for: resolvedForeground, asBackground: false)
+        let backgroundIssues = issues(for: resolvedBackground, asBackground: true)
 
         guard foregroundIssues.isEmpty,
               backgroundIssues.isEmpty,
-              let foregroundResolved,
-              let backgroundResolved else {
+              let resolvedForeground,
+              let resolvedBackground else {
             return .unavailable(
                 ContrastIssues(foreground: foregroundIssues, background: backgroundIssues)
             )
         }
 
-        // Composite the foreground over the opaque background so opacity is measured, not ignored.
-        let inverseAlpha = 1 - foregroundResolved.alpha
-        let composited = (
-            red: Double(foregroundResolved.red * foregroundResolved.alpha + backgroundResolved.red * inverseAlpha),
-            green: Double(foregroundResolved.green * foregroundResolved.alpha + backgroundResolved.green * inverseAlpha),
-            blue: Double(foregroundResolved.blue * foregroundResolved.alpha + backgroundResolved.blue * inverseAlpha)
-        )
-        let background = (
-            red: Double(backgroundResolved.red),
-            green: Double(backgroundResolved.green),
-            blue: Double(backgroundResolved.blue)
-        )
+        let backgroundComponents = components(of: resolvedBackground)
+        let compositedComponents = composite(resolvedForeground, over: resolvedBackground)
 
         return .available(
             ContrastMeasurement(
-                ratio: SRGBColorConversion.wcagContrastRatio(between: composited, and: background),
-                foregroundLuminance: SRGBColorConversion.wcagRelativeLuminance(composited),
-                backgroundLuminance: SRGBColorConversion.wcagRelativeLuminance(background)
+                ratio: SRGBColorConversion.wcagContrastRatio(
+                    between: compositedComponents,
+                    and: backgroundComponents
+                ),
+                foregroundLuminance: SRGBColorConversion.wcagRelativeLuminance(compositedComponents),
+                backgroundLuminance: SRGBColorConversion.wcagRelativeLuminance(backgroundComponents)
             )
         )
+    }
+
+    /// The reasons one resolved input cannot participate, in the role it was supplied in.
+    private static func issues(for resolved: ResolvedSRGBA?, asBackground: Bool) -> [ContrastInputIssue] {
+        guard let resolved else { return [.unresolved] }
+
+        var issues: [ContrastInputIssue] = []
+        if !resolved.isInSRGBGamut { issues.append(.outOfSRGBGamut) }
+        if asBackground, resolved.alpha != 1 { issues.append(.translucentBackground) }
+        return issues
+    }
+
+    /// Composites a foreground over an opaque background so its opacity is measured.
+    private static func composite(
+        _ foreground: ResolvedSRGBA,
+        over background: ResolvedSRGBA
+    ) -> (red: Double, green: Double, blue: Double) {
+        let inverseAlpha = 1 - foreground.alpha
+        return (
+            red: Double(foreground.red * foreground.alpha + background.red * inverseAlpha),
+            green: Double(foreground.green * foreground.alpha + background.green * inverseAlpha),
+            blue: Double(foreground.blue * foreground.alpha + background.blue * inverseAlpha)
+        )
+    }
+
+    private static func components(of resolved: ResolvedSRGBA) -> (red: Double, green: Double, blue: Double) {
+        (red: Double(resolved.red), green: Double(resolved.green), blue: Double(resolved.blue))
     }
 }

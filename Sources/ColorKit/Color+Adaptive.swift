@@ -46,6 +46,11 @@ public extension Color {
     /// Opacity is not part of relative luminance. Composite a translucent color over
     /// its background before measuring it.
     ///
+    /// Named SwiftUI colors such as `Color.blue` are resolved for the current
+    /// appearance, so their luminance reflects the appearance in effect when it is
+    /// measured. ``relativeLuminanceValue()`` is the stricter measurement: it reports
+    /// no value rather than resolving a color whose components depend on context.
+    ///
     /// Example:
     /// ```swift
     /// let color = Color.blue
@@ -54,12 +59,13 @@ public extension Color {
     /// ```
     ///
     /// - Returns: A `CGFloat` representing the relative luminance, ranging from 0 (darkest)
-    ///   to 1 (brightest). Returns 0 when the color cannot be resolved to finite, in-gamut
-    ///   sRGB components; use ``relativeLuminanceValue()`` to distinguish that case from
-    ///   a measured black.
+    ///   to 1 (brightest). Returns 0 for a color that cannot be resolved at all, which is
+    ///   indistinguishable from a measured black.
     func relativeLuminance() -> CGFloat {
-        guard let luminance = relativeLuminanceValue() else { return 0 }
-        return CGFloat(luminance)
+        // Share the lenient resolution behind wcagRelativeLuminance(). Resolving only
+        // through the strict snapshot reported 0 for every named SwiftUI color, which
+        // made contrastRatio(with:) and isDarkColor() choose the weaker endpoint.
+        CGFloat(wcagRelativeLuminance())
     }
 
     /// Determines if the color is better suited for a light or dark mode background.

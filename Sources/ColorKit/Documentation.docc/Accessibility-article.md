@@ -27,6 +27,9 @@ case .unavailable(let issues):
     print("Unavailable: \(issues.foreground), \(issues.background)")
 }
 
+// Both colors must be opaque. A translucent color reports a ratio of 1, meaning it
+// was not measured; compose it against a background with contrastResult(with:).
+
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 print("AA Large Text: \(compliance.passesAALarge)")
@@ -134,11 +137,20 @@ Text("Dynamic Text")
 ```
 
 `adjustedForAccessibility(with:minimumRatio:)` preserves the original color, including
-opacity, when its legacy contrast ratio already meets or exceeds the requested minimum.
-Otherwise, it attempts to adjust lightness. Failed foreground conversion returns the
-original color; unsuccessful adjustment retains the existing black/white fallback,
-which may not meet the requested ratio. `highContrastColor` delegates to this behavior.
-These legacy adjustments do not independently certify WCAG compliance.
+opacity, when `contrastRatio(with:)` already meets or exceeds the requested minimum.
+That measurement uses WCAG relative luminance, so its ratios match
+`wcagContrastRatio(with:)` for opaque colors.
+
+It ignores opacity, however: it compares two colors rather than compositing a
+foreground over a background. A translucent color is therefore measured as though it
+were fully saturated, and the returned color is not certified as compliant. Two further
+limits apply: a foreground that cannot be converted to HSL is returned unchanged, and an
+unsuccessful adjustment falls back to black or white, which may still fall short of the
+requested ratio even though it is the stronger of the two endpoints.
+
+`highContrastColor` delegates to this behavior. For an assessment that composites
+opacity and reports whether the result actually meets a level, use
+`accessibilityResult(against:targetLevel:)` or `contrastResult(with:)`.
 
 ## WCAG Guidelines
 

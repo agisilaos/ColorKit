@@ -15,10 +15,13 @@ All notable changes to ColorKit will be documented in this file.
 - Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
 
 ### Fixed
+- Measure named SwiftUI colors such as `Color.blue` and `Color.orange` in `relativeLuminance()`, `contrastRatio(with:)`, and `isDarkColor()`. They carry no `cgColor`, so they previously measured as black, reported 1:1 against black and 21:1 against white, and made the black-or-white contrast fallback select the weaker endpoint.
+- Report a WCAG contrast ratio of 1 when either color is translucent, instead of measuring it as though it were opaque. Black at ten percent opacity on white reported 21:1 and passed AAA against its true composited 1.25:1; `Color.primary`, which resolves to black at 84.7% opacity, did the same. Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to measure a translucent foreground over an explicit opaque background. See [the migration guide](MIGRATION.md#translucent-contrast-measurement).
+- Resolve blending and RGB interpolation operands through the resolved sRGBA snapshot. A grayscale color previously failed the component check and both operations silently returned the receiver unchanged, so multiplying a gray by black returned the gray; a Display P3 color was read as though its components were sRGB.
 - Replace the normalized Euclidean RGB calculation labeled as CIEDE2000 with a reference-validated CIEDE2000 implementation over resolved D65 LAB values.
 - Calculate `relativeLuminance()` according to WCAG 2.1 by linearizing sRGB components before weighting them. The previous calculation weighted gamma-encoded components directly and under-reported contrast for mid-tone colors; `#595959` on white now measures 7.00:1 rather than 2.63:1. `contrastRatio(with:)`, `adjustedForAccessibility(with:minimumRatio:)`, and `highContrastColor` all inherit the correction. See [the migration guide](MIGRATION.md#wcag-relative-luminance).
 - Classify `isDarkColor()` at the luminance where black and white contrast equally (approximately 0.1791) instead of at 0.5, so the black-or-white fallback is always the stronger contrasting endpoint.
-- Resolve luminance inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is no longer read as though its components were sRGB.
+- Resolve strict `relativeLuminanceValue()` inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
 
 ## [2.1.0] - 2026-09-02
 
