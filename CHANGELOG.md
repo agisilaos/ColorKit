@@ -22,7 +22,7 @@ All notable changes to ColorKit will be documented in this file.
 - Replace the normalized Euclidean RGB calculation labeled as CIEDE2000 with a reference-validated CIEDE2000 implementation over resolved D65 LAB values.
 - Calculate `relativeLuminance()` according to WCAG 2.1 by linearizing sRGB components before weighting them. The previous calculation weighted gamma-encoded components directly and under-reported contrast for mid-tone colors; `#595959` on white now measures 7.00:1 rather than 2.63:1. `contrastRatio(with:)`, `adjustedForAccessibility(with:minimumRatio:)`, and `highContrastColor` all inherit the correction. See [the migration guide](MIGRATION.md#wcag-relative-luminance).
 - Classify `isDarkColor()` at the luminance where black and white contrast equally (approximately 0.1791) instead of at 0.5, so the black-or-white fallback is always the stronger contrasting endpoint.
-- Resolve luminance inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is no longer read as though its components were sRGB.
+- Resolve strict `relativeLuminanceValue()` inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
 
 ## [2.1.0] - 2026-09-02
 
