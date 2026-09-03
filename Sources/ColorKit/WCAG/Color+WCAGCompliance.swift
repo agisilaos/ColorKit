@@ -78,6 +78,9 @@ public extension Color {
     /// print("Relative luminance: \(luminance)")
     /// ```
     ///
+    /// Opacity is not part of relative luminance. Composite a translucent color over its
+    /// background before measuring it.
+    ///
     /// - Returns: The relative luminance value between 0 (darkest) and 1 (brightest)
     func wcagRelativeLuminance() -> Double {
         // Check cache first
@@ -112,18 +115,23 @@ public extension Color {
     /// print("Contrast ratio: \(ratio):1")
     /// ```
     ///
-    /// Both colors must be opaque. A translucent color has no contrast ratio on its
-    /// own, because what shows through it is not supplied here, so this method reports
-    /// 1, the ratio of a color against itself, rather than measuring it as though it
-    /// were fully saturated.
+    /// Both colors must be opaque. A translucent color's contrast depends on what shows
+    /// through it, which this method is never given, so a translucent input produces a
+    /// **declined contrast measurement**: the pair is not measured at all.
     ///
-    /// To measure a translucent foreground, use `contrastResult(with:)` or
-    /// `accessibilityResult(against:targetLevel:)`, which composite it over an explicit
-    /// opaque background and distinguish that fallback from a measured 1:1 ratio.
+    /// A declined measurement is reported as `1` because this method cannot express
+    /// absence in its return type. That `1` is a compatibility sentinel, not a measured
+    /// 1:1 ratio, and it is indistinguishable from the genuine ratio of a color against
+    /// an identical one. It satisfies no WCAG level, so `wcagCompliance(with:)` reports
+    /// no passing levels for a translucent input.
+    ///
+    /// Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to tell
+    /// the two apart. Both composite a translucent foreground over an explicit opaque
+    /// background and report an unavailable measurement rather than a sentinel.
     ///
     /// - Parameter color: The color to compare against
-    /// - Returns: The contrast ratio between the two colors, or 1 when either color is
-    ///   translucent.
+    /// - Returns: The contrast ratio between the two colors, or the sentinel `1` when
+    ///   either color is translucent.
     func wcagContrastRatio(with color: Color) -> Double {
         // Check cache first
         if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, with: color) {
@@ -133,10 +141,11 @@ public extension Color {
         let first = self.rgbaComponents()
         let second = color.rgbaComponents()
 
-        // Fail closed. Measuring a translucent color as though it were opaque reported a
+        // Decline rather than measure. Treating a translucent color as opaque reported a
         // faint overlay as fully saturated: black at ten percent opacity on white
         // measured 21:1, and passed AAA, against its true composited 1.25:1. This method
-        // has no background to composite over, so it declines to measure instead.
+        // has no background to composite over and no way to return absence, so it
+        // reports the sentinel instead.
         guard first.alpha >= 1, second.alpha >= 1 else { return 1 }
 
         let ratio = SRGBColorConversion.wcagContrastRatio(

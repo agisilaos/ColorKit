@@ -43,8 +43,8 @@ The perceived brightness of a color under WCAG 2.1: each nonlinear sRGB componen
 _Avoid_: Nonlinear luma, brightness
 
 **Declined contrast measurement**:
-The ratio of 1 that `wcagContrastRatio(with:)` reports when either color is translucent. It means the pair was not measured, not that the colors are identical, and it satisfies no WCAG level.
-_Avoid_: Equal colors, measured 1:1 ratio, failed threshold
+The outcome when `wcagContrastRatio(with:)` is given a translucent color and so does not measure the pair. It is reported as the compatibility sentinel 1 because that method cannot express absence, and it satisfies no WCAG level. It is not a measured 1:1 ratio and says nothing about how similar the colors are.
+_Avoid_: Equal colors, measured 1:1 ratio, failed threshold, ratio of a color against itself
 
 **Resolved blend operand**:
 A blending or interpolation input converted to a resolved sRGBA snapshot before the operation. Grayscale and other RGB spaces resolve; values outside the sRGB gamut are preserved in extended sRGB rather than clamped or rejected.

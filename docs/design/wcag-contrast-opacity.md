@@ -65,6 +65,40 @@ through `UIColor`/`NSColor`, which succeeds for `Color.blue`, `.orange`, `.green
 for all of them. Routing contrast through the stricter path would have made the
 most common SwiftUI colors report a ratio of 1.
 
+### Named colors in the legacy accessors
+
+`relativeLuminance()` resolved strictly, through `relativeLuminanceValue()`, and so
+reported zero for every named SwiftUI color. `Color.blue`, `.orange`, `.green`,
+`.red`, and `.gray` carry no `cgColor`, so `contrastRatio(with:)` reported 1:1
+against black and 21:1 against white for all of them, and `isDarkColor()` selected
+white for every one even though black is the stronger endpoint. Orange is 9.09:1
+against black and 2.31:1 against white.
+
+That contradicted the guarantee recorded in
+[ADR 0007](../adr/0007-classify-dark-colors-at-equal-contrast.md): that
+`background.isDarkColor() ? .white : .black` selects the stronger endpoint.
+
+`relativeLuminance()` now shares the lenient resolution behind
+`wcagRelativeLuminance()`, so it, `contrastRatio(with:)`, `isDarkColor()`, and the
+`adjustedForAccessibility(with:minimumRatio:)` fallback all measure named colors.
+`relativeLuminanceValue()` stays strict and still reports no value for them. See
+[ADR 0010](../adr/0010-resolve-legacy-luminance-leniently.md).
+
+`adjustedForAccessibility(with:minimumRatio:)` still returns a named *foreground*
+unchanged, because `hslComponents()` reads raw components and cannot convert one.
+The fallback this guarantee concerns is chosen from the background, which now
+resolves.
+
+### One strict measurement
+
+`contrastResult(with:)` and `accessibilityResult(against:targetLevel:)` had separate
+copies of the same resolution, gamut and opacity validation, compositing, and ratio
+calculation. Both now derive from `StrictWCAGContrast.measure(foreground:background:)`,
+which returns a `ColorContrastResult`; the accessibility result reads `.ratio` from it.
+`relativeLuminanceValue()` shares that type's strict resolution through
+`StrictWCAGContrast.luminance(of:)`. Per-input diagnostics are unchanged, and the two
+APIs can no longer disagree about whether a pair is measurable.
+
 ### Blending and interpolation
 
 Both operations resolve their operands through `ResolvedSRGBA`, which handles
