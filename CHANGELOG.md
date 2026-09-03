@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Measure named SwiftUI colors such as `Color.blue` and `Color.orange` in `relativeLuminance()`, `contrastRatio(with:)`, and `isDarkColor()`. They carry no `cgColor`, so they previously measured as black, reported 1:1 against black and 21:1 against white, and made the black-or-white contrast fallback select the weaker endpoint.
 - Report a WCAG contrast ratio of 1 when either color is translucent, instead of measuring it as though it were opaque. Black at ten percent opacity on white reported 21:1 and passed AAA against its true composited 1.25:1; `Color.primary`, which resolves to black at 84.7% opacity, did the same. Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to measure a translucent foreground over an explicit opaque background. See [the migration guide](MIGRATION.md#translucent-contrast-measurement).
 - Resolve blending and RGB interpolation operands through the shared sRGBA snapshot. A grayscale color previously failed the component check and both operations silently returned the receiver unchanged, so multiplying a gray by black returned the gray; a Display P3 color was read as though its components were sRGB.
 

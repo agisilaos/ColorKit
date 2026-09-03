@@ -38,12 +38,15 @@ library two divergent public contrast calculations with no stated relationship.
 Correct the calculation in place rather than preserving the previous numbers
 behind an adapter. See [ADR 0006](../adr/0006-correct-wcag-luminance-in-place.md).
 
-`relativeLuminance()` now delegates to the new `relativeLuminanceValue()`, which
-resolves its input through `ResolvedSRGBA` and applies
-`SRGBColorConversion.wcagRelativeLuminance`. That conversion was already the
-single linearizing implementation behind `wcagContrastRatio(with:)` and
+`relativeLuminance()` applies `SRGBColorConversion.wcagRelativeLuminance`, which was
+already the single linearizing implementation behind `wcagContrastRatio(with:)` and
 `accessibilityResult(against:targetLevel:)`; exposing it internally makes it the
 one luminance calculation in the library rather than adding a third.
+
+This change first resolved `relativeLuminance()` strictly, through the new
+`relativeLuminanceValue()`. That reported zero for every named SwiftUI color and was
+corrected in [opacity-aware WCAG contrast](wcag-contrast-opacity.md); see
+[ADR 0010](../adr/0010-resolve-legacy-luminance-leniently.md).
 
 `contrastRatio(with:)` keeps its body and inherits the correction, so it now
 agrees with `wcagContrastRatio(with:)` for any color that resolves to finite,
