@@ -20,7 +20,7 @@ The `ColorCache` class provides thread-safe caching for:
 - Uses `NSCache` for automatic memory management
 - Thread-safe for use in concurrent environments
 - Singleton pattern for global access
-- Available on iOS 14.0+ and macOS 11.0+
+- Available on iOS 14.0+ and macOS 12.0+
 
 ### Usage
 

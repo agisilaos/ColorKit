@@ -83,7 +83,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
         }
     }
 
-    func testGrayscaleFallbacksDoNotChangeWhenCacheIsWarm() throws {
+    func testGrayscaleLABResolutionDoesNotChangeOtherFallbacksWhenCacheIsWarm() throws {
         let other = try fixedTestColor()
         let grays = try [0.25, 0.75].map { value in
             try fixedTestColor(space: CGColorSpace.genericGrayGamma2_2, components: [value, 1])
@@ -97,7 +97,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
             for _ in 0..<2 {
                 for index in order {
                     let gray = grays[index]
-                    XCTAssertNil(gray.labComponents())
+                    XCTAssertNotNil(gray.labComponents())
                     XCTAssertNil(gray.hslComponents())
                     XCTAssertEqual(conversionValues(gray, other: other), cold[index])
                     try assertCacheColorEqual(gray.blended(with: other, mode: .normal), gray)

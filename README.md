@@ -70,13 +70,19 @@ let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 
 ### **4️⃣ LAB Conversion**  
 ```swift
-// Convert from RGB to LAB
-let lab = Color.red.labComponents()
-// (L: 53.24, a: 80.09, b: 67.20)
+// Resolve a fixed color and convert it to LAB
+if let lab = Color.red.labComponents() {
+    print(lab) // (L: 53.24, a: 80.09, b: 67.20)
+}
 
 // Create color from LAB values
 let labColor = Color(L: 50.0, a: 25.0, b: -30.0)
 ```
+
+`labComponents()` resolves fixed RGB and grayscale colors—including linear RGB and
+Display P3—to nonlinear sRGB before conversion. Finite out-of-gamut channels are
+preserved without clipping. The method returns `nil` for colors it cannot resolve,
+such as unresolved dynamic colors; alpha does not affect the LAB coordinates.
 
 ### **5️⃣ Adaptive Colors (Light/Dark Mode)**  
 ```swift

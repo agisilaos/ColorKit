@@ -29,9 +29,9 @@ import SwiftUI
 /// - Accessibility calculations
 ///
 /// The components are:
-/// - L*: Lightness (0-100)
-/// - a*: Green to red axis (-128 to +127)
-/// - b*: Blue to yellow axis (-128 to +127)
+/// - L*: Lightness
+/// - a*: Green to red axis
+/// - b*: Blue to yellow axis
 ///
 /// Example usage:
 /// ```swift
@@ -53,14 +53,20 @@ import SwiftUI
 public extension Color {
     /// Returns the LAB (L*, a*, b*) components of the color.
     ///
-    /// This method converts the color from sRGB to the CIE L*a*b* color space
-    /// using the D65 illuminant as the white point. The conversion process:
+    /// This method converts a fixed RGB or grayscale color to the CIE L*a*b* color
+    /// space using the D65 illuminant as the white point. The conversion process:
     ///
-    /// 1. Converts sRGB to linear RGB
-    /// 2. Converts linear RGB to CIE XYZ
-    /// 3. Converts CIE XYZ to CIE L*a*b*
+    /// 1. Resolves the color to nonlinear sRGB
+    /// 2. Converts sRGB to linear RGB
+    /// 3. Converts linear RGB to CIE XYZ
+    /// 4. Converts CIE XYZ to CIE L*a*b*
     ///
-    /// The results are cached for performance in subsequent calls.
+    /// Finite extended-range channels are preserved without gamut mapping, so extracted
+    /// coordinates can fall outside conventional LAB ranges. Alpha does not affect the
+    /// LAB coordinates. Dynamic colors must be resolved for a specific appearance before
+    /// conversion.
+    ///
+    /// Results for cache-eligible colors are cached for subsequent calls.
     ///
     /// Example:
     /// ```swift
@@ -80,20 +86,21 @@ public extension Color {
     /// }
     /// ```
     ///
-    /// - Returns: A tuple containing L* (0-100), a* (-128-127), and b* (-128-127),
-    ///           or `nil` if conversion fails.
+    /// - Returns: A tuple containing L*, a*, and b*, or `nil` if the color cannot be
+    ///            resolved or conversion does not produce finite coordinates.
     func labComponents() -> (L: CGFloat, a: CGFloat, b: CGFloat)? {
-        // Check cache first
         if let cachedComponents = ColorCache.shared.getCachedLABComponents(for: self) {
             return cachedComponents
         }
 
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let xyz = SRGBColorConversion.xyz(from: (Double(components[0]), Double(components[1]), Double(components[2])))
+        guard let resolved = ResolvedSRGBA.resolve(self) else { return nil }
+        let xyz = SRGBColorConversion.xyz(
+            from: (Double(resolved.red), Double(resolved.green), Double(resolved.blue))
+        )
         let lab = SRGBColorConversion.lab(from: xyz)
+        guard lab.l.isFinite, lab.a.isFinite, lab.b.isFinite else { return nil }
         let result = (L: CGFloat(lab.l), a: CGFloat(lab.a), b: CGFloat(lab.b))
 
-        // Cache the result
         ColorCache.shared.cacheLABComponents(for: self, L: result.L, a: result.a, b: result.b)
 
         return result

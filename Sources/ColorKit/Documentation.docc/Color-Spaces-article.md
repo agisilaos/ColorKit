@@ -76,6 +76,14 @@ when platform conversion produces a tiny overshoot near white. Supply an already
 fixed color when appearance matters. Existing nonoptional conversion fallbacks and
 cached conversions retain their previous behavior.
 
+LAB extraction also resolves fixed RGB and grayscale colors to nonlinear sRGB before
+conversion, but it preserves finite channels outside 0–1 instead of rejecting them.
+This allows LAB to describe Display P3 and other colors outside the sRGB gamut without
+clipping. Alpha does not affect LAB coordinates, though it remains part of cache identity.
+LAB extraction returns `nil` for unresolved dynamic colors, unsupported source models,
+failed resolution, nonfinite input, or nonfinite conversion results. It does not choose
+an appearance or substitute zero-valued LAB coordinates.
+
 ColorKit handles color space conversions automatically. When you create a color in one color space and request components in another, the conversion is done for you:
 
 ```swift

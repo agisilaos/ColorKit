@@ -59,6 +59,9 @@ An assessment for which ColorKit cannot establish a contrast ratio from the supp
 CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.
 _Avoid_: RGB brightness when referring to L*.
 
+**Unavailable LAB conversion**:
+A conversion for which ColorKit cannot obtain LAB coordinates from the supplied color. It is absence, not black or zero-valued LAB.
+
 **XYZ**:
 CIE XYZ tristimulus coordinates. ColorKit's public XYZ values use a relative scale on which the reference white has Y = 100; this is not an upper bound on every coordinate.
 _Avoid_: XYZ percentages, XYZ in the range 0–1 without specifying a different scale.
