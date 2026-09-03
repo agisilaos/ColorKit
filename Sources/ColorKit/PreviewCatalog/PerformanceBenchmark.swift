@@ -28,7 +28,8 @@ public struct PerformanceBenchmark: View {
         .blending,
         .conversion,
         .gradient,
-        .accessibility
+        .accessibility,
+        .comparison
     ]
 
     public var body: some View {
@@ -145,6 +146,8 @@ public struct PerformanceBenchmark: View {
             benchmarkGradient(iterations: iterations)
         case .accessibility:
             benchmarkAccessibility(iterations: iterations)
+        case .comparison:
+            benchmarkComparison(iterations: iterations)
         }
     }
 
@@ -282,6 +285,25 @@ public struct PerformanceBenchmark: View {
 
         return results
     }
+
+    nonisolated private static func benchmarkComparison(iterations: Int) -> [BenchmarkResult] {
+        let first = Color(.sRGB, red: 0.85, green: 0.2, blue: 0.35, opacity: 1)
+        let second = Color(.sRGB, red: 0.15, green: 0.55, blue: 0.8, opacity: 1)
+        var lastResult: ColorComparisonResult?
+        let start = CFAbsoluteTimeGetCurrent()
+
+        for _ in 0..<iterations {
+            lastResult = first.comparisonResult(with: second)
+        }
+
+        withExtendedLifetime(lastResult) {}
+        let duration = CFAbsoluteTimeGetCurrent() - start
+        return [BenchmarkResult(
+            name: "CIEDE2000 Color Comparison",
+            duration: duration,
+            operationsPerSecond: Double(iterations) / duration
+        )]
+    }
 }
 
 // MARK: - Supporting Types
@@ -291,6 +313,7 @@ enum BenchmarkOperation: String, CaseIterable, Sendable {
     case conversion
     case gradient
     case accessibility
+    case comparison
 
     var name: String {
         rawValue.capitalized

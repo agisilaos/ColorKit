@@ -20,20 +20,79 @@
 
 import SwiftUI
 
-/// A structure that represents the difference between two colors across various color spaces
-public struct ColorDifference {
-    /// The difference in RGB components
+/// The calculation represented by ``ColorDifference/perceptualDifference``.
+public enum PerceptualDifferenceMetric: Sendable, Equatable {
+    /// CIEDE2000 over D65 LAB values with `kL`, `kC`, and `kH` set to one.
+    case ciede2000
+    /// ColorKit's deprecated normalized Euclidean RGB calculation.
+    ///
+    /// Only the deprecated `Color.compare(with:)` compatibility adapter produces this metric.
+    case legacyRGBDistance
+}
+
+extension PerceptualDifferenceMetric {
+    var displayLabel: String {
+        switch self {
+        case .ciede2000:
+            "CIEDE2000 Difference (ΔE00)"
+        case .legacyRGBDistance:
+            "Legacy RGB Distance"
+        }
+    }
+}
+
+/// A reason that one input cannot participate in an authoritative color comparison.
+public enum ColorComparisonInputIssue: Sendable, Equatable {
+    /// The color cannot be resolved to fixed, finite components.
+    case unresolved
+    /// The color is not opaque and no backing color was supplied for compositing.
+    case translucent
+    /// The resolved color lies outside the standard sRGB gamut and was not clamped.
+    case outOfSRGBGamut
+}
+
+/// The independently diagnosed issues for both inputs to a color comparison.
+public struct ColorComparisonIssues: Sendable {
+    /// Issues for the color that received `comparisonResult(with:)`.
+    public let firstColor: [ColorComparisonInputIssue]
+    /// Issues for the color passed to `comparisonResult(with:)`.
+    public let secondColor: [ColorComparisonInputIssue]
+}
+
+/// The result of an atomic comparison between two colors.
+public enum ColorComparisonResult: Sendable {
+    /// Every advertised comparison metric is available.
+    case available(ColorDifference)
+    /// No comparison metrics are available; the associated value explains why.
+    case unavailable(ColorComparisonIssues)
+}
+
+/// A complete set of component, perceptual, contrast, and WCAG measurements for two colors.
+///
+/// Instances returned by `Color.comparisonResult(with:)` describe fixed, opaque,
+/// in-gamut sRGB inputs. RGB and HSL values are component-coordinate differences;
+/// only ``perceptualDifference`` with ``PerceptualDifferenceMetric/ciede2000`` is a
+/// perceptual color-difference measurement.
+public struct ColorDifference: Sendable {
+    /// Absolute differences between normalized nonlinear sRGB components.
     public let rgbDifference: (red: Double, green: Double, blue: Double)
-    /// The difference in HSL components
+    /// Absolute HSL coordinate differences in degrees and percentage points.
+    ///
+    /// Achromatic colors use a canonical hue coordinate of zero.
     public let hslDifference: (hue: Double, saturation: Double, lightness: Double)
-    /// The perceptual difference using CIEDE2000 formula
+    /// The difference produced by ``perceptualDifferenceMetric``.
+    ///
+    /// Authoritative comparison results use CIEDE2000. The deprecated `compare(with:)`
+    /// adapter can return the legacy RGB distance when its inputs cannot be compared.
     public let perceptualDifference: Double
-    /// The contrast ratio between the colors
+    /// The calculation used for ``perceptualDifference``.
+    public let perceptualDifferenceMetric: PerceptualDifferenceMetric
+    /// The WCAG contrast ratio between the colors.
     public let contrastRatio: Double
-    /// WCAG compliance levels that pass for this color pair
+    /// WCAG compliance levels that pass for this color pair.
     public let wcagComplianceLevels: [WCAGContrastLevel]
 
-    /// A human-readable description of the color difference
+    /// A human-readable description of the color difference.
     public var description: String {
         """
         RGB Difference:
@@ -46,7 +105,7 @@ public struct ColorDifference {
         - Saturation: \(String(format: "%.2f", hslDifference.saturation))%
         - Lightness: \(String(format: "%.2f", hslDifference.lightness))%
 
-        Perceptual Difference: \(String(format: "%.2f", perceptualDifference))
+        \(perceptualDifferenceMetric.displayLabel): \(String(format: "%.2f", perceptualDifference))
         Contrast Ratio: \(String(format: "%.2f", contrastRatio)):1
         WCAG Compliance: \(wcagComplianceLevels.map { $0.rawValue }.joined(separator: ", "))
         """

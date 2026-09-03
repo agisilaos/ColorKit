@@ -6,6 +6,28 @@ Learn about ColorKit's utility features for color manipulation, export, and perf
 
 ColorKit provides various utility features to help you work with colors efficiently, export color palettes, and optimize performance.
 
+### Color Comparison
+
+Measure fixed, opaque, in-gamut sRGB colors with an atomic result:
+
+```swift
+let first = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
+let second = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
+
+switch first.comparisonResult(with: second) {
+case .available(let difference):
+    print("CIEDE2000 difference: \(difference.perceptualDifference)")
+case .unavailable(let issues):
+    print(issues.firstColor, issues.secondColor)
+}
+```
+
+An available result derives RGB, HSL, CIEDE2000, contrast, and WCAG measurements from the same resolved snapshots. Dynamic or otherwise unresolved colors, translucent colors without a backing color, nonfinite components, and colors outside standard sRGB produce an unavailable result with per-input issues and no partial measurements.
+
+CIEDE2000 uses the reference weighting factors set to one and is validated against Sharma, Wu, and Dalal's [implementation notes](https://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf) and [supplementary data](https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt). RGB and HSL values remain component-coordinate differences, not perceptual metrics.
+
+![A comparison of system blue and indigo showing raw CIEDE2000, component, contrast, and WCAG results.](ciede2000-comparison.jpg)
+
 ### Color Cache
 
 Improve performance by caching expensive color operations:
@@ -100,6 +122,14 @@ let overlay = color1.blended(with: color2, mode: .overlay)
 ```
 
 ## Interface Overview
+
+### Comparison
+- ``ColorComparisonResult``
+- ``ColorComparisonIssues``
+- ``ColorComparisonInputIssue``
+- ``ColorDifference``
+- ``PerceptualDifferenceMetric``
+- ``ColorComparisonView``
 
 ### Caching
 - ``ColorCache``

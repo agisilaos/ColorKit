@@ -17,7 +17,7 @@ Thank you for your interest in contributing to ColorKit! This document outlines 
 
 - Use PascalCase for types (structs, classes, enums, protocols)
 - Use camelCase for properties, methods, and variables
-- Use UPPER_SNAKE_CASE for constants
+- Use lowerCamelCase for constants, following Swift naming conventions
 - Prefix boolean properties with verbs (is, has, should, etc.)
 - Use descriptive names that indicate purpose rather than type
 

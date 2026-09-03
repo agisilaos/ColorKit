@@ -82,23 +82,17 @@ private enum StrictWCAGContrast {
             green: foreground.green * foreground.alpha + background.green * inverseAlpha,
             blue: foreground.blue * foreground.alpha + background.blue * inverseAlpha
         )
-        let foregroundLuminance = luminance(composited)
-        let backgroundLuminance = luminance((background.red, background.green, background.blue))
-        let lighter = max(foregroundLuminance, backgroundLuminance)
-        let darker = min(foregroundLuminance, backgroundLuminance)
-        return (lighter + 0.05) / (darker + 0.05)
-    }
-
-    private static func luminance(_ components: (red: CGFloat, green: CGFloat, blue: CGFloat)) -> Double {
-        let red = linearized(Double(components.red))
-        let green = linearized(Double(components.green))
-        let blue = linearized(Double(components.blue))
-        return 0.2126 * red + 0.7152 * green + 0.0722 * blue
-    }
-
-    private static func linearized(_ component: Double) -> Double {
-        component <= 0.03928
-            ? component / 12.92
-            : pow((component + 0.055) / 1.055, 2.4)
+        return SRGBColorConversion.wcagContrastRatio(
+            between: (
+                red: Double(composited.red),
+                green: Double(composited.green),
+                blue: Double(composited.blue)
+            ),
+            and: (
+                red: Double(background.red),
+                green: Double(background.green),
+                blue: Double(background.blue)
+            )
+        )
     }
 }

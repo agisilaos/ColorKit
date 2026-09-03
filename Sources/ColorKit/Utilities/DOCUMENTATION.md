@@ -29,24 +29,29 @@ print(components.description)
 
 ### Color Comparison
 
-The `ColorComparison` utility helps you compare two colors across different color spaces and see their differences.
+The color-comparison API measures fixed, opaque, in-gamut sRGB colors without inventing components when resolution fails. It reports RGB and HSL component differences, CIEDE2000 perceptual difference, WCAG contrast, and passing WCAG levels as one atomic result.
 
 ```swift
-// Compare two colors
-let color1 = Color.blue
-let color2 = Color.purple
-let difference = color1.compare(with: color2)
+let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
+let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
 
-// Access difference metrics
-let rgbDiff = difference.rgbDifference // RGB component differences
-let hslDiff = difference.hslDifference // HSL component differences
-let perceptualDiff = difference.perceptualDifference // Overall perceptual difference
-let contrastRatio = difference.contrastRatio // WCAG contrast ratio
-let wcagLevels = difference.wcagComplianceLevels // WCAG compliance levels that pass
-
-// Get a human-readable description of the differences
-print(difference.description)
+switch color1.comparisonResult(with: color2) {
+case .available(let difference):
+    let rgbDiff = difference.rgbDifference // Normalized sRGB component differences
+    let hslDiff = difference.hslDifference // HSL coordinate differences
+    let deltaE00 = difference.perceptualDifference // Raw value; not normalized or a percentage
+    let contrastRatio = difference.contrastRatio // WCAG contrast ratio
+    let wcagLevels = difference.wcagComplianceLevels // Passing WCAG levels
+    print(difference.description)
+case .unavailable(let issues):
+    print("First color issues: \(issues.firstColor)")
+    print("Second color issues: \(issues.secondColor)")
+}
 ```
+
+The comparison rejects dynamic or otherwise unresolved colors, translucency without an explicit backing color, nonfinite components, and colors outside the standard sRGB gamut. The unavailable result contains all provable issues for each input and no partial measurements. `compare(with:)` remains deprecated through ColorKit 2.x solely as a compatibility adapter; unavailable inputs may receive its explicitly labeled legacy RGB-distance fallback.
+
+ColorKit implements CIEDE2000 with the reference weighting factors set to one and validates it against all 34 color pairs published with Sharma, Wu, and Dalal's [implementation notes](https://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf) and [supplementary test data](https://hajim.rochester.edu/ece/sites/gsharma/ciede2000/dataNprograms/ciede2000testdata.txt).
 
 ### Color Space Inspector View
 
@@ -74,8 +79,8 @@ The `ColorComparisonView` provides a SwiftUI view for comparing two colors:
 
 ```swift
 struct ContentView: View {
-    @State private var color1 = Color.blue
-    @State private var color2 = Color.purple
+    @State private var color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
+    @State private var color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
     
     var body: some View {
         VStack {
@@ -168,4 +173,4 @@ let suggestions = suggester.generateSuggestions(preserveHue: false)
 
 4. **Maintain brand consistency**: When fixing accessibility issues, use `preserveHue: true` to maintain your color palette's feel.
 
-5. **Document color decisions**: Use the tools to document why specific colors were chosen, especially when addressing accessibility concerns. 
+5. **Document color decisions**: Use the tools to document why specific colors were chosen, especially when addressing accessibility concerns.

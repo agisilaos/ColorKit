@@ -4,6 +4,17 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.
+- Add CIEDE2000 comparison to the preview catalog's performance benchmark.
+
+### Changed
+- Deprecate `compare(with:)` in favor of explicit unavailable-result handling while preserving its ColorKit 2.x fallback behavior.
+- Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
+
+### Fixed
+- Replace the normalized Euclidean RGB calculation labeled as CIEDE2000 with a reference-validated CIEDE2000 implementation over resolved D65 LAB values.
+
 ## [2.1.0] - 2026-09-02
 
 ### Added
