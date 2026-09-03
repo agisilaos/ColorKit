@@ -5,12 +5,12 @@
 //  Created by Agisilaos Tsaraboulidis on 12.03.2025.
 //
 //  Description:
-//  Tests for WCAG compliance preview modifiers and color blindness simulation.
+//  Tests for WCAG compliance modifiers and deprecated CVD compatibility APIs.
 //
 //  Features:
 //  - Tests for WCAG compliance preview modifiers
-//  - Tests for color blindness simulation (protanopia, deuteranopia, tritanopia)
-//  - Tests for color effect matrices and transformations
+//  - Tests for deprecated color-blindness symbols retained for source compatibility
+//  - Tests for legacy color-effect matrix symbols
 //  - Tests for view extensions and modifier applications
 //
 //  License:
@@ -49,7 +49,7 @@ final class WCAGPreviewModifiersTests: XCTestCase {
 
     @MainActor
     func testColorBlindnessPreviewModifier() throws {
-        // Test each type of color blindness
+        // Test each deprecated compatibility case
         let types = ColorBlindnessPreviewModifier.ColorBlindnessType.allCases
         for type in types {
             let modifier = ColorBlindnessPreviewModifier(type: type)
@@ -126,12 +126,8 @@ final class WCAGPreviewModifiersTests: XCTestCase {
         let wcagView = view.wcagCompliance(foreground: .blue, background: .white)
         XCTAssertNotNil(wcagView)
 
-        // Test color blindness preview modifier
+        // Test the deprecated compatibility modifier
         let colorBlindView = view.colorBlindnessPreview(type: ColorBlindnessPreviewModifier.ColorBlindnessType.protanopia)
         XCTAssertNotNil(colorBlindView)
-
-        // Test color effect modifier
-        let effectView = view.colorEffect(ColorEffect.identity)
-        XCTAssertNotNil(effectView)
     }
 }

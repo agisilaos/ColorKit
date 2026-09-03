@@ -53,8 +53,11 @@ public struct WCAGComplianceModifier: ViewModifier {
     }
 }
 
-/// A view modifier that displays a color blindness simulation preview
+/// A deprecated compatibility modifier that leaves content unchanged.
+@available(*, deprecated, message: "Transform fixed colors with Color.simulated(for:) instead.")
 public struct ColorBlindnessPreviewModifier: ViewModifier {
+    /// The cases accepted by the legacy arbitrary-view modifier.
+    @available(*, deprecated, message: "Use ColorVisionDeficiency for fixed-color simulation.")
     public enum ColorBlindnessType: String, CaseIterable, Identifiable {
         case normal = "Normal Vision"
         case protanopia = "Protanopia (Red-Blind)"
@@ -65,44 +68,21 @@ public struct ColorBlindnessPreviewModifier: ViewModifier {
         public var id: String { rawValue }
     }
 
-    private let type: ColorBlindnessType
-
+    /// Creates a no-op compatibility modifier.
+    ///
+    /// - Parameter type: The legacy simulation selection. It is accepted but not applied.
+    @available(*, deprecated, message: "Transform fixed colors with Color.simulated(for:) instead.")
     public init(type: ColorBlindnessType) {
-        self.type = type
+        _ = type
     }
 
     public func body(content: Content) -> some View {
         content
-            .colorEffect(colorBlindnessEffect())
-            .overlay(
-                Text(type.rawValue)
-                    .font(.caption)
-                    .padding(4)
-                    .background(Color.black.opacity(0.6))
-                    .foregroundColor(.white)
-                    .cornerRadius(4)
-                    .padding(4),
-                alignment: .topLeading
-            )
-    }
-
-    private func colorBlindnessEffect() -> ColorEffect {
-        switch type {
-        case .normal:
-            return ColorEffect.identity
-        case .protanopia:
-            return ColorEffect.protanopia
-        case .deuteranopia:
-            return ColorEffect.deuteranopia
-        case .tritanopia:
-            return ColorEffect.tritanopia
-        case .achromatopsia:
-            return ColorEffect.grayscale
-        }
     }
 }
 
-/// A color effect for simulating different types of color blindness
+/// The deprecated matrix container used by the legacy preview API.
+@available(*, deprecated, message: "Transform fixed colors with Color.simulated(for:) instead.")
 public struct ColorEffect: Sendable {
     let matrix: [CGFloat]
 
@@ -148,47 +128,18 @@ public struct ColorEffect: Sendable {
     ])
 }
 
-// Extension to apply color effects to views
 extension View {
-    func colorEffect(_ effect: ColorEffect) -> some View {
-        #if os(iOS) || os(macOS)
-        let matrix = effect.matrix
-        return self.modifier(ColorMatrixModifier(matrix: matrix))
-        #else
-        return self // Placeholder for other platforms
-        #endif
-    }
-
     /// Apply WCAG compliance checking to a view
     public func wcagCompliance(foreground: Color, background: Color, showDetails: Bool = true) -> some View {
         self.modifier(WCAGComplianceModifier(foreground: foreground, background: background, showDetails: showDetails))
     }
 
-    /// Apply color blindness simulation to a view
+    /// A deprecated compatibility modifier that leaves this view unchanged.
+    ///
+    /// - Parameter type: The legacy simulation selection. It is accepted but not applied.
+    /// - Returns: This view with a no-op compatibility modifier.
+    @available(*, deprecated, message: "Transform fixed colors with Color.simulated(for:) instead.")
     public func colorBlindnessPreview(type: ColorBlindnessPreviewModifier.ColorBlindnessType) -> some View {
         self.modifier(ColorBlindnessPreviewModifier(type: type))
-    }
-}
-
-/// A ViewModifier that applies a color matrix effect to a view
-private struct ColorMatrixModifier: ViewModifier {
-    let matrix: [CGFloat]
-
-    func body(content: Content) -> some View {
-        content.overlay(
-            GeometryReader { _ in
-                content
-                    .transformEffect(.identity) // Force redraw
-                    .foregroundColor(
-                        Color(
-                            .sRGB,
-                            red: matrix[0],
-                            green: matrix[5],
-                            blue: matrix[10],
-                            opacity: matrix[15]
-                        )
-                    )
-            }
-        )
     }
 }

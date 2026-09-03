@@ -114,25 +114,4 @@ final class AccessibilityAdjustmentTests: XCTestCase {
 
         XCTAssertEqual(try renderedPixel(of: actual), try renderedPixel(of: expected))
     }
-
-    @available(iOS 16.0, macOS 13.0, *)
-    @MainActor
-    private func renderedPixel(of view: some View) throws -> [UInt8] {
-        let renderer = ImageRenderer(content: view.frame(width: 1, height: 1).environment(\.colorScheme, .light))
-        let image = try XCTUnwrap(renderer.cgImage)
-        var pixel = [UInt8](repeating: 0, count: 4)
-        try pixel.withUnsafeMutableBytes { bytes in
-            let context = try XCTUnwrap(CGContext(
-                data: bytes.baseAddress,
-                width: 1,
-                height: 1,
-                bitsPerComponent: 8,
-                bytesPerRow: 4,
-                space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            ))
-            context.draw(image, in: CGRect(x: 0, y: 0, width: 1, height: 1))
-        }
-        return pixel
-    }
 }

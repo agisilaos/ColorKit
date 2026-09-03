@@ -6,8 +6,8 @@ public struct WCAGDemoView: View {
     @State private var backgroundColor: Color = .white
     @State private var text: String = "Sample Text"
     @State private var fontSize: Double = 16
-    @State private var selectedColorBlindnessType: ColorBlindnessPreviewModifier.ColorBlindnessType = .normal
-    @State private var showColorBlindnessPreview: Bool = false
+    @State private var selectedDeficiency = ColorVisionDeficiency.protanopia
+    @State private var showSimulation: Bool = false
 
     public init() {}
 
@@ -52,17 +52,17 @@ public struct WCAGDemoView: View {
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
 
-                // Color Blindness Simulation
+                // Color Vision Deficiency Simulation
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Color Blindness Simulation")
+                    Text("Fixed-Color CVD Simulation")
                         .font(.headline)
 
-                    Toggle("Show Color Blindness Preview", isOn: $showColorBlindnessPreview)
+                    Toggle("Show Simulated Colors", isOn: $showSimulation)
 
-                    if showColorBlindnessPreview {
-                        Picker("Type", selection: $selectedColorBlindnessType) {
-                            ForEach(ColorBlindnessPreviewModifier.ColorBlindnessType.allCases) { type in
-                                Text(type.rawValue).tag(type)
+                    if showSimulation {
+                        Picker("Type", selection: $selectedDeficiency) {
+                            ForEach(ColorVisionDeficiency.allCases) { deficiency in
+                                Text(deficiency.previewPresentation.name).tag(deficiency)
                             }
                         }
                         .pickerStyle(SegmentedPickerStyle())
@@ -77,11 +77,21 @@ public struct WCAGDemoView: View {
                     Text("Preview")
                         .font(.headline)
 
-                    if showColorBlindnessPreview {
+                    if showSimulation,
+                       let simulatedForeground = foregroundColor.simulated(for: selectedDeficiency),
+                       let simulatedBackground = backgroundColor.simulated(for: selectedDeficiency) {
                         Text(text)
                             .font(.system(size: fontSize))
-                            .wcagCompliance(foreground: foregroundColor, background: backgroundColor)
-                            .colorBlindnessPreview(type: selectedColorBlindnessType)
+                            .wcagCompliance(
+                                foreground: simulatedForeground,
+                                background: simulatedBackground
+                            )
+                    } else if showSimulation {
+                        Label(
+                            "Simulation unavailable for these colors",
+                            systemImage: "exclamationmark.triangle.fill"
+                        )
+                        .foregroundColor(.secondary)
                     } else {
                         Text(text)
                             .font(.system(size: fontSize))
