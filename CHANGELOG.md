@@ -32,6 +32,7 @@ All notable changes to ColorKit will be documented in this file.
 - Resolve strict `relativeLuminanceValue()` inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
 
 ### Tooling
+- Retain both stdout and stderr in test-runner logs, including failed Xcode invocations.
 - Use one local/CI test matrix with the pinned iPhone 17 / iOS 26.5 destination, isolated build storage, unique raw logs and result bundles, and serialized shared-state suites.
 - Compile marked public documentation examples and actual generated theme code in CI; execute HSL, CMYK, and LAB README examples in both languages and verify their results. Test the runner's CLI contract and fail when required example coverage disappears.
 

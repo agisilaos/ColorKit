@@ -154,7 +154,7 @@ and pinned destinations in `scripts/run_tests.sh`, not in the workflow. Set
 Build storage defaults to this checkout's `.build/xcode`; override it with
 `COLORKIT_DERIVED_DATA` when needed.
 
-Each matrix invocation retains raw logs and result bundles in a unique directory
+Each matrix invocation retains raw stdout/stderr logs and result bundles in a unique directory
 under `.build/test-results`; use `--results-dir TestResults` to choose another parent.
 For a targeted run, pass a platform label, destination, and Xcode options. Only
 these explicit single-destination runs use `xcpretty` when available; add
