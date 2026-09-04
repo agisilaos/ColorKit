@@ -15,6 +15,9 @@ import CoreGraphics
 import SwiftUI
 
 public struct BlendingPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var foregroundColor = Color.blue

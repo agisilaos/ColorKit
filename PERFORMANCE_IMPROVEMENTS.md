@@ -57,6 +57,7 @@ See [the cache identity design](docs/design/cache-identity.md) for the supported
 
 While the cache is automatically managed, you can manually control it if needed:
 
+<!-- swift-example: cache -->
 ```swift
 // Clear the entire cache
 ColorCache.shared.clearCache()
@@ -70,24 +71,19 @@ ColorCache.shared.clearContrastCache()
 
 ## Benchmarking
 
-ColorKit 1.4.0 includes a benchmark tool that allows you to measure the performance improvements on your specific hardware:
+Open the public `PerformanceBenchmark` SwiftUI view and use its Run Benchmarks
+button to measure operations on your hardware. There is no public programmatic
+`runAllBenchmarks()` API. Results depend on the device, build configuration,
+inputs, and cache state; they are not a guarantee of the historical ratios above.
 
-```swift
-import ColorKit
-
-let benchmark = PerformanceBenchmark()
-benchmark.runAllBenchmarks()
-```
-
-Or use the included SwiftUI view:
-
+<!-- swift-example: benchmark -->
 ```swift
 import SwiftUI
 import ColorKit
 
 struct ContentView: View {
     var body: some View {
-        PerformanceBenchmarkView()
+        PerformanceBenchmark()
     }
 }
 ```

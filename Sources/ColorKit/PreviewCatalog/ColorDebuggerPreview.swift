@@ -21,6 +21,9 @@ import SwiftUI
 
 /// A preview view for debugging and inspecting colors
 public struct ColorDebuggerPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var selectedColor: Color = .blue

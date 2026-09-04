@@ -23,6 +23,9 @@ import SwiftUI
 /// A preview component for generating, customizing, and exporting color palettes
 /// - Note: This preview doesn't export and share actions because interactive elements such as sheets or save panels are not supported in SwiftUI previews.
 public struct PaletteStudioPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State Properties
 
     @State private var seedColor: Color = .blue

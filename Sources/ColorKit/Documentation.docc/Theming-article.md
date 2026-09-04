@@ -119,23 +119,25 @@ Footer()
 
 ### Dynamic Themes
 
-Create themes that adapt to system settings:
+Choose light and dark colors explicitly with the adaptive view modifier. Theme
+color sets provide variants; they do not automatically select a system appearance.
 
+<!-- swift-example: dynamic-theme -->
 ```swift
-// Create an adaptive theme
-let adaptiveTheme = ColorTheme(
-    name: "Adaptive",
-    primary: Color.adaptive(light: .blue, dark: .lightBlue),
-    secondary: Color.adaptive(light: .green, dark: .lightGreen),
-    accent: Color.adaptive(light: .purple, dark: .lightPurple),
-    background: Color.adaptive(light: .white, dark: .black),
-    text: Color.adaptive(light: .black, dark: .white)
+let primary = ThemeColorSet(
+    base: Color(.sRGB, red: 0.08, green: 0.4, blue: 0.75),
+    light: Color(.sRGB, red: 0.56, green: 0.79, blue: 0.98),
+    dark: Color(.sRGB, red: 0.05, green: 0.28, blue: 0.63)
 )
 
-// Listen for theme changes
-.onThemeChange { theme in
-    print("Theme changed to: \(theme.name)")
-}
+Text("Adaptive text")
+    .adaptiveColor(light: primary.dark, dark: primary.light)
+
+// Observe the manager's published selection from a view
+Text("Current theme")
+    .onReceive(ThemeManager.shared.$currentTheme) { theme in
+        print("Theme changed to: \(theme.name)")
+    }
 ```
 
 ## Interface Overview

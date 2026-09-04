@@ -21,6 +21,11 @@ import SwiftUI
 
 /// A preview component for demonstrating color animations and transitions
 public struct ColorAnimationPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {
+        self.init(monitor: AnimationPerformanceMonitor())
+    }
+
     // MARK: - State Properties
 
     @State private var startColor: Color = .blue
@@ -32,7 +37,7 @@ public struct ColorAnimationPreview: View {
     @State private var showPerformanceMetrics = false
     @StateObject private var monitor: AnimationPerformanceMonitor
 
-    init(monitor: @autoclosure @escaping () -> AnimationPerformanceMonitor = AnimationPerformanceMonitor()) {
+    init(monitor: @autoclosure @escaping () -> AnimationPerformanceMonitor) {
         _monitor = StateObject(wrappedValue: monitor())
     }
 

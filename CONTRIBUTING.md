@@ -128,7 +128,8 @@ func testColorInitialization() {
 ### CI Validation
 
 CI runs strict SwiftLint checks, builds the DocC catalog with warnings treated as
-errors, and tests on both iOS and macOS. The jobs use the `macos-26` runner with
+errors, compiles selected public examples as a macOS client, and tests on both
+iOS and macOS. The jobs use the `macos-26` runner with
 Xcode 26.5 and an iPhone 17 simulator running iOS 26.5.
 When changing Xcode versions, also check the simulator runtime against the
 [runner image inventory](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
@@ -141,29 +142,23 @@ xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
   -derivedDataPath /tmp/ColorKitDocumentation \
   -skipPackagePluginValidation -skipMacroValidation \
   'OTHER_DOCC_FLAGS=--warnings-as-errors'
-scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
-  -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
-  -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
-  -skipPackagePluginValidation -skipMacroValidation
-scripts/run_tests.sh macOS 'platform=macOS' \
-  -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
-  -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
-  -skipPackagePluginValidation -skipMacroValidation
-scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
-  -parallel-testing-enabled NO \
-  -only-testing:ColorKitTests/ColorCacheIntegrationTests \
-  -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
-  -skipPackagePluginValidation -skipMacroValidation
-scripts/run_tests.sh macOS 'platform=macOS' \
-  -parallel-testing-enabled NO \
-  -only-testing:ColorKitTests/ColorCacheIntegrationTests \
-  -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
-  -skipPackagePluginValidation -skipMacroValidation
+scripts/run_tests.sh
+python3 -m unittest discover -s scripts/tests
+python3 scripts/check_documentation.py
 ```
 
-`scripts/run_tests.sh` formats output with `xcpretty` when it is installed and
-otherwise prints raw `xcodebuild` output. Pass `--log-file path` before the platform
-to retain the raw log with `tee`; create the log's parent directory first.
+The zero-argument runner is the canonical CI matrix: parallel iOS and macOS tests,
+then serialized shared-state suites on each platform. Change the shared-suite list
+and pinned destinations in `scripts/run_tests.sh`, not in the workflow. Set
+`COLORKIT_IOS_DESTINATION` or `COLORKIT_MACOS_DESTINATION` for another local device.
+Build storage defaults to this checkout's `.build/xcode`; override it with
+`COLORKIT_DERIVED_DATA` when needed.
+
+Each matrix invocation retains raw logs and result bundles in a unique directory
+under `.build/test-results`; use `--results-dir TestResults` to choose another parent.
+For a targeted run, pass a platform label, destination, and Xcode options. Only
+these explicit single-destination runs use `xcpretty` when available; add
+`--log-file path` to retain raw output (its parent directory must exist).
 
 After a release PR is merged, run `scripts/check_release.sh <version>` from `main`
 before tagging. The check fetches `origin/main` and tags, then verifies the working
@@ -179,6 +174,32 @@ reset or removal API, so registered fixtures remain until the test process exits
 The `test-results` workflow artifact retains raw build logs and `.xcresult`
 bundles for 14 days, including logs from failed test commands. Check the
 "Show Xcode and Available Simulators" step if a destination cannot be found.
+
+### Keeping contracts and documentation synchronized
+
+For every public API or behavior change, review these together in the same PR:
+
+- Source/API comments and the relevant DocC article.
+- English and Spanish README examples and contract prose (or explain why neither is affected).
+- An Unreleased changelog entry and migration guidance for changed results, fallbacks,
+  enum cases, or deprecations—not only source-breaking signature changes.
+- Regression tests and representative public examples exercising the changed contract.
+
+`python3 scripts/check_documentation.py` compiles the actual Swift fences marked
+with `<!-- swift-example: example-id -->`, using public imports and the package's
+macOS 12 deployment target. Add each marker to the explicit inventory in that script.
+The READMEs share the same required example IDs; deleting or renaming a required
+marker fails the check. Keep marked examples self-contained. The checker also
+executes the real theme-code generator and compiles its output for named defaults,
+translucent sRGB, grayscale, and Display P3 inputs. Generated files live in a temporary
+directory and are not committed.
+
+A successful DocC build validates documentation structure and links, not fenced
+Swift. The compile check covers selected examples, not every snippet or the truth
+of prose, visual behavior, or performance claims. Review translations for semantic
+parity and use measured, reproducible evidence for performance claims. When parallel
+branches touch these contracts (such as HSL), reconcile their release and migration
+notes after merging and rerun all gates against the combined result.
 
 ### Git Workflow
 

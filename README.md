@@ -149,6 +149,7 @@ Rectangle()
 ```
 
 ### **1️⃣1️⃣ Auto-Generate Accessible Color Palettes**  
+<!-- swift-example: accessible-palette -->
 ```swift
 // Generate an accessible palette from a seed color
 let seedColor = Color.blue
@@ -165,7 +166,7 @@ let theme = seedColor.generateAccessibleTheme(
 )
 
 // Find the stronger black-or-white endpoint and inspect its measured outcome
-let backgroundColor = Color.purple
+let backgroundColor = Color(.sRGB, red: 0.5, green: 0.2, blue: 0.7)
 let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
 let textColor = textResult.color
 
@@ -178,6 +179,8 @@ case .bestEffort:
     print("Best available endpoint is below the requested target")
 case .unavailable:
     print("Resolve the colors in an explicit appearance before assessment")
+case .invalidConfiguration:
+    print("Supply a finite perceptual-distance budget from 0 through 100")
 }
 
 // Use the demo view to experiment with palette generation
@@ -261,10 +264,11 @@ ColorCache.shared.clearCache()
 For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
 
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
+<!-- swift-example: enhancement -->
 ```swift
 // Generate a candidate while preserving brand identity, then inspect its outcome
-let originalColor = Color.blue
-let backgroundColor = Color.white
+let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
 
 let result = originalColor.enhancementResult(
@@ -283,6 +287,7 @@ if result.meetsTarget {
 ### **1️⃣5️⃣ Preview Catalog**
 The Preview Catalog provides interactive demonstrations of ColorKit's features:
 
+<!-- swift-example: catalog -->
 ```swift
 import ColorKit
 
@@ -341,8 +346,10 @@ Available previews:
 
 Each preview is designed to help developers understand and utilize ColorKit's features effectively. Access them through the `MainCatalogView` or individually:
 
+<!-- swift-example: previews -->
 ```swift
 // Use individual previews
+ColorSpacePreview()
 BlendingPreview()
 GradientPreview()
 ThemePreview()
@@ -374,6 +381,7 @@ ColorSpaceInspectorView(color: myColor)
 
 Compare fixed, opaque, in-gamut sRGB colors using component differences, WCAG metrics, and CIEDE2000:
 
+<!-- swift-example: comparison -->
 ```swift
 let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
 let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
@@ -395,8 +403,11 @@ Dynamic, translucent, nonfinite, and out-of-sRGB inputs return explicit issues i
 
 Validate and improve color accessibility:
 
+<!-- swift-example: budget -->
 ```swift
 // Check WCAG compliance
+let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
 // Get budgeted candidates with explicit outcomes and measurement evidence

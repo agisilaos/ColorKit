@@ -20,11 +20,12 @@
 - [ ] All existing and new tests are passing
 - [ ] I have tested these changes in the Demo App
 - [ ] I have updated relevant documentation
+- [ ] I have reviewed English and Spanish examples and contract prose together (or explained why unaffected)
+- [ ] Marked public examples and generated theme code pass `python3 scripts/check_documentation.py`
 - [ ] I have added entries to CHANGELOG.md following the existing format
 - [ ] My code follows the project's code style and naming conventions
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings or deprecation notices
 - [ ] I have checked my code and corrected any misspellings
 
@@ -39,6 +40,7 @@
 
 - [ ] This PR includes breaking changes
 - [ ] I have documented migration steps in MIGRATION.md
+- [ ] I have covered changed outcomes, fallbacks, enum cases, and deprecations even when signatures remain compatible
 - [ ] I have updated version numbers according to Semantic Versioning
 
 ## Screenshots/Videos
@@ -50,4 +52,4 @@
 ## Related Issues
 <!-- Link any related issues using #issue-number -->
 
-Closes # 
+Closes #
