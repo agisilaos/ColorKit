@@ -1,6 +1,12 @@
 import CoreGraphics
 import SwiftUI
 
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
 /// A finite, nonlinear sRGB snapshot with unpremultiplied alpha.
 /// RGB may extend beyond 0–1; consumers decide whether that range is representable.
 struct ResolvedSRGBA {
@@ -47,5 +53,39 @@ struct ResolvedSRGBA {
         }
 
         return Self(sRGBComponents: resolved)
+    }
+}
+
+/// sRGBA components resolved through the platform color types for the current appearance.
+///
+/// This is the lenient policy recorded in
+/// [ADR 0010](../../../docs/adr/0010-resolve-legacy-luminance-leniently.md), used by the
+/// accessors that must answer for colors ``ResolvedSRGBA`` cannot represent. It differs
+/// from that strict snapshot in two ways:
+///
+/// - It resolves named SwiftUI colors, which carry no `cgColor`, and dynamic colors,
+///   reporting whatever the appearance in effect produces.
+/// - It clamps wider-gamut colors into sRGB rather than preserving extended components.
+///
+/// Prefer ``ResolvedSRGBA`` wherever a measurement must be reproducible from its inputs.
+enum AppearanceResolvedSRGBA {
+    /// Resolves a color to unpremultiplied sRGBA components in 0-1.
+    ///
+    /// - Returns: The components, or `nil` when the platform color cannot produce them,
+    ///   as for a pattern color.
+    static func resolve(_ color: Color) -> (red: Double, green: Double, blue: Double, alpha: Double)? {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        #if canImport(UIKit)
+        guard UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+        #elseif canImport(AppKit)
+        guard let converted = NSColor(color).usingColorSpace(.sRGB) else { return nil }
+        converted.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        #endif
+
+        return (Double(red), Double(green), Double(blue), Double(alpha))
     }
 }

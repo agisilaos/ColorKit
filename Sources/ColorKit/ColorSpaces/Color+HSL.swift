@@ -80,20 +80,25 @@ public extension Color {
     /// }
     /// ```
     ///
+    /// HSL is defined on sRGB, so the color is resolved for the current appearance and a
+    /// wider-gamut color is clamped into sRGB. Opacity is not part of HSL.
+    ///
     /// - Returns: A tuple containing hue (0.0-1.0), saturation (0.0-1.0),
-    ///           and lightness (0.0-1.0), or `nil` if conversion fails.
+    ///           and lightness (0.0-1.0), or `nil` when the color cannot be resolved to
+    ///           sRGB components at all, as for a pattern color.
     func hslComponents() -> (hue: CGFloat, saturation: CGFloat, lightness: CGFloat)? {
         // Check cache first
         if let cachedComponents = ColorCache.shared.getCachedHSLComponents(for: self) {
             return cachedComponents
         }
 
-        guard let components = cgColor?.components, components.count >= 3 else { return nil }
-        let r = components[0]
-        let g = components[1]
-        let b = components[2]
+        // Resolve through the platform types. Reading raw cgColor components required at
+        // least three of them, so named SwiftUI colors and grayscale reported no value and
+        // silently made adjustedForMode(isDarkMode:) and adjustedForAccessibility no-ops.
+        guard let components = AppearanceResolvedSRGBA.resolve(self) else { return nil }
+
         let hsl = SRGBColorConversion.hsl(
-            from: (red: Double(r), green: Double(g), blue: Double(b))
+            from: (red: components.red, green: components.green, blue: components.blue)
         )
         let h = CGFloat(hsl.hue)
         let s = CGFloat(hsl.saturation)

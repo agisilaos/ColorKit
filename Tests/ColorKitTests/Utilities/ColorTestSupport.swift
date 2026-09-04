@@ -1,6 +1,39 @@
 import SwiftUI
 import XCTest
 
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
+/// A color the platform types cannot resolve to sRGB components.
+///
+/// Pattern colors have no single component value, so they exercise the failure path that
+/// named and grayscale colors no longer take. SwiftUI still exposes a `cgColor` for one,
+/// so this fixture fails the platform resolution without failing every conversion.
+func unresolvableTestColor() -> Color {
+    // The image must actually carry more than one color. A blank one resolves on UIKit.
+    #if canImport(UIKit)
+    let image = UIGraphicsImageRenderer(size: CGSize(width: 2, height: 2)).image { context in
+        UIColor.red.setFill()
+        context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        UIColor.blue.setFill()
+        context.fill(CGRect(x: 1, y: 1, width: 1, height: 1))
+    }
+    return Color(UIColor(patternImage: image))
+    #elseif canImport(AppKit)
+    let image = NSImage(size: NSSize(width: 2, height: 2))
+    image.lockFocus()
+    NSColor.red.setFill()
+    NSRect(x: 0, y: 0, width: 1, height: 1).fill()
+    NSColor.blue.setFill()
+    NSRect(x: 1, y: 1, width: 1, height: 1).fill()
+    image.unlockFocus()
+    return Color(nsColor: NSColor(patternImage: image))
+    #endif
+}
+
 func fixedTestColor(
     space name: CFString = CGColorSpace.sRGB,
     components: [CGFloat] = [0.2, 0.4, 0.6, 0.8],

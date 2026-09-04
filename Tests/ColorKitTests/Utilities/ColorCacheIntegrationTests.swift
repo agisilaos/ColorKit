@@ -120,7 +120,7 @@ final class ColorCacheIntegrationTests: XCTestCase {
                 for index in order {
                     let gray = grays[index]
                     XCTAssertNotNil(gray.labComponents())
-                    XCTAssertNil(gray.hslComponents())
+                    XCTAssertNotNil(gray.hslComponents())
                     XCTAssertEqual(conversionValues(gray, other: other), cold[index])
                     try assertCacheColorEqual(gray.blended(with: other, mode: .normal), coldBlends[index])
                     try assertCacheColorEqual(gray.interpolated(with: other, amount: 0.3), coldInterpolations[index])

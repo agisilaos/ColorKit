@@ -74,14 +74,26 @@ final class AccessibilityAdjustmentTests: XCTestCase {
     }
 
     func testFailedForegroundConversionReturnsOriginalColor() {
+        let foreground = unresolvableTestColor()
+        XCTAssertNil(foreground.hslComponents())
+
+        let adjusted = foreground.adjustedForAccessibility(with: .white, minimumRatio: 22)
+
+        XCTAssertEqual(adjusted, foreground)
+    }
+
+    func testResolvableForegroundsAreAdjustedRatherThanReturnedUnchanged() {
+        // These resolve for the current appearance, so the adjustment runs instead of
+        // returning the input untouched.
         let foregrounds = [Color.primary, Color(CGColor(gray: 0.4, alpha: 0.3))]
 
         for foreground in foregrounds {
-            XCTAssertNil(foreground.hslComponents())
+            XCTAssertNotNil(foreground.hslComponents())
 
             let adjusted = foreground.adjustedForAccessibility(with: .white, minimumRatio: 22)
 
-            XCTAssertEqual(adjusted, foreground)
+            XCTAssertNotEqual(adjusted, foreground)
+            XCTAssertEqual(adjusted, .black)
         }
     }
 

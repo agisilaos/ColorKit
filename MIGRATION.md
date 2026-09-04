@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### HSL resolution
+
+`hslComponents()` now resolves through the platform color types for the current
+appearance, instead of reading raw `cgColor` components. Colors that previously
+reported no value now convert:
+
+| Input | Before | Now |
+| --- | --- | --- |
+| `.blue`, `.orange`, `.green`, `.red`, `.gray` | no value | resolved for the current appearance |
+| grayscale `CGColor` | no value | resolved through its color space |
+| `Color.primary` and other dynamic colors | no value | resolved for the current appearance |
+| a pattern color | no value | no value |
+
+**What changes for callers.** `adjustedForMode(isDarkMode:)` and
+`adjustedForAccessibility(with:minimumRatio:)` return their input unchanged when HSL is
+unavailable. Both were therefore silent no-ops for every named and grayscale color, and
+both now perform the adjustment. If you relied on a named color passing through
+untouched, pass an explicitly constructed color instead.
+
+Dynamic colors are affected the same way: `adjustedForAccessibility(.primary, …)` now
+adjusts rather than returning `.primary`, which freezes it to a fixed color for the
+appearance in effect. `contrastRatio(with:)` already resolved `.primary` this way.
+
+Wider-gamut colors are unchanged in value. Platform resolution clamps them into sRGB, so
+Display P3 red still reports `H: 0°, S: 100%, L: 50%`; it is now an explicit clamp rather
+than P3 components read as sRGB. Colors already in sRGB convert exactly as before.
+
+
 ### Enhancement distance budgets
 
 `enhanceColorResult`, `enhancementResult`, and both result-bearing variant APIs now

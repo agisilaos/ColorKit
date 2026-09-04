@@ -36,20 +36,11 @@ extension Color {
     /// print("Alpha: \(components.alpha)")
     /// ```
     ///
-    /// - Returns: A tuple containing normalized (0.0-1.0) RGBA components
+    /// - Returns: A tuple containing normalized (0.0-1.0) RGBA components. A color the
+    ///   platform cannot resolve, such as a pattern color, reports all zeros, which is
+    ///   indistinguishable from transparent black.
     func wcagRGBAComponents() -> (red: Double, green: Double, blue: Double, alpha: Double) {
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-
-        #if canImport(UIKit)
-        UIColor(self).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        #elseif canImport(AppKit)
-        NSColor(self).usingColorSpace(.sRGB)?.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        #endif
-
-        return (Double(red), Double(green), Double(blue), Double(alpha))
+        AppearanceResolvedSRGBA.resolve(self) ?? (red: 0, green: 0, blue: 0, alpha: 0)
     }
 
     /// Gets color candidates that target the specified WCAG level when paired with this color.
