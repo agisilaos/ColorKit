@@ -2,12 +2,19 @@
 
 set -o pipefail
 
+repo_root=$(cd "$(dirname "$0")/.." && pwd)
+derived_data=${COLORKIT_DERIVED_DATA:-"$repo_root/.build/xcode"}
+
 usage() {
     cat <<'EOF'
 Usage: scripts/run_tests.sh [--log-file path] platform destination [xcodebuild-options...]
-       scripts/run_tests.sh
+       scripts/run_tests.sh [--results-dir path]
 
-With no arguments, run both iOS and macOS tests and report both results.
+With no arguments, run the CI matrix: parallel iOS and macOS tests, followed by
+serialized shared-state suites on each platform. Raw logs and result bundles
+are saved in a unique run directory under .build/test-results (or --results-dir).
+Override destinations with COLORKIT_IOS_DESTINATION / COLORKIT_MACOS_DESTINATION,
+and build storage with COLORKIT_DERIVED_DATA (default: .build/xcode).
 With a platform label and destination, run only that destination. Additional
 arguments are passed unchanged to xcodebuild after the shared test options.
 An explicit -parallel-testing-enabled option replaces the default parallel
@@ -17,7 +24,8 @@ the log's parent directory must already exist. This requires a single platform.
 
 Examples:
   scripts/run_tests.sh
-  scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 16 Pro'
+  scripts/run_tests.sh --results-dir TestResults
+  scripts/run_tests.sh iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
   scripts/run_tests.sh macOS 'platform=macOS,arch=arm64' -skipMacroValidation
   scripts/run_tests.sh --log-file macOS.log macOS 'platform=macOS'
 
@@ -48,7 +56,7 @@ run_tests() {
     if xcodebuild test \
         -scheme ColorKit \
         -destination "$destination" \
-        -derivedDataPath "$HOME/Library/Developer/Xcode/DerivedData" \
+        -derivedDataPath "$derived_data" \
         -enableCodeCoverage YES \
         "${test_options[@]}" \
         | "${output_command[@]}"; then
@@ -66,6 +74,16 @@ run_tests() {
 if [[ $# -eq 1 && $1 == --help ]]; then
     usage
     exit 0
+fi
+
+results_parent="$repo_root/.build/test-results"
+if [[ ${1:-} == --results-dir ]]; then
+    if [[ $# -ne 2 || -z $2 || $2 == -* ]]; then
+        usage >&2
+        exit 2
+    fi
+    results_parent=$2
+    shift 2
 fi
 
 if command -v xcpretty >/dev/null 2>&1; then
@@ -91,17 +109,33 @@ if [[ $# -gt 0 ]]; then
     exit $?
 fi
 
-ios_result=0
-run_tests "iOS" "platform=iOS Simulator,name=iPhone 16 Pro" || ios_result=$?
+mkdir -p "$results_parent" || exit 1
+results_dir=$(mktemp -d "$results_parent/run.XXXXXX") || exit 1
+printf 'Test artifacts: %s\n' "$results_dir"
 
-macos_result=0
-run_tests "macOS" "platform=macOS,arch=arm64" || macos_result=$?
+ios_destination=${COLORKIT_IOS_DESTINATION:-'platform=iOS Simulator,name=iPhone 17,OS=26.5'}
+macos_destination=${COLORKIT_MACOS_DESTINATION:-'platform=macOS,arch=arm64'}
+shared_suites=(ColorCacheIntegrationTests ThemeManagerIntegrationTests)
+parallel_options=()
+serial_options=(-parallel-testing-enabled NO)
+for suite in "${shared_suites[@]}"; do
+    parallel_options+=("-skip-testing:ColorKitTests/$suite")
+    serial_options+=("-only-testing:ColorKitTests/$suite")
+done
 
-if [[ $ios_result -eq 0 && $macos_result -eq 0 ]]; then
-    printf '\nAll tests passed successfully!\n'
-    exit 0
-else
-    printf '\nSome test runs failed (iOS: %s, macOS: %s)\n' \
-        "$ios_result" "$macos_result" >&2
-    exit 1
-fi
+matrix_result=0
+run_phase() {
+    local label=$1
+    shift
+    output_command=(tee "$results_dir/$label.log")
+    run_tests "$label" "$@" \
+        -resultBundlePath "$results_dir/$label.xcresult" \
+        -skipPackagePluginValidation -skipMacroValidation || matrix_result=1
+}
+
+run_phase iOS "$ios_destination" "${parallel_options[@]}"
+run_phase macOS "$macos_destination" "${parallel_options[@]}"
+run_phase SharedStateiOS "$ios_destination" "${serial_options[@]}"
+run_phase SharedStatemacOS "$macos_destination" "${serial_options[@]}"
+printf '\nTest matrix exit status: %s. Artifacts: %s\n' "$matrix_result" "$results_dir"
+exit "$matrix_result"

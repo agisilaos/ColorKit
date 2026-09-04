@@ -76,65 +76,11 @@ jobs:
       - name: Resolve Swift Package Dependencies
         run: swift package resolve
 
-      # Set up build cache
-      - name: Cache Build
-        uses: actions/cache@v4
-        with:
-          path: ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-derived-data-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-derived-data-
+      - name: Test Tooling Contracts
+        run: python3 -m unittest discover -s scripts/tests
 
-      - name: Build and Test iOS
-        id: ios_tests
-        run: |
-          mkdir -p TestResults
-          scripts/run_tests.sh --log-file TestResults/iOS.log \
-            iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
-            -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
-            -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
-            -resultBundlePath TestResults/iOS.xcresult \
-            -skipPackagePluginValidation \
-            -skipMacroValidation
-
-      - name: Build and Test macOS
-        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
-        run: |
-          mkdir -p TestResults
-          scripts/run_tests.sh --log-file TestResults/macOS.log \
-            macOS 'platform=macOS' \
-            -skip-testing:ColorKitTests/ColorCacheIntegrationTests \
-            -skip-testing:ColorKitTests/ThemeManagerIntegrationTests \
-            -resultBundlePath TestResults/macOS.xcresult \
-            -skipPackagePluginValidation \
-            -skipMacroValidation
-
-      # Singleton tests mutate global state and run outside the parallel suite.
-      - name: Test Shared State iOS
-        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
-        run: |
-          mkdir -p TestResults
-          scripts/run_tests.sh --log-file TestResults/SharedStateiOS.log \
-            iOS 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
-            -parallel-testing-enabled NO \
-            -only-testing:ColorKitTests/ColorCacheIntegrationTests \
-            -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
-            -resultBundlePath TestResults/SharedStateiOS.xcresult \
-            -skipPackagePluginValidation \
-            -skipMacroValidation
-
-      - name: Test Shared State macOS
-        if: ${{ !cancelled() && (steps.ios_tests.outcome == 'success' || steps.ios_tests.outcome == 'failure') }}
-        run: |
-          mkdir -p TestResults
-          scripts/run_tests.sh --log-file TestResults/SharedStatemacOS.log \
-            macOS 'platform=macOS' \
-            -parallel-testing-enabled NO \
-            -only-testing:ColorKitTests/ColorCacheIntegrationTests \
-            -only-testing:ColorKitTests/ThemeManagerIntegrationTests \
-            -resultBundlePath TestResults/SharedStatemacOS.xcresult \
-            -skipPackagePluginValidation \
-            -skipMacroValidation
+      - name: Build and Test Canonical Matrix
+        run: scripts/run_tests.sh --results-dir TestResults
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
