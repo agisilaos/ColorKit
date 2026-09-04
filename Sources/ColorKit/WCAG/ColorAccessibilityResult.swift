@@ -35,8 +35,7 @@ public struct ColorAccessibilityResult: Sendable {
     /// `nil` means no budget applies, the budget is invalid, or distance is unavailable.
     public var isWithinPerceptualDistanceBudget: Bool? {
         guard let maximumPerceptualDistance,
-              maximumPerceptualDistance.isFinite,
-              (0...100).contains(maximumPerceptualDistance),
+              AccessibilityEnhancer.Configuration.isValidDistanceBudget(maximumPerceptualDistance),
               let perceptualDistance else { return nil }
         return perceptualDistance <= maximumPerceptualDistance
     }
@@ -55,8 +54,8 @@ public struct ColorAccessibilityResult: Sendable {
     /// Invalid and unavailable outcomes may retain diagnostic contrast, but never report success.
     public var status: Status {
         if let maximumPerceptualDistance {
-            guard maximumPerceptualDistance.isFinite,
-                  (0...100).contains(maximumPerceptualDistance) else { return .invalidConfiguration }
+            guard AccessibilityEnhancer.Configuration.isValidDistanceBudget(maximumPerceptualDistance)
+            else { return .invalidConfiguration }
             guard isWithinPerceptualDistanceBudget == true else { return .unavailable }
         }
         guard let contrastRatio else { return .unavailable }

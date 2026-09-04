@@ -167,6 +167,10 @@ public class AccessibilityEnhancer {
             self.maxPerceptualDistance = maxPerceptualDistance
             self.preferDarker = preferDarker
         }
+
+        static func isValidDistanceBudget(_ budget: Double) -> Bool {
+            budget.isFinite && (0...100).contains(budget)
+        }
     }
 
     /// The configuration controlling the enhancement behavior.

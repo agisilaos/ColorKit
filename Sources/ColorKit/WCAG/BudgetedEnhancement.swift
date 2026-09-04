@@ -7,7 +7,7 @@ struct BudgetedEnhancement {
     func result(for original: Color, against background: Color) -> ColorAccessibilityResult {
         let budget = configuration.maxPerceptualDistance
         let originalContrast = StrictWCAGContrast.measure(foreground: original, background: background).ratio
-        guard budget.isFinite, (0...100).contains(budget) else {
+        guard AccessibilityEnhancer.Configuration.isValidDistanceBudget(budget) else {
             return result(color: original, contrast: originalContrast, distance: nil)
         }
         let originalResult = result(
