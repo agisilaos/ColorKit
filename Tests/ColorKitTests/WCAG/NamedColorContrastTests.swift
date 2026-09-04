@@ -1,6 +1,12 @@
 import SwiftUI
 import XCTest
 
+#if canImport(AppKit)
+import AppKit
+#elseif canImport(UIKit)
+import UIKit
+#endif
+
 @testable import ColorKit
 
 /// Covers luminance-derived behavior for named SwiftUI colors, which carry no
@@ -61,9 +67,18 @@ final class NamedColorContrastTests: XCTestCase {
         }
     }
 
-    func testOrangeMatchesItsPublishedEndpointRatios() {
-        XCTAssertEqual(Double(Color.orange.contrastRatio(with: .black)), 9.09, accuracy: 0.01)
-        XCTAssertEqual(Double(Color.orange.contrastRatio(with: .white)), 2.31, accuracy: 0.01)
+    func testOrangeMatchesItsPublishedEndpointRatios() throws {
+        // These reference values describe Light Mode; named orange changes in Dark Mode.
+        let checkRatios = {
+            XCTAssertEqual(Double(Color.orange.contrastRatio(with: .black)), 9.09, accuracy: 0.01)
+            XCTAssertEqual(Double(Color.orange.contrastRatio(with: .white)), 2.31, accuracy: 0.01)
+        }
+        #if canImport(AppKit)
+        let appearance = try XCTUnwrap(NSAppearance(named: .aqua))
+        appearance.performAsCurrentDrawingAppearance(checkRatios)
+        #elseif canImport(UIKit)
+        UITraitCollection(userInterfaceStyle: .light).performAsCurrent(checkRatios)
+        #endif
     }
 
     // MARK: - Adjustment fallback

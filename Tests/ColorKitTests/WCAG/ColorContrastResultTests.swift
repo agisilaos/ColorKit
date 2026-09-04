@@ -197,8 +197,11 @@ final class ColorContrastResultTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(Color.black.relativeLuminanceValue()), 0, accuracy: 1e-9)
         XCTAssertNil(Color.primary.relativeLuminanceValue())
 
-        // The non-optional accessor collapses both cases to zero.
-        XCTAssertEqual(Color.primary.relativeLuminance(), 0)
+        // Primary resolves for the current appearance in the lenient accessor.
+        // Only a color that cannot resolve at all shares black's zero fallback.
+        let unresolved = unresolvableTestColor()
+        XCTAssertNil(unresolved.relativeLuminanceValue())
+        XCTAssertEqual(unresolved.relativeLuminance(), 0)
         XCTAssertEqual(Color.black.relativeLuminance(), 0)
     }
 
