@@ -8,6 +8,7 @@ All notable changes to ColorKit will be documented in this file.
 - Resolve `hslComponents()` through the platform color types, so named SwiftUI colors such as `Color.orange` and grayscale colors report HSL instead of no value. `adjustedForMode(isDarkMode:)` and `adjustedForAccessibility(with:minimumRatio:)` return their input when HSL is unavailable, so both were silent no-ops for every named and grayscale color. See [the migration guide](MIGRATION.md#hsl-resolution).
 
 ### Added
+- Add fixed-color CVD simulation with `ColorVisionDeficiency` and `Color.simulated(for:)` for protanopia, deuteranopia, and tritanopia. The full-severity Machado model operates in linear sRGB, preserves alpha, and returns `nil` for unsupported inputs.
 - Expose enhancement distance and budget evidence in accessibility results, including an explicit `invalidConfiguration` status.
 - Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.
 - Add CIEDE2000 comparison to the preview catalog's performance benchmark.
@@ -15,11 +16,15 @@ All notable changes to ColorKit will be documented in this file.
 - Add `relativeLuminanceValue()`, which returns `nil` for an unresolvable color instead of the zero that `relativeLuminance()` reports.
 
 ### Changed
+- Deprecate `colorBlindnessPreview(type:)`; it now leaves arbitrary view content unchanged instead of presenting hue shifts as CVD simulation. Apply the new simulation to individual colors; see [CVD migration guidance](MIGRATION.md#color-vision-deficiency-simulation).
 - Enforce `maxPerceptualDistance` as an inclusive CIEDE2000 hard budget in enhancement and variant result APIs. Keep the default at 30 and preserve legacy color-returning behavior; result calls may now report best effort instead of an over-budget pass. Result variants use Delta E 00 for distinctness. See [the migration guide](MIGRATION.md#enhancement-distance-budgets).
 - Deprecate `compare(with:)` in favor of explicit unavailable-result handling while preserving its ColorKit 2.x fallback behavior.
 - Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
 
 ### Fixed
+- Resolve fixed RGB and grayscale colors to nonlinear sRGB before LAB conversion, including linear RGB and Display P3. Preserve finite extended-range channels rather than clipping; return `nil` when resolution or conversion is unavailable. See [LAB migration guidance](MIGRATION.md#lab-color-resolution).
+- Make the advertised preview catalog views publicly constructible and generate compilable fixed sRGB theme literals, including alpha, instead of debug descriptions and nonexistent adaptive APIs.
+- Repair public examples in DocC, performance documentation, and both READMEs, including exhaustive accessibility-status handling and Spanish enhancement-budget contracts.
 - Measure named SwiftUI colors such as `Color.blue` and `Color.orange` in `relativeLuminance()`, `contrastRatio(with:)`, and `isDarkColor()`. They carry no `cgColor`, so they previously measured as black, reported 1:1 against black and 21:1 against white, and made the black-or-white contrast fallback select the weaker endpoint.
 - Report a WCAG contrast ratio of 1 when either color is translucent, instead of measuring it as though it were opaque. Black at ten percent opacity on white reported 21:1 and passed AAA against its true composited 1.25:1; `Color.primary`, which resolves to black at 84.7% opacity, did the same. Use `contrastResult(with:)` or `accessibilityResult(against:targetLevel:)` to measure a translucent foreground over an explicit opaque background. See [the migration guide](MIGRATION.md#translucent-contrast-measurement).
 - Resolve blending and RGB interpolation operands through the resolved sRGBA snapshot. A grayscale color previously failed the component check and both operations silently returned the receiver unchanged, so multiplying a gray by black returned the gray; a Display P3 color was read as though its components were sRGB.
@@ -27,6 +32,10 @@ All notable changes to ColorKit will be documented in this file.
 - Calculate `relativeLuminance()` according to WCAG 2.1 by linearizing sRGB components before weighting them. The previous calculation weighted gamma-encoded components directly and under-reported contrast for mid-tone colors; `#595959` on white now measures 7.00:1 rather than 2.63:1. `contrastRatio(with:)`, `adjustedForAccessibility(with:minimumRatio:)`, and `highContrastColor` all inherit the correction. See [the migration guide](MIGRATION.md#wcag-relative-luminance).
 - Classify `isDarkColor()` at the luminance where black and white contrast equally (approximately 0.1791) instead of at 0.5, so the black-or-white fallback is always the stronger contrasting endpoint.
 - Resolve strict `relativeLuminanceValue()` inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
+
+### Tooling
+- Use one local/CI test matrix with the pinned iPhone 17 / iOS 26.5 destination, isolated build storage, unique raw logs and result bundles, and serialized shared-state suites.
+- Compile marked public documentation examples and actual generated theme code in CI; test the runner's CLI contract and fail when required example coverage disappears.
 
 ## [2.1.0] - 2026-09-02
 

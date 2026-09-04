@@ -18,6 +18,7 @@ EXAMPLES = {
     DOCC + "Color-Spaces-article.md": {"rgb", "lab"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
     "PERFORMANCE_IMPROVEMENTS.md": {"cache", "benchmark"},
+    "MIGRATION.md": {"cvd", "enhancement-budget"},
 }
 MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
 
