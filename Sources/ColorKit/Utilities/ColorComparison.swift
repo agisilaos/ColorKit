@@ -48,11 +48,11 @@ public extension Color {
         return issues
     }
 
-    /// Compares this color using the ColorKit 2.x compatibility contract.
+    /// Retains the legacy comparison call shape, but not its numeric results.
     ///
     /// Comparable colors return the same CIEDE2000 result as ``comparisonResult(with:)``.
     /// When an authoritative comparison is unavailable, this method preserves the legacy
-    /// platform-defaulting behavior and labels its value as ``PerceptualDifferenceMetric/legacyRGBDistance``.
+    /// RGB-distance fallback and labels its value as ``PerceptualDifferenceMetric/legacyRGBDistance``.
     /// Use ``comparisonResult(with:)`` to handle failures without fabricated components.
     ///
     /// - Parameter other: The second color in the comparison.

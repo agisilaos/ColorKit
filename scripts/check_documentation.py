@@ -19,7 +19,7 @@ EXAMPLES = {
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
     "PERFORMANCE_IMPROVEMENTS.md": {"cache", "benchmark"},
-    "MIGRATION.md": {"cvd", "enhancement-budget"},
+    "MIGRATION.md": {"cvd", "enhancement-budget", "enhancement-references", "comparison"},
 }
 MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
 # Postconditions use the actual README variables, not copied example implementations.

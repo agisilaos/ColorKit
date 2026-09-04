@@ -20,6 +20,11 @@ ColorKit supports **Swift Package Manager (SPM)**.
    ```
 4. Click **Add Package**.  
 
+When upgrading from 2.x to 3.0.0, update your package version requirement and read
+the [migration guide](MIGRATION.md#colorkit-300). Exhaustive accessibility-status
+switches and stored enhancement-method references need updates. Comparison metrics,
+enhancement budgets, and color measurements can produce different results.
+
 ---
 
 ## **🚀 Features**  
