@@ -65,11 +65,12 @@ struct ResolvedSRGBA {
 ///
 /// - It resolves named SwiftUI colors, which carry no `cgColor`, and dynamic colors,
 ///   reporting whatever the appearance in effect produces.
-/// - It clamps wider-gamut colors into sRGB rather than preserving extended components.
+/// - Gamut handling follows the platform: UIKit preserves extended sRGB components,
+///   while AppKit converts to bounded sRGB. Consumers such as HSL clamp as needed.
 ///
 /// Prefer ``ResolvedSRGBA`` wherever a measurement must be reproducible from its inputs.
 enum AppearanceResolvedSRGBA {
-    /// Resolves a color to unpremultiplied sRGBA components in 0-1.
+    /// Resolves a color to unpremultiplied sRGBA components, which may extend beyond 0-1 on UIKit.
     ///
     /// - Returns: The components, or `nil` when the platform color cannot produce them,
     ///   as for a pattern color.

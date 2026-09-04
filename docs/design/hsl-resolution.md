@@ -41,10 +41,13 @@ two copies.
 
 ## Wider-gamut input
 
-Platform resolution clamps a wider-gamut color into sRGB, so Display P3 red still
-reports `H: 0°, S: 100%, L: 50%`. That value is unchanged; what changed is that it is
-now an explicit clamp rather than P3 components read as though they were sRGB. HSL is
-defined on sRGB, so this is the conversion the coordinate space asks for.
+Platform resolution converts a wider-gamut color to sRGB. UIKit preserves extended
+components, while AppKit clamps them. `hslComponents()` explicitly clamps the resolved
+components to 0-1 before conversion, so Display P3 red still reports
+`H: 0°, S: 100%, L: 50%` on both platforms. Other P3 colors can change because their
+components are now converted rather than read as though they were sRGB. HSL is defined
+on sRGB, so this is the conversion the coordinate space asks for. Clamping belongs to
+HSL so the shared resolver preserves the existing legacy WCAG behavior.
 
 ## Failure is still reachable
 

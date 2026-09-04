@@ -97,8 +97,13 @@ public extension Color {
         // silently made adjustedForMode(isDarkMode:) and adjustedForAccessibility no-ops.
         guard let components = AppearanceResolvedSRGBA.resolve(self) else { return nil }
 
+        // UIKit returns extended sRGB values; HSL requires components in 0-1.
         let hsl = SRGBColorConversion.hsl(
-            from: (red: components.red, green: components.green, blue: components.blue)
+            from: (
+                red: min(1, max(0, components.red)),
+                green: min(1, max(0, components.green)),
+                blue: min(1, max(0, components.blue))
+            )
         )
         let h = CGFloat(hsl.hue)
         let s = CGFloat(hsl.saturation)

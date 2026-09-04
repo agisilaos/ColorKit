@@ -68,6 +68,35 @@ final class HSLResolutionTests: XCTestCase {
         XCTAssertEqual(opaqueHSL.lightness, translucentHSL.lightness, accuracy: 1e-9)
     }
 
+    func testDisplayP3PrimariesClampToSRGBBeforeHSLConversion() throws {
+        let primaries: [(color: Color, hue: CGFloat)] = [
+            (Color(.displayP3, red: 1, green: 0, blue: 0), 0),
+            (Color(.displayP3, red: 0, green: 1, blue: 0), 1.0 / 3),
+            (Color(.displayP3, red: 0, green: 0, blue: 1), 2.0 / 3)
+        ]
+
+        for (color, hue) in primaries {
+            let hsl = try XCTUnwrap(color.hslComponents())
+
+            // Color-space conversion can leave small residual components near zero.
+            XCTAssertEqual(hsl.hue, hue, accuracy: 1e-4)
+            XCTAssertEqual(hsl.saturation, 1, accuracy: 1e-6)
+            XCTAssertEqual(hsl.lightness, 0.5, accuracy: 1e-6)
+        }
+    }
+
+    func testDisplayP3OrangeConvertsBeforeClamping() throws {
+        let orange = Color(.displayP3, red: 1, green: 0.5, blue: 0)
+
+        let hsl = try XCTUnwrap(orange.hslComponents())
+
+        // P3 orange converts to approximately (1.07407, 0.46249, -0.21044)
+        // in extended sRGB, then clamps to (1, 0.46249, 0).
+        XCTAssertEqual(hsl.hue, 0.46249 / 6, accuracy: 1e-5)
+        XCTAssertEqual(hsl.saturation, 1, accuracy: 1e-6)
+        XCTAssertEqual(hsl.lightness, 0.5, accuracy: 1e-6)
+    }
+
     func testSRGBResolutionIsUnchanged() throws {
         let color = Color(.sRGB, red: 0.5, green: 0.25, blue: 0.75)
 

@@ -47,7 +47,7 @@ The outcome when `wcagContrastRatio(with:)` is given a translucent color and so 
 _Avoid_: Equal colors, measured 1:1 ratio, failed threshold, ratio of a color against itself
 
 **Appearance-resolved components**:
-sRGBA components obtained through the platform color types for the appearance in effect. Unlike a resolved sRGBA snapshot, this resolves named and dynamic colors and clamps wider-gamut colors into sRGB, so its values are reproducible only alongside the appearance that produced them.
+sRGBA components obtained through the platform color types for the appearance in effect. Unlike a resolved sRGBA snapshot, this resolves named and dynamic colors, so its values are reproducible only alongside the appearance that produced them. UIKit preserves extended sRGB components; AppKit converts to bounded sRGB. HSL clamps the components before conversion.
 _Avoid_: Resolved sRGBA snapshot, fixed components
 
 **Unconvertible color**:

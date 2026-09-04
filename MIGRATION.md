@@ -25,9 +25,10 @@ Dynamic colors are affected the same way: `adjustedForAccessibility(.primary, �
 adjusts rather than returning `.primary`, which freezes it to a fixed color for the
 appearance in effect. `contrastRatio(with:)` already resolved `.primary` this way.
 
-Wider-gamut colors are unchanged in value. Platform resolution clamps them into sRGB, so
-Display P3 red still reports `H: 0°, S: 100%, L: 50%`; it is now an explicit clamp rather
-than P3 components read as sRGB. Colors already in sRGB convert exactly as before.
+Wider-gamut colors are converted to sRGB and clamped before HSL conversion. Display P3
+red still reports `H: 0°, S: 100%, L: 50%`, but other wider-gamut colors can change because
+their components are now converted rather than read as sRGB. Colors already in the
+sRGB gamut convert exactly as before.
 
 
 ### Enhancement distance budgets
