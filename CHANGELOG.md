@@ -4,9 +4,6 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
-### Fixed
-- Resolve `hslComponents()` through the platform color types, so named SwiftUI colors such as `Color.orange` and grayscale colors report HSL instead of no value. `adjustedForMode(isDarkMode:)` and `adjustedForAccessibility(with:minimumRatio:)` return their input when HSL is unavailable, so both were silent no-ops for every named and grayscale color. See [the migration guide](MIGRATION.md#hsl-resolution).
-
 ### Added
 - Add fixed-color CVD simulation with `ColorVisionDeficiency` and `Color.simulated(for:)` for protanopia, deuteranopia, and tritanopia. The full-severity Machado model operates in linear sRGB, preserves alpha, and returns `nil` for unsupported inputs.
 - Expose enhancement distance and budget evidence in accessibility results, including an explicit `invalidConfiguration` status.
@@ -22,6 +19,7 @@ All notable changes to ColorKit will be documented in this file.
 - Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
 
 ### Fixed
+- Resolve `hslComponents()` through the platform color types, so named SwiftUI colors such as `Color.orange` and grayscale colors report HSL instead of no value. `adjustedForMode(isDarkMode:)` and `adjustedForAccessibility(with:minimumRatio:)` return their input when HSL is unavailable, so both were silent no-ops for every named and grayscale color. See [the migration guide](MIGRATION.md#hsl-resolution).
 - Resolve fixed RGB and grayscale colors to nonlinear sRGB before LAB conversion, including linear RGB and Display P3. Preserve finite extended-range channels rather than clipping; return `nil` when resolution or conversion is unavailable. See [LAB migration guidance](MIGRATION.md#lab-color-resolution).
 - Make the advertised preview catalog views publicly constructible and generate compilable fixed sRGB theme literals, including alpha, instead of debug descriptions and nonexistent adaptive APIs.
 - Repair public examples in DocC, performance documentation, and both READMEs, including exhaustive accessibility-status handling and Spanish enhancement-budget contracts.
@@ -35,7 +33,7 @@ All notable changes to ColorKit will be documented in this file.
 
 ### Tooling
 - Use one local/CI test matrix with the pinned iPhone 17 / iOS 26.5 destination, isolated build storage, unique raw logs and result bundles, and serialized shared-state suites.
-- Compile marked public documentation examples and actual generated theme code in CI; test the runner's CLI contract and fail when required example coverage disappears.
+- Compile marked public documentation examples and actual generated theme code in CI; execute HSL, CMYK, and LAB README examples in both languages and verify their results. Test the runner's CLI contract and fail when required example coverage disappears.
 
 ## [2.1.0] - 2026-09-02
 

@@ -45,7 +45,7 @@ jobs:
             -skipMacroValidation \
             'OTHER_DOCC_FLAGS=--warnings-as-errors'
 
-      - name: Compile Public Documentation Examples and Generated Theme Code
+      - name: Compile Public Examples and Verify Conversion Results
         run: python3 scripts/check_documentation.py --derived-data "$RUNNER_TEMP/ColorKitDocumentation"
 
   test:

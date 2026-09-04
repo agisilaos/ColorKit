@@ -27,6 +27,7 @@ It is not evidence that strict color resolution or accessibility measurement suc
 
 The HSL (Hue, Saturation, Lightness) color space is particularly useful for color manipulation and creating color schemes.
 
+<!-- swift-example: hsl -->
 ```swift
 // Create a color using HSL values
 let color = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
@@ -36,6 +37,13 @@ if let components = color.hslComponents() {
     print("H: \(components.hue), S: \(components.saturation), L: \(components.lightness)")
 }
 ```
+
+`hslComponents()` resolves named SwiftUI colors, grayscale colors, and dynamic colors
+through the platform color types for the current appearance. It converts to sRGB and
+clamps wider-gamut channels to `0...1` before HSL conversion. Hue, saturation, and
+lightness are normalized to `0...1`; opacity is not part of HSL. It returns `nil` when
+the platform cannot resolve the color, such as a pattern color. This lenient policy
+does not extend to fixed-color extraction APIs such as CMYK and LAB.
 
 ### CMYK
 

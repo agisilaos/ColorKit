@@ -53,15 +53,25 @@ print(color.hexValue()) // "#FF5733FF"
 ```
 
 ### **2️⃣ Conversión HSL**  
+<!-- swift-example: hsl -->
 ```swift
 let hsl = Color.red.hslComponents()
 let customColor = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
 ```
 
+`hslComponents()` resuelve colores con nombre y dinámicos para la apariencia actual.
+Convierte a sRGB y recorta los canales de gama más amplia a `0...1` antes de la
+conversión; la opacidad no forma parte de HSL. Devuelve `nil` si la resolución falla,
+por ejemplo, con un color de patrón. A diferencia de HSL, CMYK y LAB requieren
+colores fijos y no eligen una apariencia. Consulta la
+[guía de migración de HSL](MIGRATION.md#hsl-resolution).
+
 ### **3️⃣ Conversión CMYK**  
+<!-- swift-example: cmyk -->
 ```swift
 // Convertir de RGB a CMYK
-let cmyk = Color.red.cmykComponents()
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let cmyk = red.cmykComponents()
 // (cyan: 0.0, magenta: 1.0, yellow: 1.0, key: 0.0)
 
 // Crear color a partir de valores CMYK
@@ -69,9 +79,12 @@ let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 ```
 
 ### **4️⃣ Conversión LAB**  
+<!-- swift-example: lab -->
 ```swift
 // Resolver un color fijo y convertirlo a LAB
-if let lab = Color.red.labComponents() {
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let lab = red.labComponents()
+if let lab {
     print(lab) // (L: 53.24, a: 80.09, b: 67.20)
 }
 

@@ -190,16 +190,21 @@ with `<!-- swift-example: example-id -->`, using public imports and the package'
 macOS 12 deployment target. Add each marker to the explicit inventory in that script.
 The READMEs share the same required example IDs; deleting or renaming a required
 marker fails the check. Keep marked examples self-contained. The checker also
-executes the real theme-code generator and compiles its output for named defaults,
-translucent sRGB, grayscale, and Display P3 inputs. Generated files live in a temporary
-directory and are not committed.
+executes the actual HSL, CMYK, and LAB README snippets in both languages and verifies
+their result variables against the expected contract. Keep those variables aligned
+with `README_CHECKS`; add behavior checks when an example promises a specific result.
+Named HSL colors are checked for availability and normalized finite components, not
+appearance-specific numeric values. Fixed sRGB examples use numeric postconditions.
+It also executes the real theme-code generator and compiles its output for named
+defaults, translucent sRGB, grayscale, and Display P3 inputs. Generated files live
+in a temporary directory and are not committed.
 
 A successful DocC build validates documentation structure and links, not fenced
-Swift. The compile check covers selected examples, not every snippet or the truth
-of prose, visual behavior, or performance claims. Review translations for semantic
-parity and use measured, reproducible evidence for performance claims. When parallel
-branches touch these contracts (such as HSL), reconcile their release and migration
-notes after merging and rerun all gates against the combined result.
+Swift. The compilation and behavior checks cover selected examples, not every snippet
+or the truth of prose, visual behavior, or performance claims. Review translations
+for semantic parity and use measured, reproducible evidence for performance claims. When parallel
+branches touch the same contracts, reconcile their release and migration notes
+after integrating upstream changes and rerun all gates against the combined result.
 
 ### Git Workflow
 
