@@ -5,12 +5,14 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Expose enhancement distance and budget evidence in accessibility results, including an explicit `invalidConfiguration` status.
 - Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.
 - Add CIEDE2000 comparison to the preview catalog's performance benchmark.
 - Add `contrastResult(with:)`, which reports a measured contrast ratio with its relative luminance values and passing WCAG levels, or an unavailable result with independent per-input issues.
 - Add `relativeLuminanceValue()`, which returns `nil` for an unresolvable color instead of the zero that `relativeLuminance()` reports.
 
 ### Changed
+- Enforce `maxPerceptualDistance` as an inclusive CIEDE2000 hard budget in enhancement and variant result APIs. Keep the default at 30 and preserve legacy color-returning behavior; result calls may now report best effort instead of an over-budget pass. Result variants use Delta E 00 for distinctness. See [the migration guide](MIGRATION.md#enhancement-distance-budgets).
 - Deprecate `compare(with:)` in favor of explicit unavailable-result handling while preserving its ColorKit 2.x fallback behavior.
 - Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
 

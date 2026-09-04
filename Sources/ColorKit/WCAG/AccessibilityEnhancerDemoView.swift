@@ -265,6 +265,8 @@ public struct AccessibilityEnhancerDemoView: View {
             return "Best effort"
         case .unavailable:
             return "Unavailable"
+        case .invalidConfiguration:
+            return "Invalid configuration"
         }
     }
 
@@ -276,6 +278,8 @@ public struct AccessibilityEnhancerDemoView: View {
             return .orange
         case .unavailable:
             return .secondary
+        case .invalidConfiguration:
+            return .red
         }
     }
 }

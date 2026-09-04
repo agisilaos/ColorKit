@@ -2,6 +2,54 @@
 
 ## Unreleased
 
+### Enhancement distance budgets
+
+`enhanceColorResult`, `enhancementResult`, and both result-bearing variant APIs now
+enforce `maxPerceptualDistance`. The default remains 30, so an existing result call
+may now return `bestEffort` instead of an over-budget passing color. Legacy
+color-returning enhancement and variant methods still ignore the setting.
+
+The budget is an inclusive CIEDE2000 Delta E 00 distance from the original foreground,
+using D65 LAB with reference weights of one. It must be finite and in `0...100`.
+Zero returns the unchanged original; exact equality is allowed without an overshoot
+tolerance. If no examined in-budget candidate passes, best effort selects the highest
+contrast, then smallest distance, then stable strategy order. This is not a global
+optimality or impossibility guarantee. Strategies remain preferences, not preservation
+constraints; even their fallbacks must fit the budget.
+
+Handle the new `ColorAccessibilityResult.Status.invalidConfiguration` case in
+exhaustive switches. Invalid values are not clamped or trapped: the result retains
+the original and any measurable diagnostic contrast but never reports `meetsTarget`.
+An `unavailable` enhancement can likewise retain contrast when its standalone
+perceptual distance cannot be measured, such as with a translucent foreground.
+Use `status` or `meetsTarget`, not a diagnostic ratio alone, for enhancement success.
+
+```swift
+let foreground = Color(.sRGB, red: 0.8, green: 0.8, blue: 0.8)
+let result = foreground.enhancementResult(with: .white, maxPerceptualDistance: 15)
+switch result.status {
+case .meetsTarget:
+    print("Pass within budget")
+case .bestEffort:
+    print("No examined in-budget candidate passed")
+case .unavailable:
+    print("Contrast or perceptual distance could not be established")
+case .invalidConfiguration:
+    print("Supply a finite budget from 0 through 100")
+}
+```
+
+Budgeted results expose optional `perceptualDistance`, `maximumPerceptualDistance`,
+and `isWithinPerceptualDistanceBudget`. Ordinary assessments leave these nil; the
+budget check is also nil for invalid budgets or unavailable distance. The requested
+maximum is retained verbatim for diagnostics, including invalid values.
+
+Result-bearing variants keep stable strategy order and best-effort entries but use
+Delta E 00 for pairwise deduplication: below 5 is a duplicate and exactly 5 is distinct.
+This is separate from each variant's budget against the original. Positive-count
+invalid or unavailable requests return one diagnostic result; nonpositive counts
+return an empty array. Legacy variant arrays retain their CIE76 rule.
+
 ### Translucent contrast measurement
 
 `wcagContrastRatio(with:)` now reports 1 when either color is translucent, rather

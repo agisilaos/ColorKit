@@ -66,10 +66,11 @@ final class ColorAccessibilityResultTests: XCTestCase {
         XCTAssertLessThan(try XCTUnwrap(result.contrastRatio), WCAGContrastLevel.AAA.minimumRatio)
     }
 
-    func testEnhancerAndVariantResultsPreserveLegacyCandidates() {
+    func testLargeBudgetHueResultPreservesLegacyPassingCandidate() {
         let configuration = AccessibilityEnhancer.Configuration(
             targetLevel: .AA,
-            strategy: .preserveHue
+            strategy: .preserveHue,
+            maxPerceptualDistance: 100
         )
         let enhancer = AccessibilityEnhancer(configuration: configuration)
         let color = Color(.sRGB, red: 0.7, green: 0.7, blue: 1)
@@ -79,10 +80,6 @@ final class ColorAccessibilityResultTests: XCTestCase {
         let result = enhancer.enhanceColorResult(color, against: background)
         XCTAssertEqual(result.color, legacy)
         XCTAssertEqual(result.status, .meetsTarget)
-
-        let legacyVariants = enhancer.suggestAccessibleVariants(for: color, against: background, count: 3)
-        let results = enhancer.suggestAccessibleVariantResults(for: color, against: background, count: 3)
-        XCTAssertEqual(results.map(\.color), legacyVariants)
     }
 
     func testAssessedPalettePreservesDeterministicLegacyPalette() {

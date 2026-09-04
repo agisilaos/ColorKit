@@ -8,11 +8,13 @@ public struct ColorAccessibilityResult: Sendable {
         case meetsTarget
         /// The color is measurable but its contrast falls below the requested target.
         case bestEffort
-        /// The supplied colors cannot be measured without additional context.
+        /// A required contrast or enhancement-distance measurement is unavailable.
         case unavailable
+        /// The enhancement budget is nonfinite or outside the inclusive range 0...100.
+        case invalidConfiguration
     }
 
-    /// The foreground candidate that was assessed.
+    /// The selected foreground, or the unchanged input when enhancement cannot run.
     public let color: Color
 
     /// The WCAG level requested by the caller.
@@ -20,6 +22,23 @@ public struct ColorAccessibilityResult: Sendable {
 
     /// The measured contrast ratio, or `nil` when measurement is unavailable.
     public let contrastRatio: Double?
+
+    /// The original-to-candidate CIEDE2000 Delta E 00, or `nil` when not measured.
+    /// Ordinary contrast assessments do not measure enhancement distance.
+    public let perceptualDistance: Double?
+
+    /// The requested enhancement budget, including its raw value when invalid.
+    /// `nil` means this is an ordinary assessment without an enhancement budget.
+    public let maximumPerceptualDistance: Double?
+
+    /// Whether measured distance is within a valid inclusive budget.
+    /// `nil` means no budget applies, the budget is invalid, or distance is unavailable.
+    public var isWithinPerceptualDistanceBudget: Bool? {
+        guard let maximumPerceptualDistance,
+              AccessibilityEnhancer.Configuration.isValidDistanceBudget(maximumPerceptualDistance),
+              let perceptualDistance else { return nil }
+        return perceptualDistance <= maximumPerceptualDistance
+    }
 
     /// The minimum contrast ratio required by ``targetLevel``.
     public var minimumContrastRatio: Double {
@@ -31,16 +50,30 @@ public struct ColorAccessibilityResult: Sendable {
         status == .meetsTarget
     }
 
-    /// The result status derived from the ratio and requested target.
+    /// The outcome derived from configuration validity, required measurements, and contrast.
+    /// Invalid and unavailable outcomes may retain diagnostic contrast, but never report success.
     public var status: Status {
+        if let maximumPerceptualDistance {
+            guard AccessibilityEnhancer.Configuration.isValidDistanceBudget(maximumPerceptualDistance)
+            else { return .invalidConfiguration }
+            guard isWithinPerceptualDistanceBudget == true else { return .unavailable }
+        }
         guard let contrastRatio else { return .unavailable }
         return contrastRatio >= minimumContrastRatio ? .meetsTarget : .bestEffort
     }
 
-    init(color: Color, targetLevel: WCAGContrastLevel, contrastRatio: Double?) {
+    init(
+        color: Color,
+        targetLevel: WCAGContrastLevel,
+        contrastRatio: Double?,
+        perceptualDistance: Double? = nil,
+        maximumPerceptualDistance: Double? = nil
+    ) {
         self.color = color
         self.targetLevel = targetLevel
         self.contrastRatio = contrastRatio
+        self.perceptualDistance = perceptualDistance
+        self.maximumPerceptualDistance = maximumPerceptualDistance
     }
 }
 

@@ -445,6 +445,9 @@ public struct AccessibilityLabPreview: View {
         case .unavailable:
             Label("Unavailable", systemImage: "questionmark.circle.fill")
                 .foregroundColor(.secondary)
+        case .invalidConfiguration:
+            Label("Invalid configuration", systemImage: "exclamationmark.triangle.fill")
+                .foregroundColor(.red)
         }
     }
 
