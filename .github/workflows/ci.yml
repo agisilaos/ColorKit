@@ -71,10 +71,13 @@ jobs:
       - name: Cache SPM dependencies
         uses: actions/cache@v4
         with:
-          path: .build
-          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-${{ hashFiles('**/Package.resolved') }}
+          path: |
+            .build/checkouts
+            .build/repositories
+            .build/artifacts
+          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-deps-v1-${{ hashFiles('**/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-
+            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-deps-v1-
 
       - name: Resolve Swift Package Dependencies
         run: swift package resolve

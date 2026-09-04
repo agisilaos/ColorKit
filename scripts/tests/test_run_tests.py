@@ -27,6 +27,7 @@ class TestRunnerContract(unittest.TestCase):
             "with open(os.environ['RUNNER_CALLS'], 'a') as log:\n"
             "    log.write(json.dumps(sys.argv[1:]) + '\\n')\n"
             "print('raw xcodebuild output')\n"
+            "print('xcodebuild diagnostic', file=sys.stderr)\n"
             "sys.exit(65 if os.environ.get('RUNNER_FAIL') == '1' else 0)\n"
         )
         fake.chmod(0o755)
@@ -93,6 +94,19 @@ class TestRunnerContract(unittest.TestCase):
         result = self.run_script("macOS", "platform=macOS")
         self.assertEqual(result.returncode, 1)
 
+    def test_matrix_logs_retain_both_streams_on_success_and_failure(self):
+        for failure in ("0", "1"):
+            with self.subTest(failure=failure):
+                self.environment["RUNNER_FAIL"] = failure
+                parent = self.root / f"logs-{failure}"
+                result = self.run_script("--results-dir", str(parent))
+                self.assertEqual(result.returncode, int(failure))
+                logs = list(parent.glob("run.*/*.log"))
+                self.assertEqual(len(logs), 4)
+                for path in logs:
+                    self.assertIn("raw xcodebuild output", path.read_text())
+                    self.assertIn("xcodebuild diagnostic", path.read_text())
+
     def test_explicit_run_preserves_arguments_and_serial_override(self):
         result = self.run_script("macOS", "platform=macOS", "-parallel-testing-enabled", "NO",
                                  "-only-testing:ColorKitTests/ThemeTests")
@@ -101,6 +115,14 @@ class TestRunnerContract(unittest.TestCase):
         self.assertEqual(call.count("-parallel-testing-enabled"), 1)
         self.assertNotIn("-parallel-testing-worker-count", call)
         self.assertIn("-only-testing:ColorKitTests/ThemeTests", call)
+
+    def test_explicit_log_retains_both_streams_on_failure(self):
+        self.environment["RUNNER_FAIL"] = "1"
+        log = self.root / "explicit.log"
+        result = self.run_script("--log-file", str(log), "macOS", "platform=macOS")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("raw xcodebuild output", log.read_text())
+        self.assertIn("xcodebuild diagnostic", log.read_text())
 
     def test_destination_overrides_apply_to_both_phases(self):
         self.environment["COLORKIT_IOS_DESTINATION"] = "platform=iOS Simulator,id=chosen"

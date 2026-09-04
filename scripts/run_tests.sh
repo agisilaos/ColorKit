@@ -58,7 +58,7 @@ run_tests() {
         -destination "$destination" \
         -derivedDataPath "$derived_data" \
         -enableCodeCoverage YES \
-        "${test_options[@]}" \
+        "${test_options[@]}" 2>&1 \
         | "${output_command[@]}"; then
         printf '%s tests passed\n' "$platform"
         return 0
