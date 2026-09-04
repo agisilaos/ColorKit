@@ -84,7 +84,9 @@ case .meetsTarget:
 case .bestEffort:
     Text("Candidate is below \(result.minimumContrastRatio):1")
 case .unavailable:
-    Text("Resolve the colors in an explicit appearance before assessment")
+    Text("Required contrast or distance measurement is unavailable")
+case .invalidConfiguration:
+    Text("Use a finite distance budget from 0 through 100")
 }
 ```
 
@@ -92,6 +94,22 @@ Assessment accepts finite, in-gamut sRGB colors and requires an opaque backgroun
 A translucent foreground is composited over that background. Dynamic colors and
 translucent backgrounds return `unavailable` because their contrast needs context
 that the API was not given.
+
+Result-bearing enhancement additionally requires an opaque, comparable original
+foreground and enforces `maxPerceptualDistance` (default 30). It is an inclusive
+CIEDE2000 Delta E 00 budget in `0...100`, measured from the original in D65 LAB with
+reference weights of one. Zero preserves the original; no fallback may overshoot.
+When no examined in-budget candidate passes, return highest-contrast best effort,
+not a promise of a global optimum. Strategies are preferences, not guarantees.
+
+Inspect `perceptualDistance`, `maximumPerceptualDistance`, and
+`isWithinPerceptualDistanceBudget` for evidence. Invalid configuration or unavailable
+distance may retain diagnostic contrast but never report success. Direct assessment
+still supports composited translucent foregrounds and has no enhancement budget.
+Legacy color-returning methods continue ignoring the budget. Result variants use
+pairwise Delta E 00 below 5 for duplicates, preserve strategy order and best-effort
+entries, and return one diagnostic result for a positive-count invalid or unavailable
+request (an empty array for nonpositive counts).
 
 ### Fixed-Color CVD Simulation
 

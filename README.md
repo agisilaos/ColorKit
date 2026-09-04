@@ -399,12 +399,19 @@ Validate and improve color accessibility:
 // Check WCAG compliance
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
-// Get candidates with explicit pass, best-effort, or unavailable outcomes
+// Get budgeted candidates with explicit outcomes and measurement evidence
 let suggestions = textColor.suggestAccessibleVariantResults(
     with: backgroundColor,
-    targetLevel: .AA
+    targetLevel: .AA,
+    maxPerceptualDistance: 30
 )
 ```
+
+Result-bearing enhancement enforces an inclusive CIEDE2000 Delta E 00 budget
+from the original foreground (finite `0...100`, default `30`). It returns in-budget
+best effort when no examined candidate passes, or an explicit `invalidConfiguration`
+or `unavailable` outcome. Legacy color-returning enhancement still ignores the budget.
+See [enhancement migration guidance](MIGRATION.md#enhancement-distance-budgets).
 
 See [Color Debugging Documentation](Sources/ColorKit/Utilities/DOCUMENTATION.md) for more details.
 

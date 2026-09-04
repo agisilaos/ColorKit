@@ -2,6 +2,10 @@
 
 Status: implemented.
 
+The original 2.1 design below is extended by
+[Enhancement distance budget](enhancement-distance-budget.md): result-bearing
+enhancement now enforces a hard distance budget and reports invalid configuration.
+
 ## Problem
 
 ColorKit's existing accessibility helpers return `Color` values. A caller cannot
@@ -20,12 +24,13 @@ It exposes:
 - the candidate `color`;
 - the requested `targetLevel` and its `minimumContrastRatio`;
 - an optional measured `contrastRatio`;
-- a derived `status`: `meetsTarget`, `bestEffort`, or `unavailable`;
+- a derived `status`: `meetsTarget`, `bestEffort`, `unavailable`, or `invalidConfiguration`;
+- optional enhancement distance, requested budget, and derived budget satisfaction;
 - a derived `meetsTarget` Boolean for simple branching.
 
-The status is derived from the optional ratio and target. Callers cannot construct
-contradictory combinations such as an unavailable result with a numeric ratio or a
-passing result below its target.
+The status is derived from configuration validity, required measurements, and contrast.
+An invalid or unavailable enhancement may retain diagnostic contrast, but cannot
+claim success. Ordinary assessments continue deriving status from contrast alone.
 
 New source-compatible entry points return this result from:
 
@@ -36,8 +41,9 @@ New source-compatible entry points return this result from:
 - an existing generated palette assessed against an explicit background.
 
 Existing color-returning entry points remain compatibility APIs and preserve their
-ColorKit 2.0 behavior. The new assessed entry points select candidates through those
-existing methods, then measure the selected colors separately.
+color selection with respect to this enhancement budget. Budgeted enhancement now
+selects within the configured constraint; endpoint and assessed-palette adapters
+continue selecting through their existing methods before assessment.
 
 ## Measurement contract
 
@@ -68,9 +74,8 @@ not discard best-effort or unavailable entries. Callers can filter on
 - Do not redesign the palette-generation search in this release.
 - Do not change or remove existing methods before a major release.
 - Do not make every palette entry contrast with every other entry.
-- Do not reinterpret or begin enforcing the legacy `maxPerceptualDistance` setting;
-  it remains a documented source-compatibility value until its semantics are
-  designed independently.
+- Budget semantics are now defined independently in the linked enhancement design;
+  legacy color-returning APIs still ignore the setting.
 - Do not resolve dynamic colors without an explicit appearance supplied by the
   caller.
 
@@ -79,7 +84,7 @@ not discard best-effort or unavailable entries. Callers can filter on
 - Verify passing, best-effort, and unavailable statuses.
 - Verify translucent foreground compositing and translucent-background rejection.
 - Verify black-or-white selection reports unattainable AAA as best effort.
-- Verify enhancer and variant result colors remain identical to legacy adapters.
+- Verify budgeted enhancer and variant contracts separately from legacy adapters.
 - Verify assessed palette ordering and colors remain identical to the legacy
   generated palette.
 - Run the full iOS and macOS suites, including serialized shared-state suites,

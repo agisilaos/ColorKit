@@ -21,47 +21,45 @@ import SwiftUI
 
 /// Defines strategies for adjusting colors to meet accessibility requirements.
 ///
-/// Each strategy represents a different approach to modifying colors while maintaining
-/// certain characteristics of the original color:
+/// Strategies are search preferences, not preservation guarantees. Fallbacks may
+/// change the named characteristic, but result-bearing APIs never exceed their distance budget.
 ///
 /// - ``preserveHue``: Keeps the color's basic identity
 /// - ``preserveSaturation``: Maintains the color's intensity
 /// - ``preserveLightness``: Keeps the perceived brightness
-/// - ``minimumChange``: Makes the smallest possible adjustment
+/// - ``minimumChange``: Prefers the smallest examined perceptual adjustment
 ///
 /// Example:
 /// ```swift
 /// let strategy = AdjustmentStrategy.preserveHue
-/// print(strategy.description) // "Maintains the color's hue..."
+/// print(strategy.description) // "Prefers preserving hue..."
 /// ```
 public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
-    /// Preserves the hue while adjusting saturation and lightness.
+    /// Prefers preserving hue while adjusting saturation and lightness.
     ///
     /// This strategy is best when maintaining brand colors is important.
     /// It adjusts the color's intensity and brightness while keeping its
     /// basic identity (e.g., "blue" stays "blue").
     case preserveHue
 
-    /// Preserves the saturation while adjusting hue and lightness.
+    /// Prefers preserving saturation while adjusting hue and lightness.
     ///
     /// This strategy maintains the color's intensity while allowing its
     /// hue to shift. Useful when the vibrancy of the color is more
     /// important than its specific hue.
     case preserveSaturation
 
-    /// Preserves the lightness while adjusting hue and saturation.
+    /// Prefers preserving lightness while adjusting hue and saturation.
     ///
     /// This strategy maintains the perceived brightness of the color
     /// while allowing other properties to change. Useful for maintaining
     /// the visual hierarchy of interface elements.
     case preserveLightness
 
-    /// Adjusts all components to find the closest accessible color.
+    /// Prefers the smallest examined change across LAB and hue-fallback candidates.
     ///
-    /// This strategy makes the smallest possible change to achieve
-    /// accessibility requirements. It considers all color properties
-    /// and chooses the adjustment that results in the least
-    /// perceptual difference.
+    /// Result-bearing enhancement orders eligible candidates by CIEDE2000 distance.
+    /// It does not promise a globally optimal color across the continuous color space.
     case minimumChange
 
     /// Unique identifier for the strategy.
@@ -74,13 +72,13 @@ public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
     public var description: String {
         switch self {
         case .preserveHue:
-            return "Maintains the color's hue while adjusting saturation and lightness"
+            return "Prefers preserving hue while adjusting saturation and lightness"
         case .preserveSaturation:
-            return "Maintains the color's saturation while adjusting hue and lightness"
+            return "Prefers preserving saturation while adjusting hue and lightness"
         case .preserveLightness:
-            return "Maintains the color's lightness while adjusting hue and saturation"
+            return "Prefers preserving lightness while adjusting hue and saturation"
         case .minimumChange:
-            return "Makes the smallest perceptual change needed to meet accessibility requirements"
+            return "Prefers the smallest examined perceptual change that meets the target"
         }
     }
 }
@@ -136,15 +134,15 @@ public class AccessibilityEnhancer {
         /// The strategy to use when adjusting colors.
         public let strategy: AdjustmentStrategy
 
-        /// The requested maximum perceptual difference from the original color.
+        /// The inclusive CIEDE2000 Delta E 00 budget from the original foreground.
         ///
-        /// Values range from 0 to 100, where:
-        /// - 0-20: Subtle changes
-        /// - 20-40: Moderate changes
-        /// - 40+: Significant changes
+        /// Result-bearing enhancement requires a finite value in `0...100` and
+        /// measures D65 LAB with reference weights equal to one. Equality is eligible;
+        /// zero preserves the original. If no in-budget candidate passes, the highest-
+        /// contrast examined candidate is best effort, never an over-budget fallback.
         ///
-        /// This value is retained for source compatibility. Current enhancement
-        /// strategies do not enforce it.
+        /// Invalid values are stored unchanged and reported as `invalidConfiguration`
+        /// by result-bearing APIs. Legacy color-returning APIs continue ignoring this value.
         public let maxPerceptualDistance: Double
 
         /// Whether to prefer darker adjustments when possible.
@@ -155,8 +153,8 @@ public class AccessibilityEnhancer {
         /// - Parameters:
         ///   - targetLevel: The WCAG level to target (default: .AA)
         ///   - strategy: The adjustment strategy to use (default: .preserveHue)
-        ///   - maxPerceptualDistance: The requested perceptual-distance limit. Current
-        ///     enhancement strategies do not enforce it (default: 30)
+        ///   - maxPerceptualDistance: The inclusive Delta E 00 limit enforced by result-bearing
+        ///     enhancement, finite and in `0...100` (default: 30). Invalid values do not trap or clamp.
         ///   - preferDarker: Whether to prioritize darker adjustments (default: false)
         public init(
             targetLevel: WCAGContrastLevel = .AA,
@@ -183,7 +181,7 @@ public class AccessibilityEnhancer {
 
     /// Attempts to enhance a color for a requested accessibility target.
     ///
-    /// This compatibility method preserves the original color-returning behavior.
+    /// This compatibility method preserves the original color-returning behavior and ignores the distance budget.
     /// Use ``enhanceColorResult(_:against:)`` when the caller needs to distinguish
     /// a passing candidate from best effort or unavailable measurement.
     ///
@@ -211,24 +209,25 @@ public class AccessibilityEnhancer {
             return color
         }
 
-        // Apply the appropriate strategy
-        switch configuration.strategy {
-        case .preserveHue:
-            return enhancePreservingHue(color, against: backgroundColor)
-        case .preserveSaturation:
-            return enhancePreservingSaturation(color, against: backgroundColor)
-        case .preserveLightness:
-            return enhancePreservingLightness(color, against: backgroundColor)
-        case .minimumChange:
-            return enhanceWithMinimumChange(color, against: backgroundColor)
+        return EnhancementCandidateSearch(configuration: configuration).candidate(
+            for: color,
+            against: backgroundColor
+        ) { candidate in
+            candidate.wcagContrastRatio(with: backgroundColor) >= configuration.targetLevel.minimumRatio
         }
     }
 
     /// Enhances and assesses a color against the configured WCAG target.
     ///
-    /// Candidate selection preserves ``enhanceColor(_:against:)`` behavior. The result
-    /// reports whether that candidate meets the target, is only the best available
-    /// effort, or cannot be measured from the supplied colors.
+    /// Enforces the inclusive configured Delta E 00 budget. The original is examined
+    /// first, then the first passing eligible strategy candidate wins. Minimum-change
+    /// candidates are ordered by distance; other strategies retain their existing order.
+    /// If none passes, select highest measured contrast, then smallest distance, then
+    /// stable examination order. This is best examined effort, not a global optimum.
+    ///
+    /// The original must be fixed, opaque, and in sRGB gamut; the background must support
+    /// strict contrast measurement. Invalid budgets and unavailable measurements return
+    /// the original with diagnostic contrast when available, without reporting success.
     ///
     /// - Parameters:
     ///   - color: The foreground color to enhance.
@@ -238,10 +237,7 @@ public class AccessibilityEnhancer {
         _ color: Color,
         against backgroundColor: Color
     ) -> ColorAccessibilityResult {
-        enhanceColor(color, against: backgroundColor).accessibilityResult(
-            against: backgroundColor,
-            targetLevel: configuration.targetLevel
-        )
+        BudgetedEnhancement(configuration: configuration).result(for: color, against: backgroundColor)
     }
 
     /// Suggests multiple color variants that target the configured contrast level.
@@ -330,7 +326,13 @@ public class AccessibilityEnhancer {
         return Array(variants.prefix(requestedCount))
     }
 
-    /// Suggests variants and assesses each one against the configured WCAG target.
+    /// Suggests in-budget variants with measured outcomes, retaining best-effort entries.
+    ///
+    /// Order is hue, saturation, lightness, minimum change, then the configured strategy
+    /// with the opposite preference when needed. Pairwise Delta E 00 below 5 is a duplicate;
+    /// equality is distinct. Each budget is measured from the original, not another variant.
+    /// A positive request with invalid configuration or unavailable inputs returns one
+    /// diagnostic result. Nonpositive counts return no results before validating configuration.
     ///
     /// - Parameters:
     ///   - color: The original color on which to base the variants.
@@ -342,198 +344,29 @@ public class AccessibilityEnhancer {
         against backgroundColor: Color,
         count requestedCount: Int = 3
     ) -> [ColorAccessibilityResult] {
-        suggestAccessibleVariants(
-            for: color,
-            against: backgroundColor,
-            count: requestedCount
-        ).map {
-            $0.accessibilityResult(
-                against: backgroundColor,
-                targetLevel: configuration.targetLevel
-            )
+        guard requestedCount > 0 else { return [] }
+        var variants: [ColorAccessibilityResult] = []
+        let strategies = AdjustmentStrategy.allCases.map { ($0, configuration.preferDarker) }
+            + [(configuration.strategy, !configuration.preferDarker)]
+        for (strategy, preferDarker) in strategies {
+            let result = BudgetedEnhancement(configuration: Configuration(
+                targetLevel: configuration.targetLevel,
+                strategy: strategy,
+                maxPerceptualDistance: configuration.maxPerceptualDistance,
+                preferDarker: preferDarker
+            )).result(for: color, against: backgroundColor)
+            if result.status == .invalidConfiguration || result.status == .unavailable {
+                return [result]
+            }
+            let isDistinct = variants.allSatisfy { existing in
+                guard case let .available(difference) = existing.color.comparisonResult(with: result.color)
+                else { return false }
+                return difference.perceptualDifference >= 5
+            }
+            if isDistinct { variants.append(result) }
+            if variants.count == requestedCount { break }
         }
-    }
-
-    // MARK: - Private Methods
-
-    private func enhancePreservingHue(_ color: Color, against backgroundColor: Color) -> Color {
-        guard let hsl = color.hslComponents() else { return color }
-
-        // Start with the original color's HSL values
-        let hue = hsl.hue
-        var saturation = hsl.saturation
-        var lightness = hsl.lightness
-
-        // Determine if we need to make the color lighter or darker
-        let bgLuminance = backgroundColor.wcagRelativeLuminance()
-        let needDarker = bgLuminance > 0.5
-
-        // If we prefer the opposite of what's needed, adjust saturation more
-        let adjustLightness = needDarker == configuration.preferDarker
-
-        // Adjust lightness and saturation in small steps
-        let maxSteps = 20
-        var currentColor = color
-
-        for _ in 0..<maxSteps {
-            if adjustLightness {
-                // Adjust lightness
-                if needDarker {
-                    lightness = max(0, lightness - 0.05)
-                } else {
-                    lightness = min(1, lightness + 0.05)
-                }
-            } else {
-                // Adjust saturation
-                saturation = min(1, saturation + 0.05)
-            }
-
-            // Create the adjusted color
-            currentColor = Color(hue: hue, saturation: saturation, lightness: lightness)
-
-            // Check if it meets the contrast requirements
-            let newRatio = currentColor.wcagContrastRatio(with: backgroundColor)
-            if newRatio >= configuration.targetLevel.minimumRatio {
-                return currentColor
-            }
-
-            // If we've adjusted saturation a lot and still not meeting requirements, adjust lightness too
-            if saturation > 0.9 && !adjustLightness {
-                if needDarker {
-                    lightness = max(0, lightness - 0.05)
-                } else {
-                    lightness = min(1, lightness + 0.05)
-                }
-                currentColor = Color(hue: hue, saturation: saturation, lightness: lightness)
-            }
-        }
-
-        // If we couldn't find a suitable color, fall back to black or white
-        return needDarker ? Color.black : Color.white
-    }
-
-    private func enhancePreservingSaturation(_ color: Color, against backgroundColor: Color) -> Color {
-        guard let hsl = color.hslComponents() else { return color }
-
-        // Start with the original color's HSL values
-        var hue = hsl.hue
-        let saturation = hsl.saturation
-        var lightness = hsl.lightness
-
-        // Determine if we need to make the color lighter or darker
-        let bgLuminance = backgroundColor.wcagRelativeLuminance()
-        let needDarker = bgLuminance > 0.5
-
-        // Adjust hue and lightness in small steps
-        let maxSteps = 20
-        var currentColor = color
-
-        for _ in 0..<maxSteps {
-            // Adjust lightness
-            if needDarker {
-                lightness = max(0, lightness - 0.05)
-            } else {
-                lightness = min(1, lightness + 0.05)
-            }
-
-            // Adjust hue slightly
-            hue = fmod(hue + 0.02, 1.0)
-
-            // Create the adjusted color
-            currentColor = Color(hue: hue, saturation: saturation, lightness: lightness)
-
-            // Check if it meets the contrast requirements
-            let newRatio = currentColor.wcagContrastRatio(with: backgroundColor)
-            if newRatio >= configuration.targetLevel.minimumRatio {
-                return currentColor
-            }
-        }
-
-        // If we couldn't find a suitable color, fall back to black or white
-        return needDarker ? Color.black : Color.white
-    }
-
-    private func enhancePreservingLightness(_ color: Color, against backgroundColor: Color) -> Color {
-        guard let hsl = color.hslComponents() else { return color }
-
-        // Start with the original color's HSL values
-        var hue = hsl.hue
-        var saturation = hsl.saturation
-        let lightness = hsl.lightness
-
-        // Adjust hue and saturation in small steps
-        let maxSteps = 20
-        var currentColor = color
-
-        for _ in 0..<maxSteps {
-            // Adjust saturation
-            saturation = min(1, saturation + 0.05)
-
-            // Adjust hue slightly
-            hue = fmod(hue + 0.02, 1.0)
-
-            // Create the adjusted color
-            currentColor = Color(hue: hue, saturation: saturation, lightness: lightness)
-
-            // Check if it meets the contrast requirements
-            let newRatio = currentColor.wcagContrastRatio(with: backgroundColor)
-            if newRatio >= configuration.targetLevel.minimumRatio {
-                return currentColor
-            }
-        }
-
-        // If we couldn't find a suitable color with preserved lightness,
-        // we need to adjust lightness as a last resort
-        return enhancePreservingHue(color, against: backgroundColor)
-    }
-
-    private func enhanceWithMinimumChange(_ color: Color, against backgroundColor: Color) -> Color {
-        guard let lab = color.labComponents() else { return color }
-
-        // Start with the original color's LAB values
-        let originalL = lab.L
-        let originalA = lab.a
-        let originalB = lab.b
-
-        // Determine if we need to make the color lighter or darker
-        let bgLuminance = backgroundColor.wcagRelativeLuminance()
-        let needDarker = bgLuminance > 0.5
-
-        // Adjust LAB values in small steps
-        let maxSteps = 30
-        var currentColor = color
-        var stepSize = 2.0
-
-        for step in 0..<maxSteps {
-            // Increase step size as we go to ensure we eventually find a solution
-            if step > 10 {
-                stepSize = 4.0
-            } else if step > 20 {
-                stepSize = 8.0
-            }
-
-            // Adjust L (lightness) based on whether we need darker or lighter
-            let newL = needDarker
-                ? max(0, originalL - CGFloat(step) * CGFloat(stepSize))
-                : min(100, originalL + CGFloat(step) * CGFloat(stepSize))
-
-            // Make small adjustments to a and b to maintain perceptual similarity
-            let newA = originalA + CGFloat(sin(Double(step) * 0.2) * 2)
-            let newB = originalB + CGFloat(cos(Double(step) * 0.2) * 2)
-
-            // Create the adjusted color
-            currentColor = Color(L: newL, a: newA, b: newB)
-
-            // Check if it meets the contrast requirements
-            let newRatio = currentColor.wcagContrastRatio(with: backgroundColor)
-            if newRatio >= configuration.targetLevel.minimumRatio {
-                return currentColor
-            }
-        }
-
-        // If we couldn't find a suitable color with minimum change,
-        // fall back to a more aggressive strategy
-        return enhancePreservingHue(color, against: backgroundColor)
+        return variants
     }
 }
 
@@ -546,15 +379,18 @@ public extension Color {
     ///   - backgroundColor: The background against which the candidate is assessed.
     ///   - targetLevel: The WCAG contrast level to target.
     ///   - strategy: The adjustment strategy used to select a candidate.
+    ///   - maxPerceptualDistance: The inclusive Delta E 00 budget, finite in `0...100` (default: 30).
     /// - Returns: The selected candidate and its measured outcome.
     func enhancementResult(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
-        strategy: AdjustmentStrategy = .preserveHue
+        strategy: AdjustmentStrategy = .preserveHue,
+        maxPerceptualDistance: Double = 30
     ) -> ColorAccessibilityResult {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
             targetLevel: targetLevel,
-            strategy: strategy
+            strategy: strategy,
+            maxPerceptualDistance: maxPerceptualDistance
         ))
         return enhancer.enhanceColorResult(self, against: backgroundColor)
     }
@@ -564,7 +400,7 @@ public extension Color {
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - strategy: The adjustment strategy to use (default: .preserveHue)
-    /// - Returns: The selected enhanced color candidate. Use ``enhancementResult(with:targetLevel:strategy:)``
+    /// - Returns: The selected enhanced color candidate. Use ``enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)``
     ///   when the measured outcome is required.
     func enhanced(
         with backgroundColor: Color,
@@ -585,7 +421,7 @@ public extension Color {
     ///   - count: The maximum number of variants to suggest. Nonpositive values
     ///     request no variants (default: 3)
     /// - Returns: Up to `count` color candidates. Use
-    ///   ``suggestAccessibleVariantResults(with:targetLevel:count:)`` for measured outcomes.
+    ///   ``suggestAccessibleVariantResults(with:targetLevel:count:maxPerceptualDistance:)`` for measured outcomes.
     func suggestAccessibleVariants(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
@@ -603,14 +439,17 @@ public extension Color {
     ///   - backgroundColor: The background against which every variant is assessed.
     ///   - targetLevel: The WCAG contrast level to target.
     ///   - count: The maximum number of variants to return.
+    ///   - maxPerceptualDistance: The inclusive Delta E 00 budget from this color (default: 30).
     /// - Returns: Up to `count` candidates with their measured outcomes.
     func suggestAccessibleVariantResults(
         with backgroundColor: Color,
         targetLevel: WCAGContrastLevel = .AA,
-        count: Int = 3
+        count: Int = 3,
+        maxPerceptualDistance: Double = 30
     ) -> [ColorAccessibilityResult] {
         let enhancer = AccessibilityEnhancer(configuration: AccessibilityEnhancer.Configuration(
-            targetLevel: targetLevel
+            targetLevel: targetLevel,
+            maxPerceptualDistance: maxPerceptualDistance
         ))
         return enhancer.suggestAccessibleVariantResults(
             for: self,

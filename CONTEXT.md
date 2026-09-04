@@ -74,14 +74,34 @@ _Avoid_: Guaranteed compliant color
 A request for up to a specified number of perceptually distinct adjusted colors. A nonpositive count requests no suggestions; a positive request may return fewer when no additional distinct suggestions are available.
 _Avoid_: Required variant count
 
+**Distinct budgeted variant**:
+A result-bearing accessibility variant whose CIEDE2000 Delta E 00 from every earlier returned variant is at least 5. Its pairwise distinctness is separate from its enhancement distance budget, which is measured from the original foreground.
+_Avoid_: Legacy CIE76 variant, distance-budget boundary
+
 **Accessibility result**:
-The assessment of one foreground candidate against one explicit background and requested WCAG contrast level. It distinguishes a measured pass, a measurable best-effort result below the target, and an unavailable measurement.
+The outcome for one foreground against one explicit background and requested WCAG contrast level: a measured pass, measurable best effort, unavailable required measurements, or invalid enhancement configuration. A budgeted outcome also carries evidence of its original-to-candidate perceptual distance and permitted budget.
 
 **Best-effort accessibility result**:
 A color candidate with a measurable contrast ratio below the requested level. It records a shortfall rather than claiming success or conversion failure.
 
+**Budget-constrained best-effort result**:
+A below-target result containing the highest-contrast in-budget candidate examined by the selected strategy, including the original foreground. It describes the best examined candidate, not a global optimum or proof of impossibility.
+_Avoid_: Closest accessible color, proven optimal color
+
 **Unavailable accessibility result**:
-An assessment for which ColorKit cannot establish a contrast ratio from the supplied inputs. This includes unresolved colors, out-of-gamut snapshots, and translucent backgrounds without a supplied backing color.
+An outcome lacking a required measurement: contrast for direct assessment, or contrast and perceptual distance for budgeted enhancement. Independently available diagnostic measurements do not make the overall outcome verifiable.
+
+**Enhancement distance budget**:
+The inclusive maximum CIEDE2000 Delta E 00 between an original foreground and enhanced candidate in D65 LAB, expressed as a finite value from 0 through 100. This constraint takes precedence over achieving the requested contrast target.
+_Avoid_: RGB distance limit, contrast budget
+
+**Adjustment strategy**:
+A preference for exploring candidate colors, not a guarantee that the named color characteristic remains unchanged. Its preferences and fallbacks are subordinate to the enhancement distance budget.
+_Avoid_: Preservation guarantee, distance constraint
+
+**Invalid enhancement configuration**:
+An accessibility-enhancement configuration whose distance budget is nonfinite or outside 0–100. It is a configuration error rather than an unavailable color measurement or an implicitly corrected budget.
+_Avoid_: Unavailable color, clamped budget
 
 **LAB**:
 CIE L*a*b* coordinates relative to a reference white: L* describes lightness, a* the green–red axis, and b* the blue–yellow axis. ColorKit uses D65 as the reference white.

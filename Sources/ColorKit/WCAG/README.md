@@ -142,7 +142,9 @@ case .meetsTarget:
 case .bestEffort:
     print("Candidate remains below the requested target")
 case .unavailable:
-    print("The supplied colors require additional appearance or background context")
+    print("Required contrast or distance measurement is unavailable")
+case .invalidConfiguration:
+    print("Supply a finite distance budget from 0 through 100")
 }
 
 let generator = AccessiblePaletteGenerator(configuration: .init(targetLevel: .AA))
@@ -152,6 +154,23 @@ let paletteResults = generator.generateAssessedPalette(from: .blue, against: .wh
 The strict assessment resolves finite, in-gamut sRGB colors, composites a translucent
 foreground over an opaque background, and returns `unavailable` for dynamic colors or
 translucent backgrounds. The legacy color-returning helpers retain their existing behavior.
+
+Result-bearing enhancement enforces `maxPerceptualDistance` (default 30) as an
+inclusive CIEDE2000 Delta E 00 budget from the original in D65 LAB with reference
+weights of one. Valid values are finite and in `0...100`; zero preserves the original.
+No examined passing candidate within budget means in-budget best effort, never an
+over-budget fallback. Strategies are preferences and do not guarantee a global optimum.
+
+Unlike direct assessment, budgeted enhancement also requires an opaque comparable
+foreground. An unavailable distance or invalid budget may retain diagnostic contrast
+without reporting success. Inspect `status`, `perceptualDistance`,
+`maximumPerceptualDistance`, and `isWithinPerceptualDistanceBudget` rather than
+treating a diagnostic contrast ratio as proof of a successful enhancement.
+
+Result variants retain strategy order and best-effort entries, deduplicating at
+pairwise Delta E 00 below 5 (equality is distinct). Positive-count invalid/unavailable
+requests return one diagnostic result; nonpositive counts return none. Legacy
+color-returning variants retain CIE76 distinctness and ignore the distance budget.
 
 ### Creating Accessible Themes
 
