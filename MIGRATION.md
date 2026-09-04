@@ -19,7 +19,7 @@ reported no value now convert:
 `adjustedForAccessibility(with:minimumRatio:)` return their input unchanged when HSL is
 unavailable. Both were therefore silent no-ops for every named and grayscale color, and
 both now perform the adjustment. If you relied on a named color passing through
-untouched, pass an explicitly constructed color instead.
+untouched, bypass the adjustment call and use the original color directly.
 
 Dynamic colors are affected the same way: `adjustedForAccessibility(.primary, …)` now
 adjusts rather than returning `.primary`, which freezes it to a fixed color for the
