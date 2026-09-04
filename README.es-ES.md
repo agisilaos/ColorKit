@@ -53,15 +53,25 @@ print(color.hexValue()) // "#FF5733FF"
 ```
 
 ### **2️⃣ Conversión HSL**  
+<!-- swift-example: hsl -->
 ```swift
 let hsl = Color.red.hslComponents()
 let customColor = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
 ```
 
+`hslComponents()` resuelve colores con nombre y dinámicos para la apariencia actual.
+Convierte a sRGB y recorta los canales de gama más amplia a `0...1` antes de la
+conversión; la opacidad no forma parte de HSL. Devuelve `nil` si la resolución falla,
+por ejemplo, con un color de patrón. A diferencia de HSL, CMYK y LAB requieren
+colores fijos y no eligen una apariencia. Consulta la
+[guía de migración de HSL](MIGRATION.md#hsl-resolution).
+
 ### **3️⃣ Conversión CMYK**  
+<!-- swift-example: cmyk -->
 ```swift
 // Convertir de RGB a CMYK
-let cmyk = Color.red.cmykComponents()
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let cmyk = red.cmykComponents()
 // (cyan: 0.0, magenta: 1.0, yellow: 1.0, key: 0.0)
 
 // Crear color a partir de valores CMYK
@@ -69,9 +79,12 @@ let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 ```
 
 ### **4️⃣ Conversión LAB**  
+<!-- swift-example: lab -->
 ```swift
 // Resolver un color fijo y convertirlo a LAB
-if let lab = Color.red.labComponents() {
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let lab = red.labComponents()
+if let lab {
     print(lab) // (L: 53.24, a: 80.09, b: 67.20)
 }
 
@@ -150,6 +163,7 @@ Rectangle()
 ```
 
 ### **1️⃣1️⃣ Generación automática de paletas de colores accesibles**  
+<!-- swift-example: accessible-palette -->
 ```swift
 // Generar una paleta accesible a partir de un color base
 let seedColor = Color.blue
@@ -166,7 +180,7 @@ let theme = seedColor.generateAccessibleTheme(
 )
 
 // Encontrar el extremo blanco o negro con mayor contraste e inspeccionar el resultado
-let backgroundColor = Color.purple
+let backgroundColor = Color(.sRGB, red: 0.5, green: 0.2, blue: 0.7)
 let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
 let textColor = textResult.color
 
@@ -179,6 +193,8 @@ case .bestEffort:
     print("El mejor extremo disponible no alcanza el objetivo")
 case .unavailable:
     print("Resuelve los colores con una apariencia explícita antes de evaluarlos")
+case .invalidConfiguration:
+    print("Proporciona un límite de distancia perceptual finito entre 0 y 100")
 }
 
 // Usar la vista de demostración para experimentar con la generación de paletas
@@ -262,19 +278,30 @@ ColorCache.shared.clearCache()
 Para más detalles sobre las mejoras de rendimiento, consulta [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
 
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
+<!-- swift-example: enhancement -->
 ```swift
-// Mejorar un color para cumplir con los requisitos de accesibilidad mientras se preserva la identidad de marca
-let originalColor = Color.blue
-let backgroundColor = Color.white
+// Generar un candidato preservando la identidad de marca e inspeccionar su resultado
+let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
 
-// Mejora simple con la configuración predeterminada (preserva el matiz)
-let enhancedColor = originalColor.enhanced(with: backgroundColor)
+let result = originalColor.enhancementResult(
+    with: backgroundColor,
+    targetLevel: targetLevel
+)
+let enhancedColor = result.color
+
+if result.meetsTarget {
+    if let ratio = result.contrastRatio {
+        print("Contraste medido: \(ratio):1")
+    }
+}
 ```
 
 ### **1️⃣5️⃣ Catálogo de vista previa**
 El Catálogo de vista previa ofrece demostraciones interactivas de las características de ColorKit:
 
+<!-- swift-example: catalog -->
 ```swift
 import ColorKit
 
@@ -333,8 +360,10 @@ Vistas previas disponibles:
 
 Cada vista previa está diseñada para ayudar a los desarrolladores a comprender y utilizar eficazmente las características de ColorKit. Accede a ellas a través de `MainCatalogView` o de forma individual:
 
+<!-- swift-example: previews -->
 ```swift
 // Usar vistas previas individuales
+ColorSpacePreview()
 BlendingPreview()
 GradientPreview()
 ThemePreview()
@@ -366,6 +395,7 @@ ColorSpaceInspectorView(color: myColor)
 
 Compara colores sRGB fijos, opacos y dentro de gama mediante diferencias de componentes, métricas WCAG y CIEDE2000:
 
+<!-- swift-example: comparison -->
 ```swift
 let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
 let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
@@ -387,16 +417,27 @@ Los colores dinámicos, translúcidos, no finitos o fuera de la gama sRGB devuel
 
 Valida y mejora la accesibilidad de los colores:
 
+<!-- swift-example: budget -->
 ```swift
 // Verificar cumplimiento WCAG
+let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
-// Obtener candidatos con resultados explícitos: aprobado, mejor esfuerzo o no disponible
+// Obtener candidatos dentro del límite con resultados explícitos y evidencia de medición
 let suggestions = textColor.suggestAccessibleVariantResults(
     with: backgroundColor,
-    targetLevel: .AA
+    targetLevel: .AA,
+    maxPerceptualDistance: 30
 )
 ```
+
+Las APIs de mejora que devuelven resultados aplican un límite inclusivo CIEDE2000
+Delta E 00 respecto al primer plano original (finito, en `0...100`, predeterminado: `30`).
+Si ningún candidato examinado alcanza el objetivo, devuelven el mejor esfuerzo dentro
+del límite, o un resultado explícito `invalidConfiguration` o `unavailable`.
+Las APIs heredadas que devuelven solo colores siguen ignorando el límite.
+Consulta la [guía de migración de mejoras](MIGRATION.md#enhancement-distance-budgets).
 
 Consulta la [Documentación de depuración de colores](Sources/ColorKit/Utilities/DOCUMENTATION.md) para más detalles.
 

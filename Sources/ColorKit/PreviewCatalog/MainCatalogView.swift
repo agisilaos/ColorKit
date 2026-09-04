@@ -16,6 +16,9 @@ import SwiftUI
 
 /// The main navigation view for the ColorKit Preview Catalog
 public struct MainCatalogView: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var selectedFeature: PreviewFeature?

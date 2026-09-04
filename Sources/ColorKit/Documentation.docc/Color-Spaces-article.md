@@ -10,20 +10,24 @@ ColorKit supports multiple color spaces to give you flexibility in how you work 
 
 The RGB color space is the most common color space used in digital displays. It represents colors using red, green, and blue components.
 
+<!-- swift-example: rgb -->
 ```swift
 // Create a color using RGB values
 let color = Color(red: 1.0, green: 0.5, blue: 0.2)
 
 // Get RGB components
-if let (red, green, blue, alpha) = color.rgbComponents() {
-    print("R: \(red), G: \(green), B: \(blue), A: \(alpha)")
-}
+let (red, green, blue, alpha) = color.rgbaComponents()
+print("R: \(red), G: \(green), B: \(blue), A: \(alpha)")
 ```
+
+`rgbaComponents()` is a nonoptional, lenient extraction API with fallback values.
+It is not evidence that strict color resolution or accessibility measurement succeeded.
 
 ### HSL
 
 The HSL (Hue, Saturation, Lightness) color space is particularly useful for color manipulation and creating color schemes.
 
+<!-- swift-example: hsl -->
 ```swift
 // Create a color using HSL values
 let color = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
@@ -33,6 +37,13 @@ if let components = color.hslComponents() {
     print("H: \(components.hue), S: \(components.saturation), L: \(components.lightness)")
 }
 ```
+
+`hslComponents()` resolves named SwiftUI colors, grayscale colors, and dynamic colors
+through the platform color types for the current appearance. It converts to sRGB and
+clamps wider-gamut channels to `0...1` before HSL conversion. Hue, saturation, and
+lightness are normalized to `0...1`; opacity is not part of HSL. It returns `nil` when
+the platform cannot resolve the color, such as a pattern color. This lenient policy
+does not extend to fixed-color extraction APIs such as CMYK and LAB.
 
 ### CMYK
 
@@ -52,6 +63,7 @@ if let components = color.cmykComponents() {
 
 The LAB color space is designed to be perceptually uniform and is often used in color management systems.
 
+<!-- swift-example: lab -->
 ```swift
 // Create a color using LAB values
 let color = Color(L: 50.0, a: 25.0, b: -30.0)
@@ -99,7 +111,7 @@ let lab = color.labComponents()
 ## Interface Overview
 
 ### RGB
-- `Color.rgbComponents()`
+- `Color.rgbaComponents()`
 - `Color.init(red:green:blue:)`
 
 ### HSL

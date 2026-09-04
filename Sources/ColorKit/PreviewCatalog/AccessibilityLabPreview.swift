@@ -21,6 +21,9 @@ import SwiftUI
 
 /// A preview component for testing fixed-color simulation and color accessibility features.
 public struct AccessibilityLabPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State Properties
 
     @State private var selectedTab = AccessibilityTab.colorVisionDeficiency

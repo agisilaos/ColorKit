@@ -53,15 +53,24 @@ print(color.hexValue()) // "#FF5733FF"
 ```
 
 ### **2️⃣ HSL Conversion**  
+<!-- swift-example: hsl -->
 ```swift
 let hsl = Color.red.hslComponents()
 let customColor = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
 ```
 
+`hslComponents()` resolves named and dynamic colors for the current appearance.
+It converts to sRGB and clamps wider-gamut channels to `0...1` before conversion;
+opacity is not part of HSL. It returns `nil` when resolution fails, such as for a
+pattern color. Unlike HSL, CMYK and LAB require fixed colors and do not choose an
+appearance. See [HSL migration guidance](MIGRATION.md#hsl-resolution).
+
 ### **3️⃣ CMYK Conversion**  
+<!-- swift-example: cmyk -->
 ```swift
 // Convert from RGB to CMYK
-let cmyk = Color.red.cmykComponents()
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let cmyk = red.cmykComponents()
 // (cyan: 0.0, magenta: 1.0, yellow: 1.0, key: 0.0)
 
 // Create color from CMYK values
@@ -69,9 +78,12 @@ let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 ```
 
 ### **4️⃣ LAB Conversion**  
+<!-- swift-example: lab -->
 ```swift
 // Resolve a fixed color and convert it to LAB
-if let lab = Color.red.labComponents() {
+let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+let lab = red.labComponents()
+if let lab {
     print(lab) // (L: 53.24, a: 80.09, b: 67.20)
 }
 
@@ -149,6 +161,7 @@ Rectangle()
 ```
 
 ### **1️⃣1️⃣ Auto-Generate Accessible Color Palettes**  
+<!-- swift-example: accessible-palette -->
 ```swift
 // Generate an accessible palette from a seed color
 let seedColor = Color.blue
@@ -165,7 +178,7 @@ let theme = seedColor.generateAccessibleTheme(
 )
 
 // Find the stronger black-or-white endpoint and inspect its measured outcome
-let backgroundColor = Color.purple
+let backgroundColor = Color(.sRGB, red: 0.5, green: 0.2, blue: 0.7)
 let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
 let textColor = textResult.color
 
@@ -178,6 +191,8 @@ case .bestEffort:
     print("Best available endpoint is below the requested target")
 case .unavailable:
     print("Resolve the colors in an explicit appearance before assessment")
+case .invalidConfiguration:
+    print("Supply a finite perceptual-distance budget from 0 through 100")
 }
 
 // Use the demo view to experiment with palette generation
@@ -261,10 +276,11 @@ ColorCache.shared.clearCache()
 For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](PERFORMANCE_IMPROVEMENTS.md).
 
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
+<!-- swift-example: enhancement -->
 ```swift
 // Generate a candidate while preserving brand identity, then inspect its outcome
-let originalColor = Color.blue
-let backgroundColor = Color.white
+let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
 
 let result = originalColor.enhancementResult(
@@ -283,6 +299,7 @@ if result.meetsTarget {
 ### **1️⃣5️⃣ Preview Catalog**
 The Preview Catalog provides interactive demonstrations of ColorKit's features:
 
+<!-- swift-example: catalog -->
 ```swift
 import ColorKit
 
@@ -341,8 +358,10 @@ Available previews:
 
 Each preview is designed to help developers understand and utilize ColorKit's features effectively. Access them through the `MainCatalogView` or individually:
 
+<!-- swift-example: previews -->
 ```swift
 // Use individual previews
+ColorSpacePreview()
 BlendingPreview()
 GradientPreview()
 ThemePreview()
@@ -374,6 +393,7 @@ ColorSpaceInspectorView(color: myColor)
 
 Compare fixed, opaque, in-gamut sRGB colors using component differences, WCAG metrics, and CIEDE2000:
 
+<!-- swift-example: comparison -->
 ```swift
 let color1 = Color(.sRGB, red: 0.15, green: 0.35, blue: 0.75, opacity: 1)
 let color2 = Color(.sRGB, red: 0.55, green: 0.25, blue: 0.65, opacity: 1)
@@ -395,8 +415,11 @@ Dynamic, translucent, nonfinite, and out-of-sRGB inputs return explicit issues i
 
 Validate and improve color accessibility:
 
+<!-- swift-example: budget -->
 ```swift
 // Check WCAG compliance
+let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let compliance = backgroundColor.wcagCompliance(with: textColor)
 
 // Get budgeted candidates with explicit outcomes and measurement evidence

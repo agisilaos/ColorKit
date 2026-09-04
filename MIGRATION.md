@@ -30,6 +30,50 @@ red still reports `H: 0°, S: 100%, L: 50%`, but other wider-gamut colors can ch
 their components are now converted rather than read as sRGB. Colors already in the
 sRGB gamut convert exactly as before.
 
+### Color vision deficiency simulation
+
+`colorBlindnessPreview(type:)` is deprecated and now leaves its view unchanged.
+The former hue/saturation adjustments were not a valid CVD simulation. There is
+no replacement that transforms an arbitrary view, image, or rendered hierarchy.
+
+Simulate each known color with `simulated(for:)`, then apply the returned color
+to the appropriate view. The new `ColorVisionDeficiency` enum supports
+`protanopia`, `deuteranopia`, and `tritanopia` at full severity using the Machado
+model in linear sRGB. It preserves alpha and clips transformed RGB to the sRGB gamut.
+
+<!-- swift-example: cvd -->
+```swift
+let original = Color(.sRGB, red: 0.8, green: 0.3, blue: 0.2, opacity: 0.8)
+if let simulated = original.simulated(for: .deuteranopia) {
+    Rectangle().fill(simulated)
+} else {
+    Text("Simulation unavailable for this color")
+}
+```
+
+Inputs must resolve to finite, in-gamut sRGB components. Dynamic/semantic colors,
+including named SwiftUI colors without fixed components, unsupported models,
+nonfinite values, invalid alpha, and out-of-gamut inputs return `nil`. Resolve
+appearance-dependent colors explicitly before simulation; do not treat a fallback
+color as a successful simulation. Legacy `ColorBlindnessType.normal` and
+`.achromatopsia` remain source-compatible symbols, but have no new simulation case.
+Use the original color for normal vision. Simulation is a design aid, not a WCAG
+contrast assessment or a guarantee of an individual's perception.
+
+### LAB color resolution
+
+`labComponents()` now uses the resolved sRGBA snapshot before D65 LAB conversion.
+Fixed grayscale, linear RGB, and Display P3 inputs are converted correctly instead
+of being rejected or having their raw components interpreted as nonlinear sRGB.
+Previously calibrated values for those inputs may change; re-check stored expected
+values and any thresholds derived from them.
+
+Finite RGB channels outside `0...1` are preserved for LAB, not clipped. Alpha does
+not affect LAB coordinates and no background compositing occurs. Unresolved
+appearance-dependent colors, unsupported models, failed conversion, and nonfinite
+values return `nil`; handle that case instead of substituting zero LAB coordinates.
+This does not expand the stricter in-gamut requirements of Hex, CMYK, CVD, or
+comparison APIs, and does not change the aggregate `ColorSpaceConverter` API.
 
 ### Enhancement distance budgets
 
@@ -53,6 +97,7 @@ An `unavailable` enhancement can likewise retain contrast when its standalone
 perceptual distance cannot be measured, such as with a translucent foreground.
 Use `status` or `meetsTarget`, not a diagnostic ratio alone, for enhancement success.
 
+<!-- swift-example: enhancement-budget -->
 ```swift
 let foreground = Color(.sRGB, red: 0.8, green: 0.8, blue: 0.8)
 let result = foreground.enhancementResult(with: .white, maxPerceptualDistance: 15)

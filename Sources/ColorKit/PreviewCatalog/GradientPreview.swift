@@ -16,6 +16,9 @@ import SwiftUI
 
 /// A preview view for creating and customizing gradients
 public struct GradientPreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var gradientColors: [Color] = [.blue, .purple]

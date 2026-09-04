@@ -15,6 +15,9 @@ import SwiftUI
 
 /// A preview view for exploring color spaces and conversions
 public struct ColorSpacePreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var selectedColor = Color.blue

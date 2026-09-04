@@ -15,6 +15,9 @@ import SwiftUI
 
 /// A preview view for creating and testing color themes
 public struct ThemePreview: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var primaryColor = Color.blue
@@ -176,7 +179,11 @@ public struct ThemePreview: View {
                         .font(.headline)
 
                     ScrollView(.horizontal, showsIndicators: false) {
-                        Text(generateCode())
+                        Text(ThemeCodeGenerator.source(
+                            primary: primaryColor,
+                            secondary: secondaryColor,
+                            accent: accentColor
+                        ) ?? "Code unavailable: choose colors that resolve to finite sRGB components.")
                             .font(.system(.body, design: .monospaced))
                             .padding()
                             .background(Color.secondary.opacity(0.1))
@@ -185,28 +192,6 @@ public struct ThemePreview: View {
                 }
             }
         }
-    }
-
-    // MARK: - Helpers
-
-    private func generateCode() -> String {
-        """
-        struct Theme {
-            static let primary = Color(\(primaryColor.description))
-            static let secondary = Color(\(secondaryColor.description))
-            static let accent = Color(\(accentColor.description))
-
-            static func adaptiveColor(
-                light: Color,
-                dark: Color
-            ) -> Color {
-                Color.adaptive(
-                    light: light,
-                    dark: dark
-                )
-            }
-        }
-        """
     }
 }
 

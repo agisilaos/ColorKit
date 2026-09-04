@@ -15,6 +15,9 @@ import SwiftUI
 
 /// A preview view for benchmarking ColorKit performance
 public struct PerformanceBenchmark: View {
+    /// Creates the interactive preview with its default configuration.
+    public init() {}
+
     // MARK: - State
 
     @State private var isRunningBenchmark = false

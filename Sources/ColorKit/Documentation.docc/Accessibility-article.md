@@ -217,6 +217,6 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 - `AccessiblePaletteGenerator.generateAssessedPalette(from:against:)`
 
 ### Adaptive Colors
-- `Color.adaptiveColor(light:dark:)`
-- `Color.highContrastColor(base:background:)`
-- `Color.onAdaptiveColorChange(_:)`
+- `View.adaptiveColor(light:dark:)`
+- `View.highContrastColor(base:background:)`
+- `View.onAdaptiveColorChange(_:)`
