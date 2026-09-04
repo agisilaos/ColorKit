@@ -1,6 +1,6 @@
 # Enhancement distance budget
 
-Status: implemented and locally validated; publication pending.
+Status: implemented and locally validated; published for review in PR #51.
 
 Intended branch: `feature/enhancement-distance-budget`.
 
