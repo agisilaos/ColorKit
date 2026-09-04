@@ -5,6 +5,10 @@ import XCTest
 
 @MainActor
 final class ColorInspectorPresentationTests: XCTestCase {
+    private static func hslText(_ hsl: (hue: CGFloat, saturation: CGFloat, lightness: CGFloat)) -> String {
+        "H: \(Int(hsl.hue * 360))°, S: \(Int(hsl.saturation * 100))%, L: \(Int(hsl.lightness * 100))%"
+    }
+
     private let red = Color(.sRGB, red: 1, green: 0, blue: 0)
     private let blue = Color(.sRGB, red: 0, green: 0, blue: 1)
     private let black = Color(.sRGB, red: 0, green: 0, blue: 0)
@@ -84,9 +88,16 @@ final class ColorInspectorPresentationTests: XCTestCase {
 
         XCTAssertNil(unavailable.hexValue)
         XCTAssertNil(unavailable.rgbValues)
-        XCTAssertNil(unavailable.hslValues)
+
+        // HSL resolves through the platform types now, so it reports the new color rather
+        // than retaining the previous one. The fields that still read raw components stay
+        // unavailable until the inspector resolves the same way.
+        XCTAssertEqual(
+            unavailable.hslValues?.lightness,
+            Color.primary.hslComponents()?.lightness
+        )
         XCTAssertEqual(unavailable.rgbText, "Unavailable")
-        XCTAssertEqual(unavailable.hslText, "Unavailable")
+        XCTAssertNotEqual(unavailable.hslText, red.hslComponents().map(Self.hslText), "must not retain red")
         XCTAssertEqual(unavailable.contrast, .unavailable)
         XCTAssertNil(unavailable.contrast.ratio)
         XCTAssertEqual(unavailable.contrast.ratioText, "Ratio: Unavailable")
@@ -121,7 +132,6 @@ final class ColorInspectorPresentationTests: XCTestCase {
 
         inspector = ColorInspectorView(color: .primary, backgroundColor: white, showContrastInfo: false)
         XCTAssertNil(inspector.presentation.rgbValues)
-        XCTAssertNil(inspector.presentation.hslValues)
         XCTAssertEqual(inspector.presentation.contrast, .hidden)
 
         inspector = ColorInspectorView(color: .primary, backgroundColor: white)
@@ -136,8 +146,11 @@ final class ColorInspectorPresentationTests: XCTestCase {
         let presentation = ColorInspectorView(color: color, backgroundColor: white).presentation
 
         XCTAssertNotNil(presentation.hexValue)
+        XCTAssertNotNil(presentation.hslValues)
+
+        // The inspector still reads raw components for RGB and contrast, so those stay
+        // unavailable for grayscale until that surface resolves the same way.
         XCTAssertNil(presentation.rgbValues)
-        XCTAssertNil(presentation.hslValues)
         XCTAssertEqual(presentation.contrast, .unavailable)
     }
 

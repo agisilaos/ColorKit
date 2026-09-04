@@ -33,7 +33,7 @@ Status: implemented; validation results are recorded in `docs/screenshots/f13/RE
 - Add focused automated lifecycle tests through an internal helper scoped to this demo's export flow. Keep the public API and `ShareSheet` unchanged.
 - Verify preparation counts, ignored actions while sharing is active, failure without a share item, snapshot stability, fresh identities and file paths for repeated exports, and cleanup across simulated app runs.
 - Use isolated temporary roots and controllable run identities so tests exercise retention and cleanup without touching actual app artifacts or depending on process restarts.
-- Add a hosted-view check that redraws do not trigger preparation. Inspect the sheet builder to confirm it only presents the prepared item.
+- Add a hosted-view check that redraws do not trigger preparation. Force layout and verify the rendered color scheme at each phase, so native share-sheet transitions do not gate the redraw assertions. Inspect the sheet builder to confirm it only presents the prepared item.
 - Manually check native iOS sharing and cancellation, including repeated sharing and generation completing while sharing is active.
 - Manually check macOS saving and cancellation, preserving the selected filename, format, successful-save feedback, and error reporting.
 - Run the existing export-byte tests on iOS and macOS alongside the new lifecycle coverage.

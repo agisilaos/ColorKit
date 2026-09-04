@@ -46,6 +46,14 @@ _Avoid_: Nonlinear luma, brightness
 The outcome when `wcagContrastRatio(with:)` is given a translucent color and so does not measure the pair. It is reported as the compatibility sentinel 1 because that method cannot express absence, and it satisfies no WCAG level. It is not a measured 1:1 ratio and says nothing about how similar the colors are.
 _Avoid_: Equal colors, measured 1:1 ratio, failed threshold, ratio of a color against itself
 
+**Appearance-resolved components**:
+sRGBA components obtained through the platform color types for the appearance in effect. Unlike a resolved sRGBA snapshot, this resolves named and dynamic colors, so its values are reproducible only alongside the appearance that produced them. UIKit preserves extended sRGB components; AppKit converts to bounded sRGB. HSL clamps the components before conversion.
+_Avoid_: Resolved sRGBA snapshot, fixed components
+
+**Unconvertible color**:
+A color neither resolution policy can express as sRGB components, such as a pattern color. It is distinct from a color that merely carries no `cgColor`, which platform resolution still converts.
+_Avoid_: Dynamic color, named color
+
 **Resolved blend operand**:
 A blending or interpolation input converted to a resolved sRGBA snapshot before the operation. Grayscale and other RGB spaces resolve; values outside the sRGB gamut are preserved in extended sRGB rather than clamped or rejected.
 _Avoid_: Raw component array, clamped operand

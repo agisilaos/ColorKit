@@ -4,6 +4,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Resolve `hslComponents()` through the platform color types, so named SwiftUI colors such as `Color.orange` and grayscale colors report HSL instead of no value. `adjustedForMode(isDarkMode:)` and `adjustedForAccessibility(with:minimumRatio:)` return their input when HSL is unavailable, so both were silent no-ops for every named and grayscale color. See [the migration guide](MIGRATION.md#hsl-resolution).
+
 ### Added
 - Expose enhancement distance and budget evidence in accessibility results, including an explicit `invalidConfiguration` status.
 - Add an atomic color-comparison result that reports per-input resolution, translucency, and sRGB-gamut issues.

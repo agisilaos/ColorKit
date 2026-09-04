@@ -7,7 +7,7 @@ import XCTest
 final class AccessiblePaletteExportPresentationTests: XCTestCase {
     // MARK: - Rendering
 
-    func testHostedDemoRedrawsDoNotPrepareAgainOrChangeSharedFile() async throws {
+    func testHostedDemoRedrawsDoNotPrepareAgainOrChangeSharedFile() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         var preparations = 0
@@ -16,32 +16,32 @@ final class AccessiblePaletteExportPresentationTests: XCTestCase {
             return Data("fixed payload".utf8)
         }
         let driver = RedrawDriver()
-        var pending: XCTestExpectation? = expectation(description: "Initial render")
-        let initial = try XCTUnwrap(pending)
-        let host = Host(content: TestContent(export: export, driver: driver) {
-            pending?.fulfill()
-            pending = nil
+        var renderedScheme: ColorScheme?
+        let host = Host(content: TestContent(export: export, driver: driver) { scheme in
+            renderedScheme = scheme
         })
         defer { host.close() }
-        await fulfillment(of: [initial], timeout: 5)
+        // Drive layout explicitly so native share-sheet transitions cannot gate the assertions.
+        host.render()
+        XCTAssertEqual(renderedScheme, .light)
         XCTAssertEqual(preparations, 0)
 
         export.share(AccessiblePaletteExport.Snapshot(entries: [], name: "Prepared", format: .json))
         let item = try XCTUnwrap(export.shareItem)
-        let redrawn = expectation(description: "Redraw while sharing")
-        pending = redrawn
+        renderedScheme = nil
         driver.scheme = .dark
-        await fulfillment(of: [redrawn], timeout: 5)
+        host.render()
+        XCTAssertEqual(renderedScheme, .dark)
 
         XCTAssertEqual(preparations, 1)
         XCTAssertEqual(export.shareItem?.id, item.id)
         XCTAssertEqual(try Data(contentsOf: item.url), Data("fixed payload".utf8))
 
         export.shareItem = nil
-        let dismissed = expectation(description: "Redraw after dismissal")
-        pending = dismissed
+        renderedScheme = nil
         driver.scheme = .light
-        await fulfillment(of: [dismissed], timeout: 5)
+        host.render()
+        XCTAssertEqual(renderedScheme, .light)
 
         XCTAssertEqual(preparations, 1)
         XCTAssertTrue(FileManager.default.fileExists(atPath: item.url.path))
@@ -57,13 +57,12 @@ final class AccessiblePaletteExportPresentationTests: XCTestCase {
     private struct TestContent: View {
         let export: AccessiblePaletteExport
         @ObservedObject var driver: RedrawDriver
-        let rendered: () -> Void
+        let rendered: (ColorScheme) -> Void
 
         var body: some View {
-            AccessiblePaletteDemoView(export: export)
+            rendered(driver.scheme)
+            return AccessiblePaletteDemoView(export: export)
                 .environment(\.colorScheme, driver.scheme)
-                .onAppear(perform: rendered)
-                .onChange(of: driver.scheme) { _ in rendered() }
         }
     }
 
@@ -81,6 +80,11 @@ final class AccessiblePaletteExportPresentationTests: XCTestCase {
 
         func close() { window.close() }
 
+        func render() {
+            window.contentView?.needsLayout = true
+            window.contentView?.layoutSubtreeIfNeeded()
+        }
+
         private let window: NSWindow
         #else
         init(content: some View) {
@@ -92,6 +96,11 @@ final class AccessiblePaletteExportPresentationTests: XCTestCase {
         func close() {
             window.isHidden = true
             window.rootViewController = nil
+        }
+
+        func render() {
+            window.rootViewController?.view.setNeedsLayout()
+            window.rootViewController?.view.layoutIfNeeded()
         }
 
         private let window: UIWindow
