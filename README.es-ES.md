@@ -20,6 +20,12 @@ ColorKit es compatible con **Swift Package Manager (SPM)**.
    ```
 4. Haz clic en **Add Package**.  
 
+Al actualizar de 2.x a 3.0.0, ajusta el requisito de versión del paquete y consulta
+la [guía de migración](MIGRATION.md#colorkit-300). Los switches exhaustivos sobre el
+estado de accesibilidad y las referencias guardadas a métodos de mejora requieren
+cambios. Las métricas de comparación, los límites de distancia perceptual y las
+mediciones de color pueden producir resultados distintos.
+
 ---
 
 ## **🚀 Características**  

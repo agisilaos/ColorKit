@@ -4,6 +4,13 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-09-04
+
+### Breaking changes
+- Add `ColorAccessibilityResult.Status.invalidConfiguration`; update exhaustive switches when upgrading from 2.1.0.
+- Add the defaulted `maxPerceptualDistance` parameter to `enhancementResult` and `suggestAccessibleVariantResults`. Ordinary calls remain valid, but references to their old full method names require an updated function type or a wrapper closure. See [method-reference migration](MIGRATION.md#enhancement-method-references).
+- Enforce enhancement budgets and correct color measurement behavior as detailed below. Existing numeric thresholds, generated colors, and CVD previews may change; follow the [3.0.0 migration guide](MIGRATION.md#colorkit-300).
+
 ### Added
 - Add fixed-color CVD simulation with `ColorVisionDeficiency` and `Color.simulated(for:)` for protanopia, deuteranopia, and tritanopia. The full-severity Machado model operates in linear sRGB, preserves alpha, and returns `nil` for unsupported inputs.
 - Expose enhancement distance and budget evidence in accessibility results, including an explicit `invalidConfiguration` status.
@@ -14,8 +21,8 @@ All notable changes to ColorKit will be documented in this file.
 
 ### Changed
 - Deprecate `colorBlindnessPreview(type:)`; it now leaves arbitrary view content unchanged instead of presenting hue shifts as CVD simulation. Apply the new simulation to individual colors; see [CVD migration guidance](MIGRATION.md#color-vision-deficiency-simulation).
-- Enforce `maxPerceptualDistance` as an inclusive CIEDE2000 hard budget in enhancement and variant result APIs. Keep the default at 30 and preserve legacy color-returning behavior; result calls may now report best effort instead of an over-budget pass. Result variants use Delta E 00 for distinctness. See [the migration guide](MIGRATION.md#enhancement-distance-budgets).
-- Deprecate `compare(with:)` in favor of explicit unavailable-result handling while preserving its ColorKit 2.x fallback behavior.
+- Enforce `maxPerceptualDistance` as an inclusive CIEDE2000 hard budget in enhancement and variant result APIs. Keep the default at 30; legacy color-returning APIs still ignore the budget but inherit corrected measurements and conversions. Result calls may now report best effort instead of an over-budget pass. Result variants use Delta E 00 for distinctness. See [the migration guide](MIGRATION.md#enhancement-distance-budgets).
+- Deprecate `compare(with:)` in favor of explicit unavailable-result handling. Eligible inputs now return CIEDE2000; other inputs use the labeled legacy RGB-distance fallback. Existing numeric results are not preserved. See [comparison migration](MIGRATION.md#color-comparison-metrics).
 - Show CIEDE2000 as a raw Delta E 00 value and replace unavailable comparison metrics with actionable per-color messages.
 
 ### Fixed
@@ -29,7 +36,7 @@ All notable changes to ColorKit will be documented in this file.
 - Replace the normalized Euclidean RGB calculation labeled as CIEDE2000 with a reference-validated CIEDE2000 implementation over resolved D65 LAB values.
 - Calculate `relativeLuminance()` according to WCAG 2.1 by linearizing sRGB components before weighting them. The previous calculation weighted gamma-encoded components directly and under-reported contrast for mid-tone colors; `#595959` on white now measures 7.00:1 rather than 2.63:1. `contrastRatio(with:)`, `adjustedForAccessibility(with:minimumRatio:)`, and `highContrastColor` all inherit the correction. See [the migration guide](MIGRATION.md#wcag-relative-luminance).
 - Classify `isDarkColor()` at the luminance where black and white contrast equally (approximately 0.1791) instead of at 0.5, so the black-or-white fallback is always the stronger contrasting endpoint.
-- Resolve strict `relativeLuminanceValue()` inputs through the shared resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
+- Resolve strict `relativeLuminanceValue()` inputs through the resolved sRGBA snapshot, so a wider-gamut color is reported as unavailable instead of read as though its components were sRGB. Keep `relativeLuminance()` lenient by resolving through `UIColor` or `NSColor` for the current appearance.
 
 ### Tooling
 - Limit the CI dependency cache to SwiftPM sources and downloaded artifacts, excluding Xcode build products and test results.

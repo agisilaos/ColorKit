@@ -1,6 +1,78 @@
 # Migration Guide
 
-## Unreleased
+## ColorKit 3.0.0
+
+Upgrading from 2.1.0 requires handling the new accessibility status case and updating
+stored method references where applicable. Measurement and enhancement results also
+change. Swift tools 6.0, iOS 14, and macOS 12 minimum requirements remain unchanged.
+
+### Enhancement method references
+
+`enhancementResult(with:targetLevel:strategy:)` and
+`suggestAccessibleVariantResults(with:targetLevel:count:)` now include a final
+`maxPerceptualDistance` parameter with a default of 30. Ordinary calls can omit it,
+but references to the old full method names no longer compile. Default arguments
+do not preserve the old function type.
+
+Adopt the new four-argument method reference or use a closure to retain a
+three-argument callable while explicitly choosing its budget:
+
+<!-- swift-example: enhancement-references -->
+```swift
+let foreground = Color(.sRGB, red: 0.8, green: 0.8, blue: 0.8)
+let enhance: (Color, WCAGContrastLevel, AdjustmentStrategy) -> ColorAccessibilityResult = {
+    background, level, strategy in
+    foreground.enhancementResult(
+        with: background, targetLevel: level, strategy: strategy,
+        maxPerceptualDistance: 30
+    )
+}
+let variants: (Color, WCAGContrastLevel, Int) -> [ColorAccessibilityResult] = {
+    background, level, count in
+    foreground.suggestAccessibleVariantResults(
+        with: background, targetLevel: level, count: count,
+        maxPerceptualDistance: 30
+    )
+}
+let result = enhance(.white, .AA, .preserveHue)
+let suggestions = variants(.white, .AA, 3)
+```
+
+These closures preserve the call shape, not the former unbudgeted results. See
+[enhancement distance budgets](#enhancement-distance-budgets) for status handling.
+
+### Color comparison metrics
+
+In 2.1.0, `compare(with:)` reported a normalized Euclidean RGB distance under the
+CIEDE2000 label. In 3.0.0, eligible fixed, opaque, in-gamut sRGB inputs produce real
+CIEDE2000 Delta E 00 values. Existing thresholds and stored expectations must be
+recalibrated; there is no general conversion from the old score to Delta E 00.
+
+Prefer `comparisonResult(with:)`, which explicitly reports unavailable inputs:
+
+<!-- swift-example: comparison -->
+```swift
+let first = Color(.sRGB, red: 0.8, green: 0.2, blue: 0.3)
+let second = Color(.sRGB, red: 0.2, green: 0.5, blue: 0.8)
+switch first.comparisonResult(with: second) {
+case .available(let difference):
+    print("Delta E 00:", difference.perceptualDifference)
+case .unavailable(let issues):
+    print("Cannot compare:", issues.firstColor, issues.secondColor)
+}
+```
+
+The deprecated `compare(with:)` remains callable. It returns CIEDE2000 for eligible
+inputs and a legacy RGB-distance fallback otherwise. Inspect
+`perceptualDifferenceMetric` before interpreting its score; do not compare values
+from the two metrics using one threshold. Its other components and contrast results
+also inherit the corrected conversions and measurements. The human-readable
+`description` label changes with the metric; use typed properties instead of parsing it.
+
+Dynamic/unresolved colors, translucent inputs without an explicit backing color,
+and out-of-sRGB-gamut colors are unavailable to the new comparison API. Resolve or
+composite inputs explicitly when appropriate; an unavailable comparison is not zero
+difference or evidence of similarity.
 
 ### HSL resolution
 
