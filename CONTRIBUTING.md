@@ -61,7 +61,11 @@ struct ColorKit {
 
 ### SwiftLint Rules
 
-We use SwiftLint to enforce code style. Here are some key rules and their rationale:
+Install SwiftLint with `brew install swiftlint`, then run `swiftlint lint --strict`
+from the repository root. It covers `Sources` and `Tests` and is enforced by CI;
+package builds do not run lint.
+
+Here are some key rules and their rationale:
 
 #### Enabled Rules
 - `force_unwrapping`: Avoid force unwrapping (`!`) - use optional binding or nil coalescing
