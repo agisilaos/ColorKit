@@ -284,7 +284,9 @@ struct EnhancementDistanceBudgetTests {
         #expect(results.count <= 5)
         #expect(results.contains { $0.status == .bestEffort })
 
-        let expectedCandidates = AdjustmentStrategy.allCases.map { strategy in
+        let releasedOrder: [AdjustmentStrategy] = [.preserveHue, .preserveSaturation, .preserveLightness, .minimumChange]
+        #expect(AdjustmentStrategy.allCases == releasedOrder)
+        let expectedCandidates = releasedOrder.map { strategy in
             original.enhancementResult(with: .white, strategy: strategy, maxPerceptualDistance: budget)
         } + [AccessibilityEnhancer(configuration: .init(
             maxPerceptualDistance: budget, preferDarker: true

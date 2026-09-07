@@ -115,5 +115,15 @@ struct ColorComparisonResultTests {
         #expect(genuine.perceptualDifferenceMetric == .ciede2000)
         #expect(abs(genuine.perceptualDifference - 100) <= 0.0001)
         #expect(fallback.perceptualDifferenceMetric == .legacyRGBDistance)
+        // Opposite RGB endpoints have legacy distance 255, independent of opacity.
+        #expect(abs(fallback.perceptualDifference - 255) <= 0.0001)
+        #expect(fallback.rgbDifference.red == 1)
+        #expect(fallback.rgbDifference.green == 1)
+        #expect(fallback.rgbDifference.blue == 1)
+        #expect(fallback.hslDifference.hue == 0)
+        #expect(fallback.hslDifference.saturation == 0)
+        #expect(fallback.hslDifference.lightness == 100)
+        #expect(fallback.contrastRatio == 1)
+        #expect(fallback.wcagComplianceLevels.isEmpty)
     }
 }
