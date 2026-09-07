@@ -84,27 +84,24 @@ struct Scenario {
             for _ in 0 ..< 10 {
                 consume(operation(opaqueInput(input)))
             }
+            let prepare = {
+                mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: {
+                    consume(operation(opaqueInput(input)))
+                })
+            }
             var measurements: [Sample] = []
             for index in 0 ..< samples {
                 let request: () throws -> UInt64 = {
                     try measureRequests(
                         iterations: iterations,
-                        prepare: {
-                            mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: {
-                                consume(operation(opaqueInput(input)))
-                            })
-                        },
+                        prepare: prepare,
                         request: { operation(opaqueInput(input)) }
                     )
                 }
                 let control: () throws -> UInt64 = {
                     try measureRequests(
                         iterations: iterations,
-                        prepare: {
-                            mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: {
-                                consume(operation(opaqueInput(input)))
-                            })
-                        },
+                        prepare: prepare,
                         request: {
                             // Same input barrier and full result type, with a precomputed result.
                             consume(opaqueInput(input))
