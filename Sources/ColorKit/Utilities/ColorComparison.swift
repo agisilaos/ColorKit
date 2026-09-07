@@ -21,8 +21,11 @@ public extension Color {
     /// - Parameter other: The second color in the comparison.
     /// - Returns: A complete color difference or the issues that prevent measurement.
     func comparisonResult(with other: Color) -> ColorComparisonResult {
-        let first = ResolvedSRGBA.resolve(self)
-        let second = ResolvedSRGBA.resolve(other)
+        Self.comparisonResult(first: ResolvedSRGBA.resolve(self), second: ResolvedSRGBA.resolve(other))
+    }
+
+    /// Shares comparison validation and calculations with request-local resolved inputs.
+    internal static func comparisonResult(first: ResolvedSRGBA?, second: ResolvedSRGBA?) -> ColorComparisonResult {
         let issues = ColorComparisonIssues(
             firstColor: Self.comparisonIssues(for: first),
             secondColor: Self.comparisonIssues(for: second)
