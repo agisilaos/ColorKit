@@ -57,6 +57,8 @@ opt_in_rules:
 included:
   - Sources
   - Tests
+  - Benchmarks/Sources
+  - Benchmarks/Tests
 
 excluded:
   - .build

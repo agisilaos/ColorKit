@@ -85,6 +85,9 @@ jobs:
       - name: Test Tooling Contracts
         run: python3 -m unittest discover -s scripts/tests
 
+      - name: Test Benchmark Correctness in Release Mode
+        run: swift test --package-path Benchmarks -c release
+
       - name: Build and Test Canonical Matrix
         run: scripts/run_tests.sh --results-dir TestResults
 
