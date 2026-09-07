@@ -15,7 +15,7 @@ inventory, failed compilation, or API diagnostic makes the check fail.
 
 ## Preserved clients
 
-`baselines.json` pins full release commits and SHA-256 hashes of each client file.
+Each release directory contains its pinned full commit in `revision` and its Swift clients.
 The initial source baseline is 3.0.0 at
 `b54ca5adfc80290003c543a23483503d1c5f4d4b`. Client files are typechecked with ordinary
 public imports; they are separate from current examples and are intentionally
@@ -29,37 +29,29 @@ outside the normal formatting/lint inventory once preserved.
   conversion, enhancement, palette/export workflows, and actor-isolated theming
   and preview creation. Ordinary color work remains nonisolated.
 
-Do not edit existing client files to make an API change pass. The checker compares
-all existing client hashes and release commits with a trusted Git revision before
-building. CI supplies the PR base SHA through `--fixture-base`; local runs default
-to `origin/main`. A changed client fails even if its manifest hash changes with it.
-The first PR establishes the initial inventory, so review that addition explicitly.
+Do not edit existing client files to make an API change pass. Git compares the
+fixture directory against the PR base (`--fixture-base`, default `origin/main`)
+and rejects changes or deletions to existing files, including release revisions.
+The first PR establishes the fixtures and requires review of their initial coverage.
 
-To extend coverage, add a separate client file and its hash to the matching release
-record. It must also compile against that exact release. At each later release,
-add its pinned commit and representative clients for newly shipped APIs; retain
-older records and client files. Every registered release is checked on both
-platforms. Fetch full history and tags before running the checker in a shallow clone.
+To extend coverage, add a separate Swift file to the release directory. It must
+compile against that release. For later releases, add a directory containing a
+`revision` file and clients for newly shipped APIs. Fetch full history before
+running the checker in a shallow clone.
 
-## API inventories and cache
+## Builds and diagnostics
 
-Each platform uses one compiler, SDK, architecture, Swift language mode, and build
-configuration for the baseline and candidate. The original release source stays
-fixed while API inventories are regenerated as the toolchain changes.
+Every run archives each pinned release, then builds the release and candidate
+with the same compiler, SDK, architecture, and settings on both platforms.
+It compiles the clients against each module and compares their public APIs.
+There is no compatibility cache: release builds and API extraction run every time.
+This costs extra build time but avoids cache keys, receipts, and invalidation rules.
+Temporary release sources and builds are removed when the check finishes.
 
-The cache key covers the release record, client hashes, Xcode and Swift versions,
-SDK path/version/build, target, build settings, and checker contents. A completed
-cache entry certifies that the client compiled against the release and contains a
-checksum-verified, nonempty API inventory. Incomplete entries are rebuilt; corrupt
-completed entries fail with their path. Remove only that generated entry to rebuild
-it. Candidate builds, API extraction, and client compilation always run.
-
-Build products and logs default to `.build/compatibility`; override this using
-`--storage`. Each invocation retains its environment, both output streams, and API
-diagnostics under a unique `run-*` directory. CI uploads those diagnostics with
-its test artifacts. Baseline data is cached across CI runs; only verified complete entries are reused.
-If a toolchain upgrade cannot build an original release, investigate the failure
-before accepting the upgrade.
+Build products and logs default to `.build/compatibility`; override with `--storage`.
+Each invocation retains the environment, command output, and both API inventories
+under a unique `run-*` directory. CI uploads that directory with its test artifacts.
+If a toolchain upgrade cannot build an original release, the check fails.
 
 The checker currently has no diagnostic exceptions. A future exception requires
 an exact diagnostic, a written reason, and a reproducer establishing source

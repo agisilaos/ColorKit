@@ -34,7 +34,7 @@ An oldest-supported-compiler matrix remains a separate scope decision. Compiling
 
 Build the exact release baseline and the candidate revision using the same compiler, platform SDK, and build settings, then compare their generated public API inventories. Keep the release commit and preserved client source fixed. When the CI toolchain changes, regenerate both inventories with that toolchain.
 
-Cache generated inventories by release revision and build environment, including the compiler, SDK, target, and relevant build settings. This comparison controls for tooling differences when checking ColorKit changes; verification with older compilers remains separate. If a future toolchain cannot build the original release, the check fails and the failure must be investigated before accepting that toolchain upgrade.
+Rebuild release inventories on every run. The initial cache design was removed to simplify the implementation; no cache validation or invalidation machinery is needed. This comparison controls for tooling differences when checking ColorKit changes; verification with older compilers remains separate. If a future toolchain cannot build the original release, the check fails and the failure must be investigated before accepting that toolchain upgrade.
 
 ### Behavioral corrections
 

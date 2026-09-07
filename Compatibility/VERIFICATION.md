@@ -2,20 +2,24 @@
 
 Validated locally on 2026-09-07 with Xcode 26.5 (17F42), Swift 6.3.2, and arm64.
 The candidate started at `3f122111681538db5bd71a01891b7619fba00ba9` plus this
-change; the release source is the pinned 3.0.0 commit in `baselines.json`.
+change; the release source is the pinned 3.0.0 commit in `Clients/3.0.0/revision`.
+
+The simplification was rechecked with fresh release builds on both platforms,
+24 tooling tests, SwiftLint, and all three source/API mutations below. The
+behavioral assertions and Swift fixtures were unchanged; their runtime validation
+below predates this tooling refactor.
 
 ## Positive checks
 
 - `python3 scripts/check_compatibility.py`: all three client files compile against
   both 3.0.0 and the candidate on macOS and iOS Simulator. Both public API
-  comparisons pass. Client deployment targets are macOS 12 and iOS 14. A second
-  invocation reuses both verified baseline cache entries and passes again.
+  comparisons pass. Client deployment targets are macOS 12 and iOS 14. Release inventories are rebuilt on every invocation.
 - `scripts/run_tests.sh --results-dir .build/compatibility/behavior`: all four
   canonical phases pass, including the serialized shared-state suites on both
   platforms and the strengthened legacy comparison/variant-order assertions.
-- `python3 -m unittest discover -s scripts/tests`: 31 tests pass, including fixture
-  rewriting, missing inventory, cache invalidation/corruption, failed baseline
-  compilation, zero-exit API diagnostics, and release gate failure propagation.
+- `python3 -m unittest discover -s scripts/tests`: 24 tests pass, including fixture
+  edits/deletions, pinned revision changes, zero-exit API diagnostics, and release
+  gate failure propagation.
 - `swiftlint lint --strict`: zero violations.
 - DocC builds with `OTHER_DOCC_FLAGS=--warnings-as-errors` using the documented
   `xcodebuild docbuild` command.
