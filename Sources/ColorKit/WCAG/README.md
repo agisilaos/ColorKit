@@ -14,6 +14,10 @@ The WCAG (Web Content Accessibility Guidelines) Compliance Checker is a powerful
 
 ## Usage
 
+For new callers, start with the [result-bearing examples](../../../README.md).
+Check outcomes before using candidates; legacy color-returning helpers do not
+guarantee the target, and legacy enhancement ignores distance budgets.
+
 ### Basic Usage
 
 ```swift

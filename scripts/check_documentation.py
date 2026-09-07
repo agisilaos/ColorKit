@@ -18,6 +18,8 @@ EXAMPLES = {
     "README.es-ES.md": README_EXAMPLES,
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
+    DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette"},
+    DOCC + "Utilities-article.md": {"similarity"},
     "PERFORMANCE_IMPROVEMENTS.md": {"cache", "benchmark"},
     "MIGRATION.md": {"cvd", "enhancement-budget", "enhancement-references", "comparison"},
 }

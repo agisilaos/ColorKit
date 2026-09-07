@@ -31,7 +31,8 @@ import SwiftUI
 /// - Customize palette size and accessibility requirements
 /// - Support for different WCAG compliance levels
 ///
-/// Example usage:
+/// For new callers, prefer `generateAssessedPalette(from:against:)` and inspect each outcome.
+/// Legacy candidate examples:
 /// ```swift
 /// // Create a generator with custom configuration
 /// let config = AccessiblePaletteGenerator.Configuration(
@@ -45,7 +46,7 @@ import SwiftUI
 /// let seedColor = Color.blue
 /// let palette = generator.generatePalette(from: seedColor)
 ///
-/// // Create an accessible theme
+/// // Create a theme candidate
 /// let theme = generator.generateAccessibleTheme(
 ///     from: seedColor,
 ///     name: "Ocean Theme"
@@ -142,7 +143,10 @@ public struct AccessiblePaletteGenerator {
         self.configuration = configuration
     }
 
-    /// Generates an accessible color palette based on a seed color.
+    /// Generates palette candidates based on a seed color.
+    ///
+    /// Prefer ``generateAssessedPalette(from:against:)`` for new callers that need
+    /// measured outcomes against an explicit background.
     ///
     /// This method creates a palette that:
     /// - Targets the specified WCAG contrast for generated candidates against the seed
@@ -172,7 +176,7 @@ public struct AccessiblePaletteGenerator {
     /// ```
     ///
     /// - Parameter seedColor: The color to base the palette on
-    /// - Returns: An array of colors that form an accessible palette
+    /// - Returns: An array of candidates without per-entry or pairwise compliance guarantees.
     public func generatePalette(from seedColor: Color) -> [Color] {
         var palette: [Color] = []
 
@@ -220,6 +224,8 @@ public struct AccessiblePaletteGenerator {
 
     /// Generates the existing palette and assesses every entry against a background.
     ///
+    /// Prefer this method for new callers and inspect each result's `meetsTarget` or `status`.
+    /// Assessment does not adjust candidates or impose an enhancement distance budget.
     /// Ordering and candidate generation are identical to ``generatePalette(from:)``.
     /// Results are not filtered, so callers retain evidence for passing, best-effort,
     /// and unavailable entries. This method does not imply pairwise contrast between
@@ -241,7 +247,7 @@ public struct AccessiblePaletteGenerator {
         }
     }
 
-    /// Generates a theme from a seed color with accessible color combinations.
+    /// Generates a theme with a black-and-white text/background pair from a seed color.
     ///
     /// This method creates a color theme that:
     /// - Uses a black-and-white text and background pairing
@@ -274,7 +280,7 @@ public struct AccessiblePaletteGenerator {
     /// - Parameters:
     ///   - seedColor: The primary color to base the theme on
     ///   - name: The name for the theme
-    /// - Returns: A ColorTheme with accessible color combinations
+    /// - Returns: A theme with a black-and-white text/background pair; assess other role combinations before use.
     public func generateAccessibleTheme(from seedColor: Color, name: String) -> ColorTheme {
         // Use simpler, more deterministic approach for theme generation
 

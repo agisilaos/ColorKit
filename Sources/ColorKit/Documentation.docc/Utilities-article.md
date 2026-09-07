@@ -28,6 +28,25 @@ CIEDE2000 uses the reference weighting factors set to one and is validated again
 
 ![A comparison of system blue and indigo showing raw CIEDE2000, component, contrast, and WCAG results.](ciede2000-comparison.jpg)
 
+### Similarity and Components
+
+`isPerceptuallySimilar(to:threshold:)` uses CIE76 in D65 LAB and `distance < threshold`
+without validating the threshold. Equality or unavailable LAB returns `false`.
+It ignores alpha without compositing and accepts extended sRGB when LAB is available.
+CIEDE2000 requires opaque, in-gamut inputs; thresholds are not interchangeable.
+
+<!-- swift-example: similarity -->
+```swift
+let color = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+print(color.isPerceptuallySimilar(to: color, threshold: 0)) // false: equality
+print(color.isPerceptuallySimilar(to: Color.primary)) // false: unavailable LAB
+```
+
+`rgbaComponents()` resolves the current appearance, preserving extended sRGB on UIKit
+and converting to bounded sRGB on AppKit. Failure returns `(0, 0, 0, 0)`, indistinguishable
+from transparent black. ``ColorSpaceConverter/getAllColorComponents()`` documents the
+aggregate API's additional substitutions; use optional conversions when availability matters.
+
 ### Color Cache
 
 Improve performance by caching expensive color operations:

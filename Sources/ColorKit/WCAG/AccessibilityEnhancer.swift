@@ -90,7 +90,8 @@ public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
 /// for color adjustment and can suggest alternative colors that maintain harmony with
 /// the original design.
 ///
-/// Example usage:
+/// For new callers, prefer `enhanceColorResult(_:against:)` and inspect `meetsTarget`.
+/// Legacy candidate examples:
 /// ```swift
 /// // Create an enhancer targeting WCAG AA compliance
 /// let config = AccessibilityEnhancer.Configuration(
@@ -105,7 +106,7 @@ public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
 ///     against: .white
 /// )
 ///
-/// // Get multiple accessible variants
+/// // Get legacy variant candidates
 /// let variants = enhancer.suggestAccessibleVariants(
 ///     for: .blue,
 ///     against: .white,
@@ -185,7 +186,7 @@ public class AccessibilityEnhancer {
 
     /// Attempts to enhance a color for a requested accessibility target.
     ///
-    /// This compatibility method preserves the original color-returning behavior and ignores the distance budget.
+    /// This compatibility method does not guarantee the requested target and ignores the distance budget.
     /// Use ``enhanceColorResult(_:against:)`` when the caller needs to distinguish
     /// a passing candidate from best effort or unavailable measurement.
     ///
@@ -195,7 +196,7 @@ public class AccessibilityEnhancer {
     /// let textColor = Color.blue
     /// let backgroundColor = Color.white
     ///
-    /// // Get an accessible version of the text color
+    /// // Get a legacy candidate without a target or budget guarantee
     /// let accessibleColor = enhancer.enhanceColor(
     ///     textColor,
     ///     against: backgroundColor
@@ -223,6 +224,9 @@ public class AccessibilityEnhancer {
 
     /// Enhances and assesses a color against the configured WCAG target.
     ///
+    /// Prefer this result-bearing method for new callers; check `meetsTarget` before using
+    /// the candidate as a passing color.
+    ///
     /// Enforces the inclusive configured Delta E 00 budget. The original is examined
     /// first, then the first passing eligible strategy candidate wins. Minimum-change
     /// candidates are ordered by distance; other strategies retain their existing order.
@@ -246,8 +250,8 @@ public class AccessibilityEnhancer {
 
     /// Suggests multiple color variants that target the configured contrast level.
     ///
-    /// This compatibility method generates alternative candidates while maintaining
-    /// different aspects of the original color's character. Use
+    /// This compatibility method neither guarantees the requested target nor enforces
+    /// the configured distance budget. Use
     /// ``suggestAccessibleVariantResults(for:against:count:)`` to inspect the measured
     /// outcome for each candidate.
     ///
@@ -257,7 +261,7 @@ public class AccessibilityEnhancer {
     /// let brandColor = Color.blue
     /// let backgroundColor = Color.white
     ///
-    /// // Get three accessible variants
+    /// // Request up to three legacy candidates
     /// let variants = enhancer.suggestAccessibleVariants(
     ///     for: brandColor,
     ///     against: backgroundColor,
@@ -377,7 +381,10 @@ public class AccessibilityEnhancer {
 // MARK: - Color Extensions
 
 public extension Color {
-    /// Enhances and assesses this color against a background and WCAG target.
+    /// Enhances and assesses this foreground against a background and WCAG target.
+    ///
+    /// Prefer this method for new callers. Check `meetsTarget` or `status` before using
+    /// `color` as a passing candidate; diagnostic contrast alone does not establish success.
     ///
     /// - Parameters:
     ///   - backgroundColor: The background against which the candidate is assessed.
@@ -400,6 +407,10 @@ public extension Color {
     }
 
     /// Attempts to enhance this color for a requested accessibility target.
+    ///
+    /// This legacy method neither guarantees the target nor enforces an enhancement
+    /// distance budget. Prefer ``enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)``.
+    ///
     /// - Parameters:
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
@@ -418,7 +429,11 @@ public extension Color {
         return enhancer.enhanceColor(self, against: backgroundColor)
     }
 
-    /// Suggests color variants that target a contrast level while maintaining harmony.
+    /// Suggests color candidates for a requested contrast level.
+    ///
+    /// This legacy method neither guarantees the target nor enforces an enhancement budget.
+    /// Prefer ``suggestAccessibleVariantResults(with:targetLevel:count:maxPerceptualDistance:)``.
+    ///
     /// - Parameters:
     ///   - backgroundColor: The background color to check against
     ///   - targetLevel: The WCAG level to target (default: .AA)
@@ -462,11 +477,21 @@ public extension Color {
         )
     }
 
-    /// Determines if this color is perceptually similar to another color
+    /// Returns whether the CIE76 distance between two D65 LAB colors is strictly below a threshold.
+    ///
+    /// Uses Euclidean LAB distance (`Delta E ab`) from `labComponents()`. Alpha does not
+    /// affect the coordinates and no background compositing occurs. Finite extended-sRGB
+    /// channels can participate; unresolved inputs or unavailable LAB conversions return `false`.
+    /// Equality with the threshold returns `false`, including identical colors at threshold zero.
+    ///
+    /// This is not CIEDE2000. Use `comparisonResult(with:)` for Delta E 00 and explicit
+    /// unavailable-input diagnostics; that API additionally requires opaque, in-gamut inputs.
+    /// Thresholds are not interchangeable between the two metrics.
+    ///
     /// - Parameters:
-    ///   - color: The color to compare with
-    ///   - threshold: The threshold for similarity (0-100, lower means more similar)
-    /// - Returns: Whether the colors are perceptually similar
+    ///   - color: The color whose LAB coordinates are compared with this color's.
+    ///   - threshold: The exclusive CIE76 distance limit (default: 10), used without clamping or validation.
+    /// - Returns: `true` only when both LAB conversions succeed and `distance < threshold`.
     func isPerceptuallySimilar(to color: Color, threshold: Double = 10) -> Bool {
         guard let lab1 = self.labComponents(),
               let lab2 = color.labComponents() else {

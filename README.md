@@ -168,22 +168,18 @@ Rectangle()
 ### **1️⃣1️⃣ Auto-Generate Accessible Color Palettes**  
 <!-- swift-example: accessible-palette -->
 ```swift
-// Generate an accessible palette from a seed color
-let seedColor = Color.blue
-let palette = seedColor.generateAccessiblePalette(
-    targetLevel: .AA,  // WCAG compliance level
-    paletteSize: 5,    // Number of colors to generate
-    includeBlackAndWhite: true
-)
+let seedColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+let generator = AccessiblePaletteGenerator(configuration: .init(targetLevel: .AA))
+let results = generator.generateAssessedPalette(from: seedColor, against: backgroundColor)
+for result in results {
+    if result.meetsTarget {
+        Text("WCAG AA").foregroundColor(result.color).background(backgroundColor)
+    } else {
+        print(result.status)
+    }
+}
 
-// Generate an accessible theme from a seed color
-let theme = seedColor.generateAccessibleTheme(
-    name: "Accessible Blue Theme",
-    targetLevel: .AA
-)
-
-// Find the stronger black-or-white endpoint and inspect its measured outcome
-let backgroundColor = Color(.sRGB, red: 0.5, green: 0.2, blue: 0.7)
 let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
 let textColor = textResult.color
 
@@ -207,6 +203,13 @@ struct ContentView: View {
     }
 }
 ```
+
+For new callers, check `meetsTarget` or `status` before using a candidate.
+Assessed palettes retain every outcome; they impose no enhancement budget and do
+not certify contrast between entries. Legacy palettes return candidates; themes
+only establish a black-and-white text/background pair.
+`accessibleContrastingColor(for:)` and `suggestedColor(for:)` ignore the requested
+level, use different heuristics, and do not guarantee that level.
 
 ### **1️⃣2️⃣ Export & Share Color Palettes**  
 ```swift
@@ -283,7 +286,7 @@ For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
 <!-- swift-example: enhancement -->
 ```swift
-// Generate a candidate while preserving brand identity, then inspect its outcome
+// Generate a candidate within a distance budget, then inspect its outcome
 let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
 let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
@@ -394,6 +397,12 @@ print(components.description)
 ColorSpaceInspectorView(color: myColor)
 ```
 
+`rgbaComponents()` resolves the current appearance: UIKit preserves extended sRGB;
+AppKit converts to bounded sRGB. Failure returns `(0, 0, 0, 0)`, indistinguishable
+from transparent black. Aggregate components inherit that policy, substitute zeros
+for failed HSL/CMYK, extract HSB without a success flag, and derive LAB/XYZ from RGB
+even on failure. Use optional conversions when availability matters.
+
 ### **Color Comparison**  
 
 Compare fixed, opaque, in-gamut sRGB colors using component differences, WCAG metrics, and CIEDE2000:
@@ -416,16 +425,26 @@ ColorComparisonView(color1: color1, color2: color2)
 
 Dynamic, translucent, nonfinite, and out-of-sRGB inputs return explicit issues instead of fabricated measurements.
 
+`isPerceptuallySimilar(to:threshold:)` uses CIE76 in D65 LAB and `distance < threshold`
+without validating the threshold. Equality or unavailable LAB returns `false`.
+It ignores alpha without compositing and accepts extended sRGB when LAB is available.
+CIEDE2000 requires opaque, in-gamut inputs; thresholds are not interchangeable.
+
 ### **WCAG Accessibility Debugging**  
 
 Validate and improve color accessibility:
+
+In `foreground.contrastResult(with: background)`, the receiver is the foreground.
+A translucent foreground composites over the opaque background; a translucent
+background is unavailable. Reversing the arguments can change the result.
 
 <!-- swift-example: budget -->
 ```swift
 // Check WCAG compliance
 let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
 let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
-let compliance = backgroundColor.wcagCompliance(with: textColor)
+let assessment = textColor.accessibilityResult(against: backgroundColor, targetLevel: .AA)
+print(assessment.status)
 
 // Get budgeted candidates with explicit outcomes and measurement evidence
 let suggestions = textColor.suggestAccessibleVariantResults(
@@ -438,7 +457,7 @@ let suggestions = textColor.suggestAccessibleVariantResults(
 Result-bearing enhancement enforces an inclusive CIEDE2000 Delta E 00 budget
 from the original foreground (finite `0...100`, default `30`). It returns in-budget
 best effort when no examined candidate passes, or an explicit `invalidConfiguration`
-or `unavailable` outcome. Legacy color-returning enhancement still ignores the budget.
+or `unavailable` outcome. Legacy color-returning enhancement ignores the budget and does not guarantee the target.
 See [enhancement migration guidance](MIGRATION.md#enhancement-distance-budgets).
 
 See [Color Debugging Documentation](Sources/ColorKit/Utilities/DOCUMENTATION.md) for more details.

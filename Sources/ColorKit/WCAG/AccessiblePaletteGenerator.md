@@ -18,6 +18,10 @@ The Accessible Palette Generator helps you create candidate palettes around a se
 
 ## Usage Examples
 
+For new callers, use `generateAssessedPalette(from:against:)` and inspect each
+result. See the [compiled README examples](../../../README.md). Assessment retains
+all outcomes without imposing an enhancement budget or certifying pairwise contrast.
+
 ### Generating an Accessible Palette
 
 ```swift

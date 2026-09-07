@@ -16,8 +16,10 @@
 import SwiftUI
 
 public extension Color {
-    /// Get color components in all available color spaces
-    /// - Returns: A ColorComponents structure with all color space representations
+    /// Returns aggregate components without per-conversion availability.
+    ///
+    /// See ``ColorSpaceConverter/getAllColorComponents()`` for appearance resolution
+    /// and failure substitutions; zero components do not establish conversion success.
     func colorSpaceComponents() -> ColorComponents {
         let converter = ColorSpaceConverter(color: self)
         return converter.getAllColorComponents()

@@ -171,22 +171,18 @@ Rectangle()
 ### **1️⃣1️⃣ Generación automática de paletas de colores accesibles**  
 <!-- swift-example: accessible-palette -->
 ```swift
-// Generar una paleta accesible a partir de un color base
-let seedColor = Color.blue
-let palette = seedColor.generateAccessiblePalette(
-    targetLevel: .AA,  // Nivel de cumplimiento WCAG
-    paletteSize: 5,    // Número de colores a generar
-    includeBlackAndWhite: true
-)
+let seedColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+let generator = AccessiblePaletteGenerator(configuration: .init(targetLevel: .AA))
+let results = generator.generateAssessedPalette(from: seedColor, against: backgroundColor)
+for result in results {
+    if result.meetsTarget {
+        Text("WCAG AA").foregroundColor(result.color).background(backgroundColor)
+    } else {
+        print(result.status)
+    }
+}
 
-// Generar un tema accesible a partir de un color base
-let theme = seedColor.generateAccessibleTheme(
-    name: "Accessible Blue Theme",
-    targetLevel: .AA
-)
-
-// Encontrar el extremo blanco o negro con mayor contraste e inspeccionar el resultado
-let backgroundColor = Color(.sRGB, red: 0.5, green: 0.2, blue: 0.7)
 let textResult = backgroundColor.accessibleContrastingColorResult(for: .AA)
 let textColor = textResult.color
 
@@ -210,6 +206,13 @@ struct ContentView: View {
     }
 }
 ```
+
+Para código nuevo, comprueba `meetsTarget` o `status` antes de usar un candidato.
+La paleta evaluada conserva todos los resultados; no aplica un límite de mejora ni
+certifica el contraste entre entradas. Las paletas heredadas devuelven candidatos;
+los temas solo establecen una pareja de texto/fondo blanco y negro.
+`accessibleContrastingColor(for:)` y `suggestedColor(for:)` ignoran el nivel solicitado,
+usan heurísticas distintas y no garantizan ese nivel.
 
 ### **1️⃣2️⃣ Exportar y compartir paletas de colores**  
 ```swift
@@ -286,7 +289,7 @@ Para más detalles sobre las mejoras de rendimiento, consulta [PERFORMANCE_IMPRO
 ### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
 <!-- swift-example: enhancement -->
 ```swift
-// Generar un candidato preservando la identidad de marca e inspeccionar su resultado
+// Generar un candidato dentro de un límite de distancia e inspeccionar su resultado
 let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
 let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
@@ -397,6 +400,12 @@ print(components.description)
 ColorSpaceInspectorView(color: myColor)
 ```
 
+`rgbaComponents()` resuelve la apariencia actual: UIKit conserva sRGB extendido;
+AppKit convierte a sRGB acotado. Un fallo devuelve `(0, 0, 0, 0)`, indistinguible del
+negro transparente. Los componentes agregados heredan esa política, sustituyen fallos
+HSL/CMYK por ceros, extraen HSB sin indicar éxito y derivan LAB/XYZ de RGB incluso
+si es una sustitución. Usa conversiones opcionales cuando importe la disponibilidad.
+
 ### **Comparación de colores**  
 
 Compara colores sRGB fijos, opacos y dentro de gama mediante diferencias de componentes, métricas WCAG y CIEDE2000:
@@ -419,16 +428,26 @@ ColorComparisonView(color1: color1, color2: color2)
 
 Los colores dinámicos, translúcidos, no finitos o fuera de la gama sRGB devuelven problemas explícitos en vez de mediciones inventadas.
 
+`isPerceptuallySimilar(to:threshold:)` usa CIE76 en LAB D65 y `distancia < umbral`
+sin validar el umbral. La igualdad o una conversión LAB no disponible devuelven `false`.
+Ignora alfa sin componer sobre un fondo y admite sRGB extendido si LAB está disponible.
+CIEDE2000 requiere colores opacos dentro de gama; los umbrales no son intercambiables.
+
 ### **Depuración de accesibilidad WCAG**  
 
 Valida y mejora la accesibilidad de los colores:
+
+En `foreground.contrastResult(with: background)`, el receptor es el primer plano.
+Un primer plano translúcido se compone sobre el fondo opaco; un fondo translúcido
+no está disponible. Invertir los argumentos puede cambiar el resultado.
 
 <!-- swift-example: budget -->
 ```swift
 // Verificar cumplimiento WCAG
 let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
 let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
-let compliance = backgroundColor.wcagCompliance(with: textColor)
+let assessment = textColor.accessibilityResult(against: backgroundColor, targetLevel: .AA)
+print(assessment.status)
 
 // Obtener candidatos dentro del límite con resultados explícitos y evidencia de medición
 let suggestions = textColor.suggestAccessibleVariantResults(
@@ -442,7 +461,7 @@ Las APIs de mejora que devuelven resultados aplican un límite inclusivo CIEDE20
 Delta E 00 respecto al primer plano original (finito, en `0...100`, predeterminado: `30`).
 Si ningún candidato examinado alcanza el objetivo, devuelven el mejor esfuerzo dentro
 del límite, o un resultado explícito `invalidConfiguration` o `unavailable`.
-Las APIs heredadas que devuelven solo colores siguen ignorando el límite.
+Las mejoras heredadas que devuelven solo colores ignoran el límite y no garantizan el objetivo.
 Consulta la [guía de migración de mejoras](MIGRATION.md#enhancement-distance-budgets).
 
 Consulta la [Documentación de depuración de colores](Sources/ColorKit/Utilities/DOCUMENTATION.md) para más detalles.

@@ -23,7 +23,8 @@ import SwiftUI
 /// - Checking WCAG compliance levels
 /// - Suggesting accessible color alternatives
 ///
-/// Example usage:
+/// For new callers, prefer `accessibilityResult(against:targetLevel:)` and inspect `meetsTarget`.
+/// Legacy candidate examples:
 /// ```swift
 /// let textColor = Color.blue
 /// let backgroundColor = Color.white
@@ -38,14 +39,17 @@ import SwiftUI
 ///     print("Safe for normal text")
 /// }
 ///
-/// // Get suggested accessible color
+/// // Get a legacy color candidate
 /// let accessibleColor = backgroundColor.suggestedColor(for: .AA)
 /// ```
 public extension Color {
-    /// Returns the RGBA components of a color.
+    /// Returns appearance-resolved sRGBA components with a zero-tuple compatibility fallback.
     ///
-    /// This method provides access to the raw color components in the sRGB color space.
-    /// Values are normalized to the range 0.0-1.0.
+    /// Named and dynamic colors resolve through the platform color types for the appearance
+    /// in effect. UIKit preserves extended sRGB channels, which can fall outside `0...1`;
+    /// AppKit converts to bounded sRGB. Alpha is separate and unpremultiplied.
+    /// If conversion fails, the method returns `(0, 0, 0, 0)`, indistinguishable from
+    /// transparent black. The tuple carries no indication of conversion success.
     ///
     /// Example:
     /// ```swift
@@ -57,7 +61,7 @@ public extension Color {
     /// print("Alpha: \(components.alpha)")
     /// ```
     ///
-    /// - Returns: A tuple containing red, green, blue, and alpha components as Double values (0.0-1.0)
+    /// - Returns: Red, green, blue, and alpha as `Double` values, or all zeros if conversion fails.
     func rgbaComponents() -> (red: Double, green: Double, blue: Double, alpha: Double) {
         return wcagRGBAComponents()
     }
@@ -198,21 +202,21 @@ public extension Color {
 
     /// Suggests a black-or-white color to pair with this color.
     ///
-    /// This method provides a simple suggestion for an accessible color by recommending
-    /// either black or white based on the current color's luminance. For more
-    /// sophisticated color suggestions that preserve brand identity, use
-    /// ``AccessibilityEnhancer``.
+    /// The requested level does not affect this legacy luminance heuristic, and the candidate
+    /// is not guaranteed to meet it. This heuristic differs from the stronger-endpoint
+    /// selection in ``accessibleContrastingColor(for:)``. For new callers, prefer
+    /// ``accessibleContrastingColorResult(for:)`` and inspect `meetsTarget` before use.
     ///
     /// Example:
     /// ```swift
     /// let backgroundColor = Color.blue
     /// let textColor = backgroundColor.suggestedColor(for: .AA)
-    /// Text("Accessible Text")
+    /// Text("Candidate text")
     ///     .foregroundColor(textColor)
     ///     .background(backgroundColor)
     /// ```
     ///
-    /// - Parameter level: The WCAG compliance level to target
+    /// - Parameter level: The requested WCAG level, retained for compatibility and ignored.
     /// - Returns: A black-or-white candidate selected from this color's legacy luminance.
     func suggestedColor(for level: WCAGContrastLevel) -> Color {
         let luminance = self.wcagRelativeLuminance()
