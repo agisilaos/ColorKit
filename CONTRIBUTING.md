@@ -186,6 +186,12 @@ The `test-results` workflow artifact retains raw build logs and `.xcresult`
 bundles for 14 days, including logs from failed test commands. Check the
 "Show Xcode and Available Simulators" step if a destination cannot be found.
 
+### Review screenshots
+
+Attach review screenshots to the pull request instead of committing them under
+`docs/screenshots/`. Keep local captures in an ignored directory. Images that
+illustrate published documentation may remain beside that documentation.
+
 ### Release client compatibility
 
 The [release compatibility gate](Compatibility/README.md) preserves 3.0.0 client
