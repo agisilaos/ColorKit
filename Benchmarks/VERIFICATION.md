@@ -1,16 +1,16 @@
-# Initial harness verification — 2026-09-07
+# Harness verification — 2026-09-07
 
-The initial local validation completed successfully on an Apple M4 Pro, macOS
-26.6.2, Xcode 26.5 (17F42), and Swift 6.3.2. This was a dirty-worktree validation
-based on `b54ca5adfc80290003c543a23483503d1c5f4d4b`, not a clean-revision published
-baseline. Capture a fresh baseline after committing and reviewing the harness.
+Local validation completed successfully on an Apple M4 Pro, macOS 26.6.2,
+Xcode 26.5 (17F42), and Swift 6.3.2. The final run used clean source revision
+`5918b1ac50c3dcc3209785e87ea2b10c1cd96b56`; both tracked changes and untracked
+files were empty in the recorded metadata.
 
 ## Runtime evidence
 
-`python3 Benchmarks/run.py --output .build/benchmark-results/validation` completed
+`python3 Benchmarks/run.py --output .build/benchmark-results/5918b1a` completed
 all 36 isolated processes: three runs of 12 scenario/cache pairs, with 10 samples
 of 100 requests each. The local `raw.json` has `complete: true` and 360 samples;
-it retains the dirty-tree details and environment. Its companion `summary.md`
+it retains the source revision and environment. Its companion `summary.md`
 reports sample means and control overhead without subtraction. Both files are
 local ignored artifacts, not committed reference results.
 
@@ -28,7 +28,9 @@ xcrun llvm-objdump --disassemble --demangle \
 ```
 
 Executable SHA-256:
-`097ef5a84c400879b1a92305e090ff00e078a5b61efd857600cef4dd6b191f3b`.
+`caedfa6e7082f2c6fa5b61cec8279d21ffe4f7cfb68e8eec1b5f135d8c24fb30`.
+
+Its disassembly was identical to the initially inspected validation executable.
 
 The specialized request loops retain the opaque input call, operation dispatch,
 and complete-result consumption between the clock reads. Cache preparation

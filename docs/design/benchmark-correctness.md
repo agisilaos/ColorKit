@@ -21,7 +21,7 @@ follow-up work.
 
 ## Agreed harness
 
-The authoritative baseline runner will be a repository-local command-line package
+The authoritative baseline runner is a repository-local command-line package
 under `Benchmarks/`, importing ColorKit through its existing public API and running
 in Release mode. macOS is the initial reference platform; recorded results must
 identify that platform and cannot establish iOS performance.
@@ -65,8 +65,8 @@ verify their expected outcomes before accepting measurements. Start with a small
 set of explicit sRGB fixtures; exhaustive color-space and edge-case coverage is
 deferred.
 
-Choose and document the compact fixture inventory and exact settings during
-implementation, using existing correctness tests where applicable.
+The [runner guide](../../Benchmarks/README.md) records the compact fixture inventory
+and exact settings, checked against existing correctness expectations.
 
 Implementation inspection found that the public palette generator uses internal,
 unseeded random hue shifts. Its seed color and configuration are fixed, but its
@@ -137,9 +137,9 @@ typical request time, variation, and measurement limitations. Record the source
 revision, fixture settings, cache preparation, Release build configuration,
 hardware, OS, and Swift/Xcode versions so results can be reproduced.
 
-Choose and document a modest repetition count during implementation. Check fixture
-correctness, valid timing arithmetic, and optimized workload execution. Explain
-noisy or overhead-dominated measurements directly; this milestone does not require
+The runner defaults to three independent runs, each with ten samples of 100
+requests. Check fixture correctness, valid timing arithmetic, and optimized workload
+execution. Explain noisy or overhead-dominated measurements directly; this milestone does not require
 a formal classification system, statistical acceptance thresholds, or CI slowdown
 gates. Do not interpret a shorter duration as an improvement if the expected
 workload result is wrong.

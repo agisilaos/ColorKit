@@ -86,7 +86,7 @@ HSL/LAB conversion, full comparison, enhancement, and palette generation. Record
 this verification alongside baseline results. No underscored annotation is added
 to ColorKit's public API.
 
-See [initial harness verification](VERIFICATION.md) for the checked executable
+See [harness verification](VERIFICATION.md) for the checked executable
 and local validation evidence.
 
 These measurements establish reference data for this machine and toolchain. They
