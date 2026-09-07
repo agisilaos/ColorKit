@@ -109,6 +109,7 @@ jobs:
         if: success() || failure() # Upload even if tests fail
         with:
           name: test-results
+          include-hidden-files: true
           path: |
             TestResults/
             .build/compatibility/run-*/
