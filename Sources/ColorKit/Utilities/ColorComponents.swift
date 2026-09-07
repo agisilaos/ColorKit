@@ -18,7 +18,10 @@
 //  License:
 //  MIT License. See LICENSE file for details.
 
-/// A structure that represents color components in various color spaces
+/// Aggregate color representations without per-conversion availability.
+///
+/// Values from ``ColorSpaceConverter/getAllColorComponents()`` may contain compatibility
+/// substitutions. Zero components do not establish that conversion succeeded.
 public struct ColorComponents: Sendable {
     /// RGB color components
     public let rgb: (red: Double, green: Double, blue: Double, alpha: Double)

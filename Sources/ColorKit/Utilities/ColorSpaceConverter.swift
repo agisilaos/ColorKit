@@ -49,13 +49,21 @@ public struct ColorSpaceConverter {
         self.color = color
     }
 
-    /// Get all color components in various color spaces.
+    /// Returns aggregate color components, including compatibility substitutions.
     ///
     /// This method converts the color to all supported color spaces and returns their components
     /// in a single structure. This is useful when you need to analyze or compare a color across
     /// different color spaces.
-    /// LAB and XYZ share the D65 conversion used by `Color.labComponents()`.
-    /// XYZ uses a relative scale where the reference white has Y = 100.
+    /// RGB uses `Color.rgbaComponents()`, including appearance resolution, platform gamut
+    /// handling, and the all-zero failure tuple. Failed HSL and CMYK conversions each
+    /// substitute zero tuples. HSB uses platform hue extraction into zero-initialized
+    /// components without exposing conversion success.
+    ///
+    /// LAB and XYZ are derived from the RGB tuple, even when that tuple is a fallback;
+    /// they do not call the optional `Color.labComponents()`. They share its D65 formula,
+    /// but not its resolution or failure policy. XYZ uses reference-white Y = 100.
+    /// No field identifies substitutions. Use individual optional conversions when
+    /// their availability matters; a zero coordinate alone is not evidence of success.
     ///
     /// Example:
     /// ```swift

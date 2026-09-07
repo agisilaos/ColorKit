@@ -27,17 +27,18 @@ import SwiftUI
 /// - Creating themes with a high-contrast text and background pairing
 /// - Finding the stronger black-or-white contrasting endpoint
 ///
-/// Example usage:
+/// For new callers, prefer `AccessiblePaletteGenerator.generateAssessedPalette(from:against:)`.
+/// Legacy candidate examples:
 /// ```swift
 /// let brandColor = Color.blue
 ///
-/// // Generate an accessible palette
+/// // Generate palette candidates
 /// let palette = brandColor.generateAccessiblePalette(
 ///     targetLevel: .AA,
 ///     paletteSize: 5
 /// )
 ///
-/// // Create an accessible theme
+/// // Create a theme candidate
 /// let theme = brandColor.generateAccessibleTheme(
 ///     name: "Brand Theme"
 /// )
@@ -46,8 +47,10 @@ import SwiftUI
 /// let textColor = brandColor.accessibleContrastingColor()
 /// ```
 public extension Color {
-    /// Generates an accessible color palette based on this color.
+    /// Generates palette candidates based on this color.
     ///
+    /// For new callers, prefer `AccessiblePaletteGenerator.generateAssessedPalette(from:against:)`
+    /// to retain each candidate's outcome against its intended background.
     /// Generated candidates target the requested contrast level against the base color.
     /// The base color, optional black and white entries, and fallback colors are not
     /// pairwise certified. Validate combinations in the context where they will be used.
@@ -58,7 +61,7 @@ public extension Color {
     ///
     /// // Generate a palette with custom settings
     /// let palette = brandColor.generateAccessiblePalette(
-    ///     targetLevel: .AAA,      // Highest accessibility
+    ///     targetLevel: .AAA,      // Requested target, not a guarantee
     ///     paletteSize: 7,         // 7 colors
     ///     includeBlackAndWhite: true
     /// )
@@ -75,7 +78,7 @@ public extension Color {
     ///   - targetLevel: The WCAG level to target (default: .AA)
     ///   - paletteSize: The number of colors to generate (default: 5)
     ///   - includeBlackAndWhite: Whether to include black and white (default: true)
-    /// - Returns: An array of colors that form an accessible palette
+    /// - Returns: An array of candidates without per-entry or pairwise compliance guarantees.
     func generateAccessiblePalette(
         targetLevel: WCAGContrastLevel = .AA,
         paletteSize: Int = 5,
@@ -91,7 +94,7 @@ public extension Color {
         return generator.generatePalette(from: self)
     }
 
-    /// Generates an accessible theme based on this color.
+    /// Generates a theme with a black-and-white text/background pair based on this color.
     ///
     /// This method creates a complete color theme with a black-and-white text and
     /// background pairing. Other role combinations are not certified against the
@@ -121,7 +124,7 @@ public extension Color {
     /// - Parameters:
     ///   - name: The name for the theme
     ///   - targetLevel: The WCAG level to target (default: .AA)
-    /// - Returns: A ColorTheme with accessible color combinations
+    /// - Returns: A theme with a black-and-white text/background pair; assess other role combinations before use.
     func generateAccessibleTheme(
         name: String,
         targetLevel: WCAGContrastLevel = .AA
@@ -141,6 +144,9 @@ public extension Color {
     /// Compares both endpoints using `wcagContrastRatio(with:)` and returns the one
     /// with the higher ratio. Exact ties return black.
     ///
+    /// For new callers, prefer ``accessibleContrastingColorResult(for:)`` and check
+    /// `meetsTarget` before using the endpoint as a passing foreground.
+    ///
     /// The result is independent of the requested level: the stronger endpoint is
     /// returned even when neither meets the target. In particular, AAA may be
     /// unattainable. Color resolution follows the existing WCAG calculation.
@@ -151,11 +157,11 @@ public extension Color {
     ///
     /// // Get a contrasting color for text
     /// let textColor = backgroundColor.accessibleContrastingColor(
-    ///     for: .AAA  // Highest contrast requirement
+    ///     for: .AAA  // Requested level does not change selection
     /// )
     ///
     /// // Use in SwiftUI
-    /// Text("Accessible Text")
+    /// Text("Candidate text")
     ///     .foregroundColor(textColor)
     ///     .background(backgroundColor)
     /// ```

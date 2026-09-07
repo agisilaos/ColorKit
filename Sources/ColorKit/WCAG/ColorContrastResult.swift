@@ -101,6 +101,8 @@ public extension Color {
 
     /// Measures the WCAG contrast ratio between this foreground color and a background.
     ///
+    /// The receiver is the foreground; the `with:` argument is the background. Reversing
+    /// them can change availability and the measurement when opacity is involved.
     /// Both colors must resolve to finite, in-gamut sRGB values, and the background
     /// must be opaque. A translucent foreground is composited over the background
     /// before measurement. Dynamic colors, wider-gamut colors, and translucent

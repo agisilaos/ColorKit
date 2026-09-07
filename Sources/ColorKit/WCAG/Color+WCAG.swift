@@ -36,7 +36,7 @@ extension Color {
     /// print("Alpha: \(components.alpha)")
     /// ```
     ///
-    /// - Returns: A tuple containing normalized (0.0-1.0) RGBA components. A color the
+    /// - Returns: A tuple of appearance-resolved sRGBA components; UIKit RGB may extend beyond `0...1`. A color the
     ///   platform cannot resolve, such as a pattern color, reports all zeros, which is
     ///   indistinguishable from transparent black.
     func wcagRGBAComponents() -> (red: Double, green: Double, blue: Double, alpha: Double) {

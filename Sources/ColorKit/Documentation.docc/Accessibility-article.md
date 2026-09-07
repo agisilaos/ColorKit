@@ -4,64 +4,53 @@ Learn how to create accessible color combinations and ensure your app meets WCAG
 
 ## Overview
 
-ColorKit provides comprehensive tools for ensuring your app's colors meet accessibility standards, particularly the Web Content Accessibility Guidelines (WCAG).
+For new callers, use result-bearing APIs and check `meetsTarget` or `status` before
+using a candidate. Legacy color-returning methods do not guarantee the requested
+target; legacy enhancement also ignores distance budgets.
 
 ### Contrast Checking
 
 Check if your color combinations meet WCAG contrast requirements:
 
+The receiver of `foreground.contrastResult(with: background)` is the foreground.
+A translucent foreground composites over the opaque background; a translucent
+background is unavailable. Reversing the arguments can change the result.
+
+<!-- swift-example: contrast -->
 ```swift
-let backgroundColor = Color.white
-let textColor = Color.gray
-
-// Check contrast ratio
-let ratio = backgroundColor.contrastRatio(with: textColor)
-print("Contrast ratio: \(ratio)")
-
-// Or measure it without collapsing an unresolvable input to zero luminance
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+let textColor = Color(.sRGB, red: 0, green: 0, blue: 0, opacity: 0.7)
 switch textColor.contrastResult(with: backgroundColor) {
 case .available(let measurement):
-    print("Contrast ratio: \(measurement.ratio)")
-    print("Passing levels: \(measurement.passingLevels)")
+    print(measurement.ratio, measurement.passingLevels)
 case .unavailable(let issues):
-    print("Unavailable: \(issues.foreground), \(issues.background)")
+    print(issues.foreground, issues.background)
 }
-
-// Both colors must be opaque. A translucent color reports a ratio of 1, meaning it
-// was not measured; compose it against a background with contrastResult(with:).
-
-// Check WCAG compliance
-let compliance = backgroundColor.wcagCompliance(with: textColor)
-print("AA Large Text: \(compliance.passesAALarge)")
-print("AA Normal Text: \(compliance.passesAA)")
-print("AAA Large Text: \(compliance.passesAAALarge)")
-print("AAA Normal Text: \(compliance.passesAAA)")
 ```
 
-### Accessible Color Generation
+### Assessed Palettes
 
-Generate accessible color variations that maintain your brand identity:
+Assessment retains every outcome without imposing an enhancement budget or
+certifying contrast between entries. Legacy palettes return candidates; themes
+establish a black-and-white text/background pair. Assess other role combinations.
 
+<!-- swift-example: assessed-palette -->
 ```swift
-// Find an accessible color that meets AA standards
-let enhancedColor = textColor.enhanced(
-    with: backgroundColor,
-    targetLevel: .AA
-)
-
-// Generate an accessible color palette
-let palette = seedColor.generateAccessiblePalette(
-    targetLevel: .AA,
-    paletteSize: 5,
-    includeBlackAndWhite: true
-)
-
-// Create an accessible theme
-let theme = seedColor.generateAccessibleTheme(
-    name: "Accessible Theme",
-    targetLevel: .AA
-)
+let seed = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let background = Color(.sRGB, red: 1, green: 1, blue: 1)
+let results = AccessiblePaletteGenerator().generateAssessedPalette(from: seed, against: background)
+for result in results {
+    if result.meetsTarget {
+        Text("WCAG AA").foregroundColor(result.color).background(background)
+    } else {
+        print(result.status)
+    }
+}
 ```
+
+`accessibleContrastingColor(for:)` and `suggestedColor(for:)` ignore the requested
+level and use different endpoint heuristics. Prefer `accessibleContrastingColorResult(for:)`
+and inspect its outcome; even the stronger black-or-white endpoint may miss the target.
 
 ### Verifiable Results
 
@@ -70,7 +59,10 @@ on knowing the outcome, use the assessed interfaces. They distinguish a measured
 a measurable best effort below the target, and a result that cannot be measured from
 the supplied colors.
 
+<!-- swift-example: enhancement -->
 ```swift
+let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let result = textColor.enhancementResult(
     with: backgroundColor,
     targetLevel: .AAA
@@ -205,10 +197,10 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 
 ### Color Enhancement
 - `Color.enhanced(with:targetLevel:)`
-- `Color.enhancementResult(with:targetLevel:strategy:)`
+- `Color.enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)`
 - ``AccessibilityEnhancer``
 - `Color.suggestedAccessibleColors(for:level:)`
-- `Color.suggestAccessibleVariantResults(with:targetLevel:count:)`
+- `Color.suggestAccessibleVariantResults(with:targetLevel:count:maxPerceptualDistance:)`
 - `Color.accessibleContrastingColorResult(for:)`
 
 ### Palette Generation
