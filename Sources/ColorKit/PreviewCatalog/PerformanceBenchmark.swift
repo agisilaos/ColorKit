@@ -101,6 +101,10 @@ public struct PerformanceBenchmark: View {
             Text("Results")
                 .font(.headline)
 
+            Text("Exploratory timings include measurement overhead and uncontrolled cache state. Gradients measure value construction only.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
             if benchmarkResults.isEmpty {
                 Text("Run a benchmark to see results")
                     .foregroundColor(.secondary)
@@ -140,7 +144,8 @@ public struct PerformanceBenchmark: View {
         operation: BenchmarkOperation,
         iterations: Int
     ) -> [BenchmarkResult] {
-        switch operation {
+        guard iterations > 0 else { return [] }
+        return switch operation {
         case .blending:
             benchmarkBlending(iterations: iterations)
         case .conversion:
@@ -155,157 +160,67 @@ public struct PerformanceBenchmark: View {
     }
 
     nonisolated private static func benchmarkBlending(iterations: Int) -> [BenchmarkResult] {
-        let color1 = Color.blue
-        let color2 = Color.red
-        var results: [BenchmarkResult] = []
-
-        // Test each blend mode
+        let first = Color(.sRGB, red: 0, green: 0, blue: 1, opacity: 1)
+        let second = Color(.sRGB, red: 1, green: 0, blue: 0, opacity: 1)
         let blendModes: [BlendMode] = [
             .normal, .multiply, .screen, .overlay,
             .darken, .lighten, .colorDodge, .colorBurn,
             .softLight, .hardLight, .difference, .exclusion
         ]
-
-        for mode in blendModes {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            for _ in 0..<iterations {
-                _ = color1.blended(with: color2, mode: mode)
+        return blendModes.map { mode in
+            BenchmarkMeasurement.measure(name: "Blend Mode: \(mode)", iterations: iterations) {
+                BenchmarkMeasurement.input(first).blended(with: second, mode: mode)
             }
-
-            let end = CFAbsoluteTimeGetCurrent()
-            let duration = end - start
-
-            results.append(BenchmarkResult(
-                name: "Blend Mode: \(String(describing: mode))",
-                duration: duration,
-                operationsPerSecond: Double(iterations) / duration
-            ))
         }
-
-        return results
     }
 
     nonisolated private static func benchmarkConversion(iterations: Int) -> [BenchmarkResult] {
-        let color = Color.blue
-        var results: [BenchmarkResult] = []
-
-        // Color Space Conversion
-        do {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            for _ in 0..<iterations {
-                _ = color.opacity(1.0) // Simple color operation
+        let color = Color(.sRGB, red: 1, green: 0, blue: 0, opacity: 1)
+        return BenchmarkConversion.allCases.map { conversion in
+            BenchmarkMeasurement.measure(name: conversion.rawValue, iterations: iterations) {
+                conversion.components(for: BenchmarkMeasurement.input(color))
             }
-
-            let end = CFAbsoluteTimeGetCurrent()
-            let duration = end - start
-
-            results.append(BenchmarkResult(
-                name: "Color Space Conversion",
-                duration: duration,
-                operationsPerSecond: Double(iterations) / duration
-            ))
         }
-
-        return results
     }
 
     nonisolated private static func benchmarkGradient(iterations: Int) -> [BenchmarkResult] {
-        let colors = [Color.blue, Color.purple, Color.red]
-        var results: [BenchmarkResult] = []
-
-        // Linear Gradient
-        do {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            for _ in 0..<iterations {
-                _ = LinearGradient(
-                    colors: colors,
+        let colors = [
+            Color(.sRGB, red: 0, green: 0, blue: 1, opacity: 1),
+            Color(.sRGB, red: 1, green: 0, blue: 0, opacity: 1)
+        ]
+        return [
+            BenchmarkMeasurement.measure(name: "Linear Gradient Construction", iterations: iterations) {
+                LinearGradient(
+                    colors: BenchmarkMeasurement.input(colors),
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-            }
-
-            let end = CFAbsoluteTimeGetCurrent()
-            let duration = end - start
-
-            results.append(BenchmarkResult(
-                name: "Linear Gradient",
-                duration: duration,
-                operationsPerSecond: Double(iterations) / duration
-            ))
-        }
-
-        // Radial Gradient
-        do {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            for _ in 0..<iterations {
-                _ = RadialGradient(
-                    colors: colors,
+            },
+            BenchmarkMeasurement.measure(name: "Radial Gradient Construction", iterations: iterations) {
+                RadialGradient(
+                    colors: BenchmarkMeasurement.input(colors),
                     center: .center,
                     startRadius: 0,
                     endRadius: 100
                 )
             }
-
-            let end = CFAbsoluteTimeGetCurrent()
-            let duration = end - start
-
-            results.append(BenchmarkResult(
-                name: "Radial Gradient",
-                duration: duration,
-                operationsPerSecond: Double(iterations) / duration
-            ))
-        }
-
-        return results
+        ]
     }
 
     nonisolated private static func benchmarkAccessibility(iterations: Int) -> [BenchmarkResult] {
-        let color1 = Color.white
-        let color2 = Color.black
-        var results: [BenchmarkResult] = []
-
-        // Contrast Ratio
-        do {
-            let start = CFAbsoluteTimeGetCurrent()
-
-            for _ in 0..<iterations {
-                _ = color1.contrastRatio(with: color2)
-            }
-
-            let end = CFAbsoluteTimeGetCurrent()
-            let duration = end - start
-
-            results.append(BenchmarkResult(
-                name: "Contrast Ratio",
-                duration: duration,
-                operationsPerSecond: Double(iterations) / duration
-            ))
-        }
-
-        return results
+        let first = Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 1)
+        let second = Color(.sRGB, red: 0, green: 0, blue: 0, opacity: 1)
+        return [BenchmarkMeasurement.measure(name: "Contrast Ratio", iterations: iterations) {
+            BenchmarkMeasurement.input(first).contrastRatio(with: second)
+        }]
     }
 
     nonisolated private static func benchmarkComparison(iterations: Int) -> [BenchmarkResult] {
         let first = Color(.sRGB, red: 0.85, green: 0.2, blue: 0.35, opacity: 1)
         let second = Color(.sRGB, red: 0.15, green: 0.55, blue: 0.8, opacity: 1)
-        var lastResult: ColorComparisonResult?
-        let start = CFAbsoluteTimeGetCurrent()
-
-        for _ in 0..<iterations {
-            lastResult = first.comparisonResult(with: second)
-        }
-
-        withExtendedLifetime(lastResult) {}
-        let duration = CFAbsoluteTimeGetCurrent() - start
-        return [BenchmarkResult(
-            name: "CIEDE2000 Color Comparison",
-            duration: duration,
-            operationsPerSecond: Double(iterations) / duration
-        )]
+        return [BenchmarkMeasurement.measure(name: "CIEDE2000 Color Comparison", iterations: iterations) {
+            BenchmarkMeasurement.input(first).comparisonResult(with: second)
+        }]
     }
 }
 
