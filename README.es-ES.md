@@ -52,6 +52,35 @@ mediciones de color pueden producir resultados distintos.
 
 ## **🎨 Uso**  
 
+### Resultados de conversión de componentes
+
+Usa `componentConversionResults()` cuando importe la disponibilidad. Cada campo
+devuelve su valor o un problema, de modo que un fallo de Hex no descarta LAB disponible.
+
+<!-- swift-example: component-results -->
+```swift
+let conversions = Color(.displayP3, red: 1, green: 0, blue: 0).componentConversionResults()
+if case .success(let lab) = conversions.lab {
+    print(lab.lightness, lab.a, lab.b)
+}
+switch conversions.hex {
+case .success(let hex): print(hex)
+case .failure(let issue): print("Hex no disponible:", issue)
+}
+```
+
+Los siete campos describen un único color fijo, sin composición con un fondo:
+`srgba`, `hsl`, `hsb`, `cmyk`, `xyz`, `lab` y `hex`. El llamador debe resolver
+explícitamente los colores con nombre o dinámicos que no tengan componentes fijos.
+Se conservan sRGBA extendido y XYZ/LAB D65 finitos; HSL, HSB, CMYK y Hex rechazan
+RGB fuera de `0...1`, sin recorte ni tolerancia en los extremos. Alfa se conserva
+en sRGBA y en Hex de ocho dígitos `#RRGGBBAA`; las demás coordenadas lo omiten.
+El tono se expresa en vueltas, las fracciones HSL/HSB/CMYK están en `0...1` y XYZ
+usa Y = 100 para el blanco de referencia. CMYK es una aproximación algebraica,
+no un perfil de impresión. Las API existentes no cambian ni se marcan como obsoletas.
+Consulta el [contrato de conversión](Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results)
+y las [notas de adopción](MIGRATION.md#component-conversion-results).
+
 ### **1️⃣ Conversión HEX <-> RGB**  
 ```swift
 let color = Color(hex: "#FF5733")

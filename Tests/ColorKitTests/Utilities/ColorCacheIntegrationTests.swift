@@ -15,6 +15,20 @@ final class ColorCacheIntegrationTests: XCTestCase {
         super.tearDown()
     }
 
+    func testComponentResultsIgnoreAndDoNotReplaceLegacyCacheEntries() throws {
+        let color = try fixedTestColor(components: [1, 0, 0, 1])
+        ColorCache.shared.cacheHSLComponents(for: color, hue: 0.4, saturation: 0.2, lightness: 0.3)
+        ColorCache.shared.cacheLABComponents(for: color, L: 12, a: 34, b: 56)
+
+        let result = color.componentConversionResults()
+        XCTAssertEqual(try result.hsl.get(), HSLComponents(hue: 0, saturation: 1, lightness: 0.5))
+        XCTAssertEqual(try result.lab.get().lightness, 53.2407941413, accuracy: 1e-9)
+        XCTAssertEqual(try XCTUnwrap(color.hslComponents()).hue, 0.4)
+        XCTAssertEqual(try XCTUnwrap(color.labComponents()).L, 12)
+        ColorCache.shared.clearCache()
+        XCTAssertEqual(try result.lab.get(), try color.componentConversionResults().lab.get())
+    }
+
     func testNearbyInterpolationAmountsMatchColdResultsInBothCallOrders() throws {
         let first = try fixedTestColor(components: [0.8, 0.1, 0.2, 1])
         let second = try fixedTestColor(components: [0.1, 0.6, 0.9, 1])

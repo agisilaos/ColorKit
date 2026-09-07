@@ -12,11 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCC = "Sources/ColorKit/Documentation.docc/"
 # Explicit inventory makes deleting a marker a failure, not a silent coverage loss.
 README_EXAMPLES = {"accessible-palette", "enhancement", "catalog", "previews", "comparison", "budget",
-                   "hsl", "cmyk", "lab"}
+                   "hsl", "cmyk", "lab", "component-results"}
 EXAMPLES = {
     "README.md": README_EXAMPLES,
     "README.es-ES.md": README_EXAMPLES,
-    DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab"},
+    DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
     DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette"},
     DOCC + "Utilities-article.md": {"similarity"},
@@ -27,6 +27,12 @@ MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
 # Postconditions use the actual README variables, not copied example implementations.
 # Renaming a variable requires updating its check; removing a result cannot pass silently.
 README_CHECKS = {
+    "component-results": """
+guard case .success(let coordinates) = conversions.lab else { failExample("P3 red must retain LAB") }
+checkExample(coordinates.lightness.isFinite && coordinates.a.isFinite && coordinates.b.isFinite,
+    "Expected finite D65 LAB")
+guard case .failure(.outOfSRGBGamut) = conversions.hex else { failExample("P3 red must decline Hex") }
+""",
     "hsl": """
 guard let hsl else { failExample("Named red must resolve to HSL") }
 checkExample([hsl.hue, hsl.saturation, hsl.lightness].allSatisfy {
@@ -105,6 +111,7 @@ def check(derived_data):
     compiler = ["xcrun", "swiftc", "-swift-version", "6", "-sdk", sdk,
                 "-target", f"{architecture}-apple-macosx12.0"]
     modules = derived_data / "Build/Products/Debug"
+    run(*compiler, "-typecheck", "-I", modules, ROOT / "scripts/fixtures/component_results.swift")
     with tempfile.TemporaryDirectory(prefix="colorkit-examples-") as temporary:
         scratch = Path(temporary)
         files = []
@@ -142,6 +149,7 @@ def check(derived_data):
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",
             ROOT / "Sources/ColorKit/Utilities/ResolvedSRGBA.swift",
+            ROOT / "Sources/ColorKit/Utilities/ColorComponentConversionResults.swift",
             ROOT / "scripts/fixtures/emit_theme.swift", "-o", emitter)
         for fixture in ("named", "fixed"):
             generated = scratch / f"theme_{fixture}.swift"

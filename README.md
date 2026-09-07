@@ -51,6 +51,34 @@ enhancement budgets, and color measurements can produce different results.
 
 ## **🎨 Usage**  
 
+### Component conversion results
+
+Use `componentConversionResults()` when availability matters. Each field reports its
+own value or issue, so a failed Hex conversion does not discard available LAB.
+
+<!-- swift-example: component-results -->
+```swift
+let conversions = Color(.displayP3, red: 1, green: 0, blue: 0).componentConversionResults()
+if case .success(let lab) = conversions.lab {
+    print(lab.lightness, lab.a, lab.b)
+}
+switch conversions.hex {
+case .success(let hex): print(hex)
+case .failure(let issue): print("Hex unavailable:", issue)
+}
+```
+
+All seven fields describe one fixed, uncomposited color: `srgba`, `hsl`, `hsb`,
+`cmyk`, `xyz`, `lab`, and `hex`. Named or dynamic colors without fixed components
+must be resolved explicitly by the caller. Extended sRGBA and finite D65 XYZ/LAB
+are preserved; HSL, HSB, CMYK, and Hex reject RGB outside `0...1` without clipping
+or endpoint tolerance. Alpha is retained in sRGBA and eight-digit `#RRGGBBAA` Hex;
+other coordinates omit it. Hues are turns, HSL/HSB/CMYK fractions are `0...1`, and
+XYZ uses reference-white Y = 100. CMYK is an algebraic approximation, not a printer
+profile. Existing APIs remain unchanged and are not deprecated. See the
+[conversion contract](Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results)
+and [adoption notes](MIGRATION.md#component-conversion-results).
+
 ### **1️⃣ HEX <-> RGB Conversion**  
 ```swift
 let color = Color(hex: "#FF5733")
