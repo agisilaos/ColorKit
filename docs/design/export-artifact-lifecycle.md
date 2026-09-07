@@ -1,6 +1,6 @@
 # F13 · S13 — Prepare export artifacts before presentation
 
-Status: implemented; validation results are recorded in `docs/screenshots/f13/README.md`.
+Status: implemented. Attach visual validation evidence to the relevant pull request.
 
 ## Agreed scope
 

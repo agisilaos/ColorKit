@@ -8,3 +8,6 @@ DerivedData/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 .netrc
 __pycache__/
+
+# Review screenshots belong in PR attachments.
+/docs/screenshots/
