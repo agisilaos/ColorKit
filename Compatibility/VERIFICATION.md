@@ -5,7 +5,7 @@ The candidate started at `3f122111681538db5bd71a01891b7619fba00ba9` plus this
 change; the release source is the pinned 3.0.0 commit in `Clients/3.0.0/revision`.
 
 The simplification was rechecked with fresh release builds on both platforms,
-24 tooling tests, SwiftLint, and all three source/API mutations below. The
+25 tooling tests, SwiftLint, and all three source/API mutations below. The
 behavioral assertions and Swift fixtures were unchanged; their runtime validation
 below predates this tooling refactor.
 
@@ -17,7 +17,7 @@ below predates this tooling refactor.
 - `scripts/run_tests.sh --results-dir .build/compatibility/behavior`: all four
   canonical phases pass, including the serialized shared-state suites on both
   platforms and the strengthened legacy comparison/variant-order assertions.
-- `python3 -m unittest discover -s scripts/tests`: 24 tests pass, including fixture
+- `python3 -m unittest discover -s scripts/tests`: 25 tests pass, including fixture
   edits/deletions, pinned revision changes, zero-exit API diagnostics, and release
   gate failure propagation.
 - `swiftlint lint --strict`: zero violations.

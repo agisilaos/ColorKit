@@ -42,7 +42,10 @@ def validate_clients(root, fixture_base):
                      base, "--", CLIENTS, cwd=root)
     if changed:
         raise ValueError(f"Preserved clients changed or removed:\n{changed}")
-    releases = sorted((root / CLIENTS).iterdir())
+    directory = root / CLIENTS
+    if any(path.is_symlink() for path in [directory, *directory.rglob("*")]):
+        raise ValueError("Preserved client directories and files must not be symlinks")
+    releases = sorted(directory.iterdir())
     if not releases:
         raise ValueError("No release clients found")
     for release in releases:

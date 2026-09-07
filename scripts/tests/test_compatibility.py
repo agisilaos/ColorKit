@@ -55,6 +55,14 @@ class ClientInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Preserved clients"):
             CHECK.validate_clients(self.root, "HEAD")
 
+    def test_symlinks_cannot_import_mutable_fixture_source(self):
+        target = self.root / "Mutable.swift"
+        target.write_text("import ColorKit\n")
+        link = self.client.with_name("Linked.swift")
+        link.symlink_to(target)
+        with self.assertRaisesRegex(ValueError, "must not be symlinks"):
+            CHECK.validate_clients(self.root, "HEAD")
+
     def test_invalid_reference_does_not_disable_immutability(self):
         with self.assertRaises(subprocess.CalledProcessError):
             CHECK.validate_clients(self.root, "missing-branch")
