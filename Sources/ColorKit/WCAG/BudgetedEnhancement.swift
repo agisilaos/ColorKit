@@ -10,16 +10,17 @@ struct BudgetedEnhancement {
         guard AccessibilityEnhancer.Configuration.isValidDistanceBudget(budget) else {
             return result(color: original, contrast: originalContrast, distance: nil)
         }
+        let resolvedOriginal = ResolvedSRGBA.resolve(original)
         let originalResult = result(
             color: original,
             contrast: originalContrast,
-            distance: distance(from: original, to: original)
+            distance: distance(from: resolvedOriginal, to: original)
         )
         guard originalResult.status == .bestEffort, budget > 0 else { return originalResult }
 
         var candidates: [ColorAccessibilityResult] = []
         func examine(_ candidate: Color) {
-            guard let distance = distance(from: original, to: candidate), distance <= budget,
+            guard let distance = distance(from: resolvedOriginal, to: candidate), distance <= budget,
                   let contrast = StrictWCAGContrast.measure(foreground: candidate, background: background).ratio
             else { return }
             candidates.append(result(color: candidate, contrast: contrast, distance: distance))
@@ -59,8 +60,8 @@ struct BudgetedEnhancement {
         return best
     }
 
-    private func distance(from original: Color, to candidate: Color) -> Double? {
-        guard case let .available(difference) = original.comparisonResult(with: candidate) else { return nil }
+    private func distance(from original: ResolvedSRGBA?, to candidate: Color) -> Double? {
+        guard case let .available(difference) = Color.comparisonResult(first: original, second: ResolvedSRGBA.resolve(candidate)) else { return nil }
         return difference.perceptualDifference
     }
 
