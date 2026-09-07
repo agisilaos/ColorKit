@@ -60,6 +60,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Show Xcode and Available Simulators
         run: |
@@ -68,6 +70,11 @@ jobs:
 
       - name: Test Tooling Contracts
         run: python3 -m unittest discover -s scripts/tests
+
+      - name: Check Release Client Compatibility
+        env:
+          COMPATIBILITY_BASE: ${{ github.event.pull_request.base.sha }}
+        run: python3 scripts/check_compatibility.py --fixture-base "$COMPATIBILITY_BASE"
 
       - name: Test Benchmark Correctness in Release Mode
         run: swift test --package-path Benchmarks -c release
@@ -80,5 +87,8 @@ jobs:
         if: success() || failure() # Upload even if tests fail
         with:
           name: test-results
-          path: TestResults/
+          include-hidden-files: true
+          path: |
+            TestResults/
+            .build/compatibility/run-*/
           retention-days: 14

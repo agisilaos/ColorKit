@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Protect released clients with preserved 3.0.0 public-source fixtures and release API comparisons on iOS and macOS. Run compatibility and behavioral gates in PR CI and release preflight, and retain explicit legacy comparison and variant-ordering assertions.
 - Add a repository-local macOS Release benchmark runner with explicit conversion, comparison, enhancement, and assessed-palette fixtures, cache preparation, raw repeated samples, and machine/toolchain metadata. Replace unsupported historical speedup claims with reproducible measurement guidance.
 
 ### Fixed

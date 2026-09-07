@@ -149,6 +149,7 @@ xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
 scripts/run_tests.sh
 python3 -m unittest discover -s scripts/tests
 python3 scripts/check_documentation.py
+python3 scripts/check_compatibility.py
 ```
 
 For benchmark changes, also run `swift test --package-path Benchmarks -c release`
@@ -171,7 +172,8 @@ these explicit single-destination runs use `xcpretty` when available; add
 
 After a release PR is merged, run `scripts/check_release.sh <version>` from `main`
 before tagging. The check fetches `origin/main` and tags, then verifies the working
-tree, release metadata, synchronized commit, and tag availability.
+tree, release metadata, synchronized commit, and tag availability, then runs the
+preserved-client/API compatibility checker and canonical behavioral test matrix.
 
 `ColorCacheIntegrationTests` clears `ColorCache.shared` before and after each test.
 Run it separately without parallel testing; direct cache tests use independent instances.
@@ -183,6 +185,14 @@ reset or removal API, so registered fixtures remain until the test process exits
 The `test-results` workflow artifact retains raw build logs and `.xcresult`
 bundles for 14 days, including logs from failed test commands. Check the
 "Show Xcode and Available Simulators" step if a destination cannot be found.
+
+### Release client compatibility
+
+The [release compatibility gate](Compatibility/README.md) preserves 3.0.0 client
+source independently of current examples and compares public APIs on iOS and
+macOS. Existing client files and release commits are immutable relative to the PR
+base; extend coverage with new files. CI fetches full history and runs this gate
+in the existing Build and Test job.
 
 ### Keeping contracts and documentation synchronized
 
