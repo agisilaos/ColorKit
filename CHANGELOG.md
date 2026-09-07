@@ -4,15 +4,19 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-09-07
+
 ### Added
 - Protect released clients with preserved 3.0.0 public-source fixtures and release API comparisons on iOS and macOS. Run compatibility and behavioral gates in PR CI and release preflight, and retain explicit legacy comparison and variant-ordering assertions.
 - Add a repository-local macOS Release benchmark runner with explicit conversion, comparison, enhancement, and assessed-palette fixtures, cache preparation, raw repeated samples, and machine/toolchain metadata. Replace unsupported historical speedup claims with reproducible measurement guidance.
 
 ### Fixed
+- Avoid repeated original-color resolution during budgeted enhancement while preserving selected outcomes, candidate ordering, and distance limits.
 - Clarify existing accessibility, palette assessment, component conversion, similarity, and contrast-role contracts in API comments and documentation. Lead new callers to measured outcomes and compile the revised examples; no signatures or runtime behavior change.
 - Measure real HSL/LAB conversion in the performance preview, consume every request's result, and label gradient timings as value construction. Preview measurements remain exploratory with uncontrolled cache state; no color API or conversion behavior changes.
 
 ### Tooling
+- Keep review screenshots in PR attachments instead of the repository; retain images used by published documentation.
 - Remove the SwiftLint package dependency and build-tool plugins from consumer builds. Contributors run standalone strict lint, which remains enforced in CI.
 
 ## [3.0.0] - 2026-09-04
