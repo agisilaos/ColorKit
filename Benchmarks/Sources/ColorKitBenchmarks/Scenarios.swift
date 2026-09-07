@@ -79,10 +79,10 @@ func scenarios() -> [Scenario] {
         )
     ]
 
-    for (id, original, budget, expected) in [
-        ("enhancement-compliant", black, 100.0, ColorAccessibilityResult.Status.meetsTarget),
-        ("enhancement-adjusted", gray, 100.0, .meetsTarget),
-        ("enhancement-best-effort", gray, 25.0, .bestEffort)
+    for (id, original, budget, expected, isAlreadyCompliant) in [
+        ("enhancement-compliant", black, 100.0, ColorAccessibilityResult.Status.meetsTarget, true),
+        ("enhancement-adjusted", gray, 100.0, .meetsTarget, false),
+        ("enhancement-best-effort", gray, 25.0, .bestEffort, false)
     ] {
         let enhancer = AccessibilityEnhancer(configuration: .init(
             targetLevel: .AA, strategy: .preserveHue, maxPerceptualDistance: budget, preferDarker: true
@@ -91,11 +91,11 @@ func scenarios() -> [Scenario] {
             description: ScenarioDescription(
                 id: id,
                 purpose: "Budgeted enhancement: \(id.replacingOccurrences(of: "enhancement-", with: ""))",
-                inputs: "sRGB RGBA foreground \(id == "enhancement-compliant" ? "(0, 0, 0, 1)" : "(0.8, 0.8, 0.8, 1)"), background (1, 1, 1, 1)",
+                inputs: "sRGB RGBA foreground \(isAlreadyCompliant ? "(0, 0, 0, 1)" : "(0.8, 0.8, 0.8, 1)"), background (1, 1, 1, 1)",
                 settings: "AA, preserveHue, preferDarker true, distance budget \(budget)",
                 expected: "\(expected); distance <= \(budget); best effort improves contrast; compliant preserves input",
                 unit: "enhancement",
-                modes: id == "enhancement-compliant" ? [.unused] : [.empty, .primed]
+                modes: isAlreadyCompliant ? [.unused] : [.empty, .primed]
             ),
             input: (original, white),
             operation: { enhancer.enhanceColorResult($0.0, against: $0.1) },
@@ -112,7 +112,7 @@ func scenarios() -> [Scenario] {
                         && actual.contrastRatio == value.contrastRatio && contrast.isFinite,
                     "Incorrect enhancement evidence"
                 )
-                if id == "enhancement-compliant" {
+                if isAlreadyCompliant {
                     try requireFixture(value.color == original && distance == 0, "Changed compliant input")
                 } else if expected == .bestEffort {
                     try requireFixture(abs(contrast - 3.976653) < 0.00001, "Incorrect best effort")
