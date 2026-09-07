@@ -147,6 +147,11 @@ python3 -m unittest discover -s scripts/tests
 python3 scripts/check_documentation.py
 ```
 
+For benchmark changes, also run `swift test --package-path Benchmarks -c release`
+and the [macOS Release runner](Benchmarks/README.md). Its correctness tests do not
+assert machine-specific duration thresholds. Record actual performance samples
+separately with other builds idle.
+
 The zero-argument runner is the canonical CI matrix: parallel iOS and macOS tests,
 then serialized shared-state suites on each platform. Change the shared-suite list
 and pinned destinations in `scripts/run_tests.sh`, not in the workflow. Set

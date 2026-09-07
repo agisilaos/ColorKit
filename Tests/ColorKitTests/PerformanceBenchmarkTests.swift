@@ -43,7 +43,7 @@ final class PerformanceBenchmarkTests: XCTestCase {
 
         let results = await benchmark(.conversion, iterations: iterations)
 
-        XCTAssertEqual(results.map(\.name), ["Color Space Conversion"])
+        XCTAssertEqual(results.map(\.name), ["HSL Components (uncontrolled cache)", "LAB Components (uncontrolled cache)"])
         assertValidMeasurements(results, iterations: iterations)
     }
 
@@ -52,7 +52,7 @@ final class PerformanceBenchmarkTests: XCTestCase {
 
         let results = await benchmark(.gradient, iterations: iterations)
 
-        XCTAssertEqual(results.map(\.name), ["Linear Gradient", "Radial Gradient"])
+        XCTAssertEqual(results.map(\.name), ["Linear Gradient Construction", "Radial Gradient Construction"])
         assertValidMeasurements(results, iterations: iterations)
     }
 

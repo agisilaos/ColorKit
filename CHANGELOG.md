@@ -4,6 +4,12 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Add a repository-local macOS Release benchmark runner with explicit conversion, comparison, enhancement, and assessed-palette fixtures, cache preparation, raw repeated samples, and machine/toolchain metadata. Replace unsupported historical speedup claims with reproducible measurement guidance.
+
+### Fixed
+- Measure real HSL/LAB conversion in the performance preview, consume every request's result, and label gradient timings as value construction. Preview measurements remain exploratory with uncontrolled cache state; no color API or conversion behavior changes.
+
 ## [3.0.0] - 2026-09-04
 
 ### Breaking changes

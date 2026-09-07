@@ -1,14 +1,16 @@
-# ColorKit Performance Improvements
+# ColorKit Performance Measurement
 
 ## Overview
 
-ColorKit 1.4.0 introduces significant performance optimizations through a high-performance caching system. This document explains the improvements and how they benefit your applications.
+ColorKit caches selected repeated color operations. The repository's macOS Release
+runner provides reproducible reference measurements; actual costs depend on the
+operation, inputs, cache preparation, machine, and toolchain.
 
 ## Key Performance Enhancements
 
 ### Caching System
 
-ColorKit now includes a thread-safe caching system that dramatically improves performance for repeated color operations. The caching system:
+ColorKit includes a thread-safe caching system for repeated color operations. The caching system:
 
 - Uses `NSCache` for automatic memory management
 - Is thread-safe for use in concurrent environments
@@ -17,24 +19,14 @@ ColorKit now includes a thread-safe caching system that dramatically improves pe
 
 ### Performance Metrics
 
-Based on our benchmarks, the following performance improvements can be expected:
+The historical speedup ratios previously listed here did not include reproducible
+supporting measurements and should not be used as expectations. The new baseline
+measures complete public conversion, comparison, enhancement, and palette requests.
+It does not establish rendering, battery-life, or application-level improvements.
 
-| Operation | Performance Improvement | Notes |
-|-----------|-------------------------|-------|
-| LAB Color Conversion | Up to 10x faster | Most significant for repeated conversions |
-| HSL Color Conversion | Up to 8x faster | Especially beneficial for UI with many color calculations |
-| WCAG Calculations | Up to 12x faster | Critical for accessibility checks |
-| Color Blending | Up to 5x faster | Important for complex UIs with blended colors |
-| Gradient Generation | Up to 7x faster | Significant for animations and transitions |
-
-## Real-World Benefits
-
-These performance improvements translate to:
-
-1. **Reduced CPU Usage**: Less processing power required for color operations
-2. **Better Battery Life**: More efficient processing means less power consumption
-3. **Smoother UI**: Faster color calculations lead to more responsive interfaces
-4. **Improved Scalability**: Better handling of complex UIs with many color operations
+See [the benchmark runner](Benchmarks/README.md) for fixtures, cache preparation,
+result-consumption overhead, raw samples, and reproduction commands. Treat empty
+and primed cache timings as different workloads, not a before/after library speedup.
 
 ## Implementation Details
 
@@ -71,10 +63,14 @@ ColorCache.shared.clearContrastCache()
 
 ## Benchmarking
 
-Open the public `PerformanceBenchmark` SwiftUI view and use its Run Benchmarks
-button to measure operations on your hardware. There is no public programmatic
-`runAllBenchmarks()` API. Results depend on the device, build configuration,
-inputs, and cache state; they are not a guarantee of the historical ratios above.
+For reference data, run `python3 Benchmarks/run.py --output .build/benchmark-results/first`
+from the repository root. It builds the separate macOS runner in Release mode and
+saves repeated timings and environment metadata in a new output directory.
+
+Open the public `PerformanceBenchmark` SwiftUI view and use its Run Benchmark
+button for exploratory timings. Conversion runs actual HSL and LAB requests with
+uncontrolled cache state. Gradient cases construct SwiftUI values; they do not
+render pixels. There is no public programmatic `runAllBenchmarks()` API.
 
 <!-- swift-example: benchmark -->
 ```swift
@@ -87,7 +83,3 @@ struct ContentView: View {
     }
 }
 ```
-
-## Conclusion
-
-The performance improvements in ColorKit 1.4.0 provide significant benefits with zero configuration required. Your applications will automatically take advantage of these optimizations simply by updating to the latest version.
