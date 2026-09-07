@@ -15,9 +15,6 @@ let package = Package(
             targets: ["ColorKit"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", from: "0.58.2")
-    ],
     targets: [
         .target(
             name: "ColorKit",
@@ -28,13 +25,11 @@ let package = Package(
                 "WCAG/README.md",
                 "WCAG/AccessiblePaletteGenerator.md",
                 "ColorInspector/README.md"
-            ],
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+            ]
         ),
         .testTarget(
             name: "ColorKitTests",
-            dependencies: ["ColorKit"],
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+            dependencies: ["ColorKit"]
         ),
     ]
 )

@@ -10,6 +10,9 @@ All notable changes to ColorKit will be documented in this file.
 ### Fixed
 - Measure real HSL/LAB conversion in the performance preview, consume every request's result, and label gradient timings as value construction. Preview measurements remain exploratory with uncontrolled cache state; no color API or conversion behavior changes.
 
+### Tooling
+- Remove the SwiftLint package dependency and build-tool plugins from consumer builds. Contributors run standalone strict lint, which remains enforced in CI.
+
 ## [3.0.0] - 2026-09-04
 
 ### Breaking changes

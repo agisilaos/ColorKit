@@ -61,7 +61,11 @@ struct ColorKit {
 
 ### SwiftLint Rules
 
-We use SwiftLint to enforce code style. Here are some key rules and their rationale:
+Install SwiftLint with `brew install swiftlint`, then run `swiftlint lint --strict`
+from the repository root. It covers `Sources` and `Tests` and is enforced by CI;
+package builds do not run lint.
+
+Here are some key rules and their rationale:
 
 #### Enabled Rules
 - `force_unwrapping`: Avoid force unwrapping (`!`) - use optional binding or nil coalescing
@@ -140,7 +144,7 @@ To run the same platform checks locally with Xcode 26.5 selected:
 swiftlint lint --strict
 xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
   -derivedDataPath /tmp/ColorKitDocumentation \
-  -skipPackagePluginValidation -skipMacroValidation \
+  -skipMacroValidation \
   'OTHER_DOCC_FLAGS=--warnings-as-errors'
 scripts/run_tests.sh
 python3 -m unittest discover -s scripts/tests
@@ -158,10 +162,6 @@ and pinned destinations in `scripts/run_tests.sh`, not in the workflow. Set
 `COLORKIT_IOS_DESTINATION` or `COLORKIT_MACOS_DESTINATION` for another local device.
 Build storage defaults to this checkout's `.build/xcode`; override it with
 `COLORKIT_DERIVED_DATA` when needed.
-
-CI caches only SwiftPM checkouts, repositories, and downloaded artifacts. Xcode
-build products and test results stay outside that dependency cache. The cache key
-has its own scope version so older whole-`.build` archives are not restored.
 
 Each matrix invocation retains raw stdout/stderr logs and result bundles in a unique directory
 under `.build/test-results`; use `--results-dir TestResults` to choose another parent.
