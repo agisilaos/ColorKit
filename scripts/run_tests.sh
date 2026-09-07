@@ -130,7 +130,7 @@ run_phase() {
     output_command=(tee "$results_dir/$label.log")
     run_tests "$label" "$@" \
         -resultBundlePath "$results_dir/$label.xcresult" \
-        -skipPackagePluginValidation -skipMacroValidation || matrix_result=1
+        -skipMacroValidation || matrix_result=1
 }
 
 run_phase iOS "$ios_destination" "${parallel_options[@]}"

@@ -97,7 +97,7 @@ def check(derived_data):
             sources.append((path, name, line, code))
 
     run("xcodebuild", "build", "-scheme", "ColorKit", "-destination", "generic/platform=macOS",
-        "-derivedDataPath", derived_data, "-skipPackagePluginValidation", "-skipMacroValidation")
+        "-derivedDataPath", derived_data, "-skipMacroValidation")
     sdk = subprocess.check_output(["xcrun", "--sdk", "macosx", "--show-sdk-path"], text=True).strip()
     architecture = subprocess.check_output(["uname", "-m"], text=True).strip()
     compiler = ["xcrun", "swiftc", "-swift-version", "6", "-sdk", sdk,

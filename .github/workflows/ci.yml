@@ -41,7 +41,6 @@ jobs:
             -scheme ColorKit \
             -destination 'generic/platform=macOS' \
             -derivedDataPath "$RUNNER_TEMP/ColorKitDocumentation" \
-            -skipPackagePluginValidation \
             -skipMacroValidation \
             'OTHER_DOCC_FLAGS=--warnings-as-errors'
 
@@ -66,21 +65,6 @@ jobs:
         run: |
           xcodebuild -version
           xcrun simctl list devices available
-
-      # Set up caching of Swift package dependencies
-      - name: Cache SPM dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            .build/checkouts
-            .build/repositories
-            .build/artifacts
-          key: ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-deps-v1-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-xcode-26.5-spm-deps-v1-
-
-      - name: Resolve Swift Package Dependencies
-        run: swift package resolve
 
       - name: Test Tooling Contracts
         run: python3 -m unittest discover -s scripts/tests
