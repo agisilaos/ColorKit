@@ -60,7 +60,7 @@ RGB and HSL values remain component differences, not perceptual metrics. Achroma
 
 ## Compatibility
 
-Keep `compare(with:)` as a deprecated source-compatibility adapter through ColorKit 2.x and remove it in 3.0, as recorded in [ADR 0001](../adr/0001-preserve-legacy-color-comparison-through-2x.md).
+Keep `compare(with:)` as a deprecated source-compatibility adapter through ColorKit 3.x, as recorded in [ADR 0013](../adr/0013-preserve-shipped-3x-client-contracts.md). ColorKit 3.0.0 shipped the adapter, superseding the removal schedule in [ADR 0001](../adr/0001-preserve-legacy-color-comparison-through-2x.md).
 
 - For comparable inputs, the adapter unwraps the authoritative result and returns a genuine CIEDE2000 `ColorDifference`.
 - For unavailable inputs only, it preserves the existing platform-defaulting calculation as an explicitly documented legacy fallback.

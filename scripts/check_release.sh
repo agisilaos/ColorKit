@@ -7,7 +7,9 @@ usage() {
 Usage: scripts/check_release.sh version
 
 Verify that the current checkout is the clean, synchronized main commit ready
-to receive the requested release tag. The version must omit the leading "v".
+to receive the requested release tag, including release-client compilation,
+API comparison, and the canonical behavioral test matrix.
+The version must omit the leading "v".
 EOF
 }
 
@@ -51,5 +53,8 @@ if git show-ref --verify --quiet "refs/tags/$release_tag"; then
     printf 'Tag %s already exists.\n' "$release_tag" >&2
     exit 1
 fi
+
+python3 scripts/check_compatibility.py
+scripts/run_tests.sh
 
 printf 'Release %s is ready at %s.\n' "$release_version" "$(git rev-parse HEAD)"
