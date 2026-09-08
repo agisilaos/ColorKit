@@ -49,7 +49,7 @@ struct ScenarioTests {
     @Test("Every named fixture validates in all supported cache modes")
     func fixtures() throws {
         let cases = scenarios()
-        #expect(cases.count == 7)
+        #expect(cases.count == 8)
         #expect(Set(cases.map(\.description.id)).count == cases.count)
         for scenario in cases {
             for mode in scenario.description.modes {

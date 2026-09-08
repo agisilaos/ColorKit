@@ -9,6 +9,39 @@ func scenarios() -> [Scenario] {
     var cases = [
         Scenario(
             description: ScenarioDescription(
+                id: "component-results-red",
+                purpose: "Convert fixed red to all seven independent component results",
+                inputs: "sRGB RGBA (1, 0, 0, 1)",
+                settings: "componentConversionResults()",
+                expected: "Seven successes; red coordinates and #FF0000FF",
+                unit: "aggregate conversion",
+                modes: [.unused]
+            ),
+            input: red,
+            operation: { $0.componentConversionResults() },
+            validate: { value in
+                let rgb = try value.srgba.get()
+                let hsl = try value.hsl.get()
+                let hsb = try value.hsb.get()
+                let cmyk = try value.cmyk.get()
+                let xyz = try value.xyz.get()
+                let lab = try value.lab.get()
+                let hex = try value.hex.get()
+                try requireFixture(
+                    rgb.red == 1 && rgb.green == 0 && rgb.blue == 0 && rgb.alpha == 1
+                        && hsl.hue == 0 && hsl.saturation == 1 && hsl.lightness == 0.5
+                        && hsb.hue == 0 && hsb.saturation == 1 && hsb.brightness == 1
+                        && cmyk.cyan == 0 && cmyk.magenta == 1 && cmyk.yellow == 1 && cmyk.key == 0
+                        && abs(xyz.x - 41.24564) < 0.001 && abs(xyz.y - 21.26729) < 0.001
+                        && abs(xyz.z - 1.93339) < 0.001 && abs(lab.lightness - 53.2408) < 0.001
+                        && abs(lab.a - 80.0925) < 0.001 && abs(lab.b - 67.2032) < 0.001
+                        && hex == "#FF0000FF",
+                    "Incorrect aggregate red conversion"
+                )
+            }
+        ),
+        Scenario(
+            description: ScenarioDescription(
                 id: "hsl-red",
                 purpose: "Convert fixed red to HSL components",
                 inputs: "sRGB RGBA (1, 0, 0, 1)",

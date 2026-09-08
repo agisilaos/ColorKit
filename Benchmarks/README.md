@@ -12,7 +12,7 @@ swift test --package-path Benchmarks -c release
 python3 Benchmarks/run.py --output .build/benchmark-results/first
 ```
 
-The output directory must be new. The command builds first, then runs seven named
+The output directory must be new. The command builds first, then runs eight named
 scenarios serially, using a fresh process for every scenario/cache pair in each
 of three runs. Each process performs 10 untimed warm-up requests and records 10
 samples of 100 individually timed requests. Override these modest defaults with
@@ -24,6 +24,7 @@ settings. The report records power information but does not control system load.
 
 | Scenario | Complete request |
 | --- | --- |
+| `component-results-red` | All seven component-conversion results for opaque sRGB red (cache unused) |
 | `hsl-red` | Convert opaque sRGB red to HSL |
 | `lab-red` | Convert opaque sRGB red to D65 LAB |
 | `comparison-black-white` | Full comparison, including CIEDE2000, RGB/HSL deltas, contrast, and compliance |
