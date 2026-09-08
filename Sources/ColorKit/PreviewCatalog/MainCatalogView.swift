@@ -58,6 +58,7 @@ public struct MainCatalogView: View {
 
 enum PreviewFeature: String, CaseIterable, Identifiable {
     case colorSpaces = "Color Spaces"
+    case componentResults = "Component Results"
     case blending = "Color Blending"
     case gradients = "Gradient Generation"
     case accessibility = "Accessibility Tools"
@@ -76,6 +77,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
         switch self {
         case .colorSpaces:
             return "Explore color space conversions and representations"
+        case .componentResults:
+            return "Inspect available components and individual conversion limitations"
         case .blending:
             return "Test different color blending modes and effects"
         case .gradients:
@@ -101,6 +104,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
         switch self {
         case .colorSpaces:
             return "paintpalette"
+        case .componentResults:
+            return "list.bullet.rectangle"
         case .blending:
             return "circle.lefthalf.filled"
         case .gradients:
@@ -126,6 +131,8 @@ enum PreviewFeature: String, CaseIterable, Identifiable {
         switch self {
         case .colorSpaces:
             ColorSpacePreview()
+        case .componentResults:
+            ComponentConversionPreview()
         case .blending:
             BlendingPreview()
         case .gradients:
