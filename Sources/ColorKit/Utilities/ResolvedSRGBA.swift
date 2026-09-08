@@ -31,16 +31,25 @@ struct ResolvedSRGBA {
 
     /// Resolves fixed RGB or grayscale inputs without consulting appearance or caches.
     static func resolve(_ color: Color) -> Self? {
-        guard let source = color.cgColor,
-              let space = source.colorSpace,
-              space.model == .rgb || space.model == .monochrome,
-              let components = source.components,
+        try? resolveResult(color).get()
+    }
+
+    /// Uses the same fixed resolution policy while retaining its first observable blocker.
+    static func resolveResult(_ color: Color) -> Result<Self, ColorConversionIssue> {
+        guard let source = color.cgColor else { return .failure(.unresolvedInput) }
+        guard let space = source.colorSpace,
+              space.model == .rgb || space.model == .monochrome else {
+            return .failure(.unsupportedColorModel)
+        }
+        guard let components = source.components,
               components.count == space.numberOfComponents + 1,
               components.allSatisfy({ $0.isFinite }),
               let alpha = components.last,
-              (0...1).contains(alpha),
-              let sRGB = CGColorSpace(name: CGColorSpace.sRGB),
-              let extendedSRGB = CGColorSpace(name: CGColorSpace.extendedSRGB) else { return nil }
+              (0...1).contains(alpha) else { return .failure(.invalidComponents) }
+        guard let sRGB = CGColorSpace(name: CGColorSpace.sRGB),
+              let extendedSRGB = CGColorSpace(name: CGColorSpace.extendedSRGB) else {
+            return .failure(.colorSpaceConversionFailed)
+        }
 
         let resolved: [CGFloat]
         if CFEqual(space, sRGB) || CFEqual(space, extendedSRGB) {
@@ -48,11 +57,16 @@ struct ResolvedSRGBA {
             resolved = components
         } else {
             guard let converted = source.converted(to: extendedSRGB, intent: .relativeColorimetric, options: nil),
-                  let convertedComponents = converted.components else { return nil }
+                  let convertedComponents = converted.components else {
+                return .failure(.colorSpaceConversionFailed)
+            }
             resolved = convertedComponents
         }
 
-        return Self(sRGBComponents: resolved)
+        guard let snapshot = Self(sRGBComponents: resolved) else {
+            return .failure(.colorSpaceConversionFailed)
+        }
+        return .success(snapshot)
     }
 }
 

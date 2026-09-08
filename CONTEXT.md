@@ -11,6 +11,10 @@ _Avoid_: Clamped RGB, color identity
 **Unavailable inspector conversion**:
 A color representation or contrast ratio that cannot be obtained from the current color inputs. It is neither a zero value nor a failed contrast threshold, and says nothing about earlier inputs.
 
+**Unavailable component representation**:
+A representation that cannot be obtained from a color under the conversion's stated contract. Its absence does not invalidate other representations successfully obtained from that input.
+_Avoid_: Zero components, wholly unconvertible color
+
 **Color identity**:
 The original color space and complete component values, including opacity, that distinguish a color input. Equal component values in different color spaces do not establish the same color identity.
 _Avoid_: Visual equivalence

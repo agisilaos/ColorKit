@@ -1,5 +1,28 @@
 # Migration Guide
 
+## Unreleased additions for ColorKit 3.1
+
+### Component conversion results
+
+`Color.componentConversionResults()` is additive; no existing calls need migration
+and nothing is deprecated. Adopt it when each representation's availability matters.
+It returns per-field Swift `Result` values, rather than the zero substitutions of
+`colorSpaceComponents()` and `ColorSpaceConverter.getAllColorComponents()`.
+
+The new API requires a fixed RGB or grayscale color. Resolve named/dynamic colors
+explicitly before calling it; even `.blue` can lack fixed components. All fields
+derive from one extended-sRGBA snapshot, with valid alpha and no compositing.
+Out-of-sRGB-gamut inputs retain sRGBA and finite XYZ/LAB but report unavailable
+HSL/HSB/CMYK/Hex, including tiny endpoint overshoots. This differs deliberately from
+legacy HSL clipping and ambient appearance resolution.
+
+Signed decoding corrects negative extended-sRGB channels in the new XYZ/LAB path,
+and exact LAB constants replace rounded constants in that path only. New values can
+differ from legacy results for negative channels or near the LAB breakpoint. Existing
+calculations, caches, formatters, nil/zero fallbacks, and deployment targets remain
+unchanged. Do not treat the new method as a numerically identical wrapper around
+every old accessor; see the [component contract](Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results).
+
 ## ColorKit 3.0.0
 
 Upgrading from 2.1.0 requires handling the new accessibility status case and updating

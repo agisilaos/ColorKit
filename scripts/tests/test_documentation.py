@@ -33,7 +33,7 @@ class DocumentationContract(unittest.TestCase):
                 self.extract(text)
 
     def test_behavior_checks_are_required_in_both_readme_inventories(self):
-        self.assertEqual(set(DOCS.README_CHECKS), {"hsl", "cmyk", "lab"})
+        self.assertEqual(set(DOCS.README_CHECKS), {"hsl", "cmyk", "lab", "component-results"})
         for path in ("README.md", "README.es-ES.md"):
             self.assertLessEqual(DOCS.README_CHECKS.keys(), DOCS.EXAMPLES[path])
 

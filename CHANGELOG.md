@@ -4,6 +4,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Add `Color.componentConversionResults()` with independent results for sRGBA, HSL, HSB, CMYK, XYZ, LAB, and Hex from one fixed color. Preserve extended sRGBA and finite D65 XYZ/LAB; report unavailable bounded representations without clipping. Include typed diagnostics, explicit alpha/appearance limits, and signed extended-sRGB decoding with exact LAB constants. Existing conversion APIs and legacy calculations remain unchanged, with no deprecations.
+
 ## [3.0.1] - 2026-09-07
 
 ### Added
