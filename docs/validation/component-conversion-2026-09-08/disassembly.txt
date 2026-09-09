@@ -1,0 +1,103 @@
+Release executable SHA-256: 732c5b274b805c108ac9fa178d9a755a1f4f3c4dd7cc5f5e3afa4d3aea460b80
+Generated with xcrun llvm-objdump --disassemble --demangle, then xcrun swift-demangle.
+Original line numbers below refer to .build/conversion-validation/benchmark-demangled.txt.
+
+Lines 212389-212400
+00000001000c883c <generic specialization <SwiftUI.Color, ColorKit.ColorComponentConversionResults> of closure #2 (ColorKitBenchmarks.CacheMode, Swift.Int, Swift.Int) throws -> [ColorKitBenchmarks.Sample] in ColorKitBenchmarks.Scenario.init<A, B>(description: ColorKitBenchmarks.ScenarioDescription, input: A, operation: (A) -> B, validate: (B) throws -> ()) -> ColorKitBenchmarks.Scenario>:
+1000c883c: f81a0ffc    	str	x28, [sp, #-0x60]!
+1000c8840: a9016bfb    	stp	x27, x26, [sp, #0x10]
+1000c8844: a90263f9    	stp	x25, x24, [sp, #0x20]
+1000c8848: a9035bf7    	stp	x23, x22, [sp, #0x30]
+1000c884c: a9044ff4    	stp	x20, x19, [sp, #0x40]
+1000c8850: a9057bfd    	stp	x29, x30, [sp, #0x50]
+1000c8854: 910143fd    	add	x29, sp, #0x50
+1000c8858: d11103ff    	sub	sp, sp, #0x440
+1000c885c: 910003f3    	mov	x19, sp
+1000c8860: aa1503f6    	mov	x22, x21
+1000c8864: aa0703fb    	mov	x27, x7
+
+Lines 212695-212737
+1000c8d00: 14000008    	b	0x1000c8d20 <generic specialization <SwiftUI.Color, ColorKit.ColorComponentConversionResults> of closure #2 (ColorKitBenchmarks.CacheMode, Swift.Int, Swift.Int) throws -> [ColorKitBenchmarks.Sample] in ColorKitBenchmarks.Scenario.init<A, B>(description: ColorKitBenchmarks.ScenarioDescription, input: A, operation: (A) -> B, validate: (B) throws -> ()) -> ColorKitBenchmarks.Scenario+0x4e4>
+1000c8d04: f9402a68    	ldr	x8, [x19, #0x50]
+1000c8d08: f9400114    	ldr	x20, [x8]
+1000c8d0c: aa1403e0    	mov	x0, x20
+1000c8d10: 940012f9    	bl	0x1000cd8f4 <_voucher_adopt+0x1000cd8f4>
+1000c8d14: 97fe268f    	bl	0x100052750 <ColorKit.ColorCache.clearCache() -> ()>
+1000c8d18: aa1403e0    	mov	x0, x20
+1000c8d1c: 940012f0    	bl	0x1000cd8dc <_voucher_adopt+0x1000cd8dc>
+1000c8d20: aa1c03e8    	mov	x8, x28
+1000c8d24: 94001093    	bl	0x1000ccf70 <_voucher_adopt+0x1000ccf70>
+1000c8d28: aa1c03f4    	mov	x20, x28
+1000c8d2c: 9400108e    	bl	0x1000ccf64 <_voucher_adopt+0x1000ccf64>
+1000c8d30: aa0003f7    	mov	x23, x0
+1000c8d34: a946ea68    	ldp	x8, x26, [x19, #0x68]
+1000c8d38: f9400519    	ldr	x25, [x8, #0x8]
+1000c8d3c: aa1c03e0    	mov	x0, x28
+1000c8d40: aa1a03e1    	mov	x1, x26
+1000c8d44: d63f0320    	blr	x25
+1000c8d48: f9403e68    	ldr	x8, [x19, #0x78]
+1000c8d4c: f9004668    	str	x8, [x19, #0x88]
+1000c8d50: 91020268    	add	x8, x19, #0x80
+1000c8d54: 91022260    	add	x0, x19, #0x88
+1000c8d58: 90000201    	adrp	x1, 0x100108000 <_voucher_adopt+0x100108000>
+1000c8d5c: f946f821    	ldr	x1, [x1, #0xdf0]
+1000c8d60: 97ffd5df    	bl	0x1000be4dc <ColorKitBenchmarks.opaqueInput<A>(A) -> A>
+1000c8d64: 9105c268    	add	x8, x19, #0x170
+1000c8d68: 91020260    	add	x0, x19, #0x80
+1000c8d6c: a9445269    	ldp	x9, x20, [x19, #0x40]
+1000c8d70: d63f0120    	blr	x9
+1000c8d74: f9404260    	ldr	x0, [x19, #0x80]
+1000c8d78: 940012d9    	bl	0x1000cd8dc <_voucher_adopt+0x1000cd8dc>
+1000c8d7c: 9105c260    	add	x0, x19, #0x170
+1000c8d80: 90000221    	adrp	x1, 0x10010c000 <value witness table for ColorKit.(RGBDifferenceView in _09B5711F82AA56ED9525B22CCB0366A0)+0x8>
+1000c8d84: 91164021    	add	x1, x1, #0x590
+1000c8d88: 97ffd5df    	bl	0x1000be504 <ColorKitBenchmarks.consume<A>(A) -> ()>
+1000c8d8c: 9105c260    	add	x0, x19, #0x170
+1000c8d90: 97fed34c    	bl	0x10007dac0 <outlined destroy of ColorKit.ColorComponentConversionResults>
+1000c8d94: aa1c03e8    	mov	x8, x28
+1000c8d98: 94001076    	bl	0x1000ccf70 <_voucher_adopt+0x1000ccf70>
+1000c8d9c: aa1c03f4    	mov	x20, x28
+1000c8da0: 94001071    	bl	0x1000ccf64 <_voucher_adopt+0x1000ccf64>
+1000c8da4: aa0003f4    	mov	x20, x0
+1000c8da8: aa1c03e0    	mov	x0, x28
+
+Lines 214306-214344
+
+00000001000ca624 <closure #1 (SwiftUI.Color) -> ColorKit.ColorComponentConversionResults in ColorKitBenchmarks.scenarios() -> [ColorKitBenchmarks.Scenario]>:
+1000ca624: d10443ff    	sub	sp, sp, #0x110
+1000ca628: a90f4ff4    	stp	x20, x19, [sp, #0xf0]
+1000ca62c: a9107bfd    	stp	x29, x30, [sp, #0x100]
+1000ca630: 910403fd    	add	x29, sp, #0x100
+1000ca634: aa0803f3    	mov	x19, x8
+1000ca638: f9400000    	ldr	x0, [x0]
+1000ca63c: 910023e8    	add	x8, sp, #0x8
+1000ca640: 97fe3ca9    	bl	0x1000598e4 <(extension in ColorKit):SwiftUI.Color.componentConversionResults() -> ColorKit.ColorComponentConversionResults>
+1000ca644: 3ccc83e0    	ldur	q0, [sp, #0xc8]
+1000ca648: 3ccd83e1    	ldur	q1, [sp, #0xd8]
+1000ca64c: ad060660    	stp	q0, q1, [x19, #0xc0]
+1000ca650: 3943a3e8    	ldrb	w8, [sp, #0xe8]
+1000ca654: 39038268    	strb	w8, [x19, #0xe0]
+1000ca658: 3cc883e0    	ldur	q0, [sp, #0x88]
+1000ca65c: 3cc983e1    	ldur	q1, [sp, #0x98]
+1000ca660: ad040660    	stp	q0, q1, [x19, #0x80]
+1000ca664: 3ccb83e0    	ldur	q0, [sp, #0xb8]
+1000ca668: 3cca83e1    	ldur	q1, [sp, #0xa8]
+1000ca66c: ad050261    	stp	q1, q0, [x19, #0xa0]
+1000ca670: 3cc483e0    	ldur	q0, [sp, #0x48]
+1000ca674: 3cc583e1    	ldur	q1, [sp, #0x58]
+1000ca678: ad020660    	stp	q0, q1, [x19, #0x40]
+1000ca67c: 3cc783e0    	ldur	q0, [sp, #0x78]
+1000ca680: 3cc683e1    	ldur	q1, [sp, #0x68]
+1000ca684: ad030261    	stp	q1, q0, [x19, #0x60]
+1000ca688: 3cc083e0    	ldur	q0, [sp, #0x8]
+1000ca68c: 3cc183e1    	ldur	q1, [sp, #0x18]
+1000ca690: ad000660    	stp	q0, q1, [x19]
+1000ca694: 3cc383e0    	ldur	q0, [sp, #0x38]
+1000ca698: 3cc283e1    	ldur	q1, [sp, #0x28]
+1000ca69c: ad010261    	stp	q1, q0, [x19, #0x20]
+1000ca6a0: a9507bfd    	ldp	x29, x30, [sp, #0x100]
+1000ca6a4: a94f4ff4    	ldp	x20, x19, [sp, #0xf0]
+1000ca6a8: 910443ff    	add	sp, sp, #0x110
+1000ca6ac: d65f03c0    	ret
+
+00000001000ca6b0 <closure #2 (ColorKit.ColorComponentConversionResults) throws -> () in ColorKitBenchmarks.scenarios() -> [ColorKitBenchmarks.Scenario]>:

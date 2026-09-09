@@ -1,0 +1,2673 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "environment": {
+    "timestampUTC": "2026-09-08T11:34:18.829946+00:00",
+    "revision": "bc46e3e1e264d8b7d420cb607d546bf7d014b9e3",
+    "trackedChanges": "Benchmarks/README.md                               |  3 +-\n .../Sources/ColorKitBenchmarks/Scenarios.swift     | 33 ++++++++++++++++++++++\n .../ColorKitBenchmarksTests/MeasurementTests.swift |  2 +-\n 3 files changed, 36 insertions(+), 2 deletions(-)",
+    "untrackedFiles": "Tests/ColorKitTests/Utilities/PublicComponentConversionTests.swift\nValidation/ComponentConsumer/.gitignore\nValidation/ComponentConsumer/Package.swift\nValidation/ComponentConsumer/README.md\nValidation/ComponentConsumer/Sources/ComponentConsumer/Consumer.swift",
+    "binarySHA256": "732c5b274b805c108ac9fa178d9a755a1f4f3c4dd7cc5f5e3afa4d3aea460b80",
+    "configuration": "release",
+    "buildCommand": "swift build --package-path Benchmarks -c release",
+    "swift": "Apple Swift version 6.3.2 (swiftlang-6.3.2.1.108 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0",
+    "xcode": "Xcode 26.5\nBuild version 17F42",
+    "sdk": "26.5",
+    "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
+    "architecture": "arm64",
+    "hardwareModel": "Mac16,7",
+    "cpu": "Apple M4 Pro",
+    "memoryBytes": 51539607552,
+    "power": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=22216803)\t100%; charged; 0:00 remaining present: true",
+    "runs": 3,
+    "samplesPerRun": 10,
+    "requestsPerSample": 100,
+    "warmupRequests": 10,
+    "clock": "DispatchTime.uptimeNanoseconds",
+    "sampling": "Sum individually timed requests; preparation excluded; alternating request/control sample order"
+  },
+  "records": [
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2666,
+          "requestCount": 100,
+          "requestNanoseconds": 177541
+        },
+        {
+          "controlNanoseconds": 2707,
+          "requestCount": 100,
+          "requestNanoseconds": 163620
+        },
+        {
+          "controlNanoseconds": 2583,
+          "requestCount": 100,
+          "requestNanoseconds": 163793
+        },
+        {
+          "controlNanoseconds": 2499,
+          "requestCount": 100,
+          "requestNanoseconds": 170625
+        },
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 163171
+        },
+        {
+          "controlNanoseconds": 2709,
+          "requestCount": 100,
+          "requestNanoseconds": 162830
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 162831
+        },
+        {
+          "controlNanoseconds": 2623,
+          "requestCount": 100,
+          "requestNanoseconds": 162458
+        },
+        {
+          "controlNanoseconds": 2920,
+          "requestCount": 100,
+          "requestNanoseconds": 168872
+        },
+        {
+          "controlNanoseconds": 2875,
+          "requestCount": 100,
+          "requestNanoseconds": 179208
+        }
+      ],
+      "scenario": {
+        "expected": "Seven successes; red coordinates and #FF0000FF",
+        "id": "component-results-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Convert fixed red to all seven independent component results",
+        "settings": "componentConversionResults()",
+        "unit": "aggregate conversion"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1291,
+          "requestCount": 100,
+          "requestNanoseconds": 341876
+        },
+        {
+          "controlNanoseconds": 1416,
+          "requestCount": 100,
+          "requestNanoseconds": 322725
+        },
+        {
+          "controlNanoseconds": 1208,
+          "requestCount": 100,
+          "requestNanoseconds": 321329
+        },
+        {
+          "controlNanoseconds": 1334,
+          "requestCount": 100,
+          "requestNanoseconds": 319970
+        },
+        {
+          "controlNanoseconds": 1209,
+          "requestCount": 100,
+          "requestNanoseconds": 348004
+        },
+        {
+          "controlNanoseconds": 1079,
+          "requestCount": 100,
+          "requestNanoseconds": 319625
+        },
+        {
+          "controlNanoseconds": 1251,
+          "requestCount": 100,
+          "requestNanoseconds": 333835
+        },
+        {
+          "controlNanoseconds": 1542,
+          "requestCount": 100,
+          "requestNanoseconds": 342454
+        },
+        {
+          "controlNanoseconds": 1542,
+          "requestCount": 100,
+          "requestNanoseconds": 344421
+        },
+        {
+          "controlNanoseconds": 1626,
+          "requestCount": 100,
+          "requestNanoseconds": 331757
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2580,
+          "requestCount": 100,
+          "requestNanoseconds": 110835
+        },
+        {
+          "controlNanoseconds": 1992,
+          "requestCount": 100,
+          "requestNanoseconds": 125168
+        },
+        {
+          "controlNanoseconds": 2207,
+          "requestCount": 100,
+          "requestNanoseconds": 114959
+        },
+        {
+          "controlNanoseconds": 2086,
+          "requestCount": 100,
+          "requestNanoseconds": 118003
+        },
+        {
+          "controlNanoseconds": 2248,
+          "requestCount": 100,
+          "requestNanoseconds": 117080
+        },
+        {
+          "controlNanoseconds": 1671,
+          "requestCount": 100,
+          "requestNanoseconds": 117958
+        },
+        {
+          "controlNanoseconds": 2077,
+          "requestCount": 100,
+          "requestNanoseconds": 116793
+        },
+        {
+          "controlNanoseconds": 1994,
+          "requestCount": 100,
+          "requestNanoseconds": 117369
+        },
+        {
+          "controlNanoseconds": 1917,
+          "requestCount": 100,
+          "requestNanoseconds": 127000
+        },
+        {
+          "controlNanoseconds": 2044,
+          "requestCount": 100,
+          "requestNanoseconds": 118295
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1667,
+          "requestCount": 100,
+          "requestNanoseconds": 218804
+        },
+        {
+          "controlNanoseconds": 1667,
+          "requestCount": 100,
+          "requestNanoseconds": 206203
+        },
+        {
+          "controlNanoseconds": 1666,
+          "requestCount": 100,
+          "requestNanoseconds": 196042
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 195166
+        },
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 200519
+        },
+        {
+          "controlNanoseconds": 1543,
+          "requestCount": 100,
+          "requestNanoseconds": 194039
+        },
+        {
+          "controlNanoseconds": 1872,
+          "requestCount": 100,
+          "requestNanoseconds": 198247
+        },
+        {
+          "controlNanoseconds": 1750,
+          "requestCount": 100,
+          "requestNanoseconds": 215038
+        },
+        {
+          "controlNanoseconds": 1583,
+          "requestCount": 100,
+          "requestNanoseconds": 193255
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 200540
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 1917,
+          "requestCount": 100,
+          "requestNanoseconds": 119961
+        },
+        {
+          "controlNanoseconds": 1587,
+          "requestCount": 100,
+          "requestNanoseconds": 121874
+        },
+        {
+          "controlNanoseconds": 1580,
+          "requestCount": 100,
+          "requestNanoseconds": 121374
+        },
+        {
+          "controlNanoseconds": 1670,
+          "requestCount": 100,
+          "requestNanoseconds": 120997
+        },
+        {
+          "controlNanoseconds": 1879,
+          "requestCount": 100,
+          "requestNanoseconds": 132171
+        },
+        {
+          "controlNanoseconds": 1501,
+          "requestCount": 100,
+          "requestNanoseconds": 125210
+        },
+        {
+          "controlNanoseconds": 1664,
+          "requestCount": 100,
+          "requestNanoseconds": 120624
+        },
+        {
+          "controlNanoseconds": 1290,
+          "requestCount": 100,
+          "requestNanoseconds": 123831
+        },
+        {
+          "controlNanoseconds": 1750,
+          "requestCount": 100,
+          "requestNanoseconds": 122958
+        },
+        {
+          "controlNanoseconds": 1292,
+          "requestCount": 100,
+          "requestNanoseconds": 123830
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2793,
+          "requestCount": 100,
+          "requestNanoseconds": 74957
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 66960
+        },
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 67624
+        },
+        {
+          "controlNanoseconds": 2582,
+          "requestCount": 100,
+          "requestNanoseconds": 66624
+        },
+        {
+          "controlNanoseconds": 2457,
+          "requestCount": 100,
+          "requestNanoseconds": 67456
+        },
+        {
+          "controlNanoseconds": 2710,
+          "requestCount": 100,
+          "requestNanoseconds": 70539
+        },
+        {
+          "controlNanoseconds": 2459,
+          "requestCount": 100,
+          "requestNanoseconds": 65915
+        },
+        {
+          "controlNanoseconds": 2668,
+          "requestCount": 100,
+          "requestNanoseconds": 62378
+        },
+        {
+          "controlNanoseconds": 2125,
+          "requestCount": 100,
+          "requestNanoseconds": 58833
+        },
+        {
+          "controlNanoseconds": 2669,
+          "requestCount": 100,
+          "requestNanoseconds": 58456
+        }
+      ],
+      "scenario": {
+        "expected": "Available CIEDE2000 100 and contrast 21",
+        "id": "comparison-black-white",
+        "inputs": "sRGB RGBA first (0, 0, 0, 1), second (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Compute all public color-comparison metrics",
+        "settings": "comparisonResult(with:)",
+        "unit": "comparison"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2208,
+          "requestCount": 100,
+          "requestNanoseconds": 110082
+        },
+        {
+          "controlNanoseconds": 2305,
+          "requestCount": 100,
+          "requestNanoseconds": 94542
+        },
+        {
+          "controlNanoseconds": 1830,
+          "requestCount": 100,
+          "requestNanoseconds": 93418
+        },
+        {
+          "controlNanoseconds": 2583,
+          "requestCount": 100,
+          "requestNanoseconds": 93834
+        },
+        {
+          "controlNanoseconds": 1960,
+          "requestCount": 100,
+          "requestNanoseconds": 93958
+        },
+        {
+          "controlNanoseconds": 1917,
+          "requestCount": 100,
+          "requestNanoseconds": 94376
+        },
+        {
+          "controlNanoseconds": 2003,
+          "requestCount": 100,
+          "requestNanoseconds": 94581
+        },
+        {
+          "controlNanoseconds": 2458,
+          "requestCount": 100,
+          "requestNanoseconds": 103251
+        },
+        {
+          "controlNanoseconds": 2041,
+          "requestCount": 100,
+          "requestNanoseconds": 106125
+        },
+        {
+          "controlNanoseconds": 2141,
+          "requestCount": 100,
+          "requestNanoseconds": 106124
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-compliant",
+        "inputs": "sRGB RGBA foreground (0, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Budgeted enhancement: compliant",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2001,
+          "requestCount": 100,
+          "requestNanoseconds": 3183748
+        },
+        {
+          "controlNanoseconds": 1667,
+          "requestCount": 100,
+          "requestNanoseconds": 3219467
+        },
+        {
+          "controlNanoseconds": 2001,
+          "requestCount": 100,
+          "requestNanoseconds": 3142625
+        },
+        {
+          "controlNanoseconds": 1291,
+          "requestCount": 100,
+          "requestNanoseconds": 3160333
+        },
+        {
+          "controlNanoseconds": 2334,
+          "requestCount": 100,
+          "requestNanoseconds": 3143874
+        },
+        {
+          "controlNanoseconds": 2499,
+          "requestCount": 100,
+          "requestNanoseconds": 3170293
+        },
+        {
+          "controlNanoseconds": 1833,
+          "requestCount": 100,
+          "requestNanoseconds": 3234293
+        },
+        {
+          "controlNanoseconds": 2792,
+          "requestCount": 100,
+          "requestNanoseconds": 3118963
+        },
+        {
+          "controlNanoseconds": 2000,
+          "requestCount": 100,
+          "requestNanoseconds": 3287963
+        },
+        {
+          "controlNanoseconds": 2083,
+          "requestCount": 100,
+          "requestNanoseconds": 3118293
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3330,
+          "requestCount": 100,
+          "requestNanoseconds": 2704630
+        },
+        {
+          "controlNanoseconds": 3213,
+          "requestCount": 100,
+          "requestNanoseconds": 2689839
+        },
+        {
+          "controlNanoseconds": 3165,
+          "requestCount": 100,
+          "requestNanoseconds": 2703132
+        },
+        {
+          "controlNanoseconds": 3126,
+          "requestCount": 100,
+          "requestNanoseconds": 2601658
+        },
+        {
+          "controlNanoseconds": 2702,
+          "requestCount": 100,
+          "requestNanoseconds": 2535374
+        },
+        {
+          "controlNanoseconds": 2711,
+          "requestCount": 100,
+          "requestNanoseconds": 2558544
+        },
+        {
+          "controlNanoseconds": 2629,
+          "requestCount": 100,
+          "requestNanoseconds": 2533713
+        },
+        {
+          "controlNanoseconds": 3209,
+          "requestCount": 100,
+          "requestNanoseconds": 2526995
+        },
+        {
+          "controlNanoseconds": 2587,
+          "requestCount": 100,
+          "requestNanoseconds": 2549540
+        },
+        {
+          "controlNanoseconds": 2500,
+          "requestCount": 100,
+          "requestNanoseconds": 2577705
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2791,
+          "requestCount": 100,
+          "requestNanoseconds": 2493171
+        },
+        {
+          "controlNanoseconds": 2584,
+          "requestCount": 100,
+          "requestNanoseconds": 2555916
+        },
+        {
+          "controlNanoseconds": 2586,
+          "requestCount": 100,
+          "requestNanoseconds": 2541955
+        },
+        {
+          "controlNanoseconds": 4875,
+          "requestCount": 100,
+          "requestNanoseconds": 2569832
+        },
+        {
+          "controlNanoseconds": 2460,
+          "requestCount": 100,
+          "requestNanoseconds": 2595502
+        },
+        {
+          "controlNanoseconds": 2457,
+          "requestCount": 100,
+          "requestNanoseconds": 2598124
+        },
+        {
+          "controlNanoseconds": 2793,
+          "requestCount": 100,
+          "requestNanoseconds": 2530583
+        },
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 2531165
+        },
+        {
+          "controlNanoseconds": 2540,
+          "requestCount": 100,
+          "requestNanoseconds": 2521665
+        },
+        {
+          "controlNanoseconds": 2375,
+          "requestCount": 100,
+          "requestNanoseconds": 2535750
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3583,
+          "requestCount": 100,
+          "requestNanoseconds": 1893957
+        },
+        {
+          "controlNanoseconds": 3248,
+          "requestCount": 100,
+          "requestNanoseconds": 2036705
+        },
+        {
+          "controlNanoseconds": 3377,
+          "requestCount": 100,
+          "requestNanoseconds": 2045833
+        },
+        {
+          "controlNanoseconds": 3212,
+          "requestCount": 100,
+          "requestNanoseconds": 2033456
+        },
+        {
+          "controlNanoseconds": 3547,
+          "requestCount": 100,
+          "requestNanoseconds": 2037795
+        },
+        {
+          "controlNanoseconds": 2963,
+          "requestCount": 100,
+          "requestNanoseconds": 1985424
+        },
+        {
+          "controlNanoseconds": 2707,
+          "requestCount": 100,
+          "requestNanoseconds": 1973250
+        },
+        {
+          "controlNanoseconds": 2836,
+          "requestCount": 100,
+          "requestNanoseconds": 1993371
+        },
+        {
+          "controlNanoseconds": 3129,
+          "requestCount": 100,
+          "requestNanoseconds": 1977828
+        },
+        {
+          "controlNanoseconds": 3206,
+          "requestCount": 100,
+          "requestNanoseconds": 1964291
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2125,
+          "requestCount": 100,
+          "requestNanoseconds": 6755001
+        },
+        {
+          "controlNanoseconds": 2499,
+          "requestCount": 100,
+          "requestNanoseconds": 7270250
+        },
+        {
+          "controlNanoseconds": 2126,
+          "requestCount": 100,
+          "requestNanoseconds": 7426499
+        },
+        {
+          "controlNanoseconds": 2125,
+          "requestCount": 100,
+          "requestNanoseconds": 6888208
+        },
+        {
+          "controlNanoseconds": 1834,
+          "requestCount": 100,
+          "requestNanoseconds": 7078499
+        },
+        {
+          "controlNanoseconds": 1750,
+          "requestCount": 100,
+          "requestNanoseconds": 7188999
+        },
+        {
+          "controlNanoseconds": 1666,
+          "requestCount": 100,
+          "requestNanoseconds": 7162289
+        },
+        {
+          "controlNanoseconds": 1791,
+          "requestCount": 100,
+          "requestNanoseconds": 6330876
+        },
+        {
+          "controlNanoseconds": 1833,
+          "requestCount": 100,
+          "requestNanoseconds": 7177165
+        },
+        {
+          "controlNanoseconds": 1750,
+          "requestCount": 100,
+          "requestNanoseconds": 6863663
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3122,
+          "requestCount": 100,
+          "requestNanoseconds": 6214498
+        },
+        {
+          "controlNanoseconds": 3131,
+          "requestCount": 100,
+          "requestNanoseconds": 6149167
+        },
+        {
+          "controlNanoseconds": 2539,
+          "requestCount": 100,
+          "requestNanoseconds": 6187999
+        },
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 5645500
+        },
+        {
+          "controlNanoseconds": 2545,
+          "requestCount": 100,
+          "requestNanoseconds": 6043336
+        },
+        {
+          "controlNanoseconds": 2919,
+          "requestCount": 100,
+          "requestNanoseconds": 6068005
+        },
+        {
+          "controlNanoseconds": 2498,
+          "requestCount": 100,
+          "requestNanoseconds": 5944574
+        },
+        {
+          "controlNanoseconds": 2752,
+          "requestCount": 100,
+          "requestNanoseconds": 6193413
+        },
+        {
+          "controlNanoseconds": 2338,
+          "requestCount": 100,
+          "requestNanoseconds": 5633206
+        },
+        {
+          "controlNanoseconds": 2419,
+          "requestCount": 100,
+          "requestNanoseconds": 6143633
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 1
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2745,
+          "requestCount": 100,
+          "requestNanoseconds": 5836091
+        },
+        {
+          "controlNanoseconds": 2457,
+          "requestCount": 100,
+          "requestNanoseconds": 6487333
+        },
+        {
+          "controlNanoseconds": 2633,
+          "requestCount": 100,
+          "requestNanoseconds": 5480542
+        },
+        {
+          "controlNanoseconds": 2379,
+          "requestCount": 100,
+          "requestNanoseconds": 6232630
+        },
+        {
+          "controlNanoseconds": 2747,
+          "requestCount": 100,
+          "requestNanoseconds": 5998495
+        },
+        {
+          "controlNanoseconds": 2292,
+          "requestCount": 100,
+          "requestNanoseconds": 5978087
+        },
+        {
+          "controlNanoseconds": 2718,
+          "requestCount": 100,
+          "requestNanoseconds": 6257169
+        },
+        {
+          "controlNanoseconds": 2329,
+          "requestCount": 100,
+          "requestNanoseconds": 5622378
+        },
+        {
+          "controlNanoseconds": 2920,
+          "requestCount": 100,
+          "requestNanoseconds": 5846703
+        },
+        {
+          "controlNanoseconds": 2209,
+          "requestCount": 100,
+          "requestNanoseconds": 5796833
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2128,
+          "requestCount": 100,
+          "requestNanoseconds": 6362708
+        },
+        {
+          "controlNanoseconds": 1961,
+          "requestCount": 100,
+          "requestNanoseconds": 7076129
+        },
+        {
+          "controlNanoseconds": 1875,
+          "requestCount": 100,
+          "requestNanoseconds": 6829456
+        },
+        {
+          "controlNanoseconds": 1958,
+          "requestCount": 100,
+          "requestNanoseconds": 6936544
+        },
+        {
+          "controlNanoseconds": 1581,
+          "requestCount": 100,
+          "requestNanoseconds": 6735037
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 6732288
+        },
+        {
+          "controlNanoseconds": 1793,
+          "requestCount": 100,
+          "requestNanoseconds": 7013706
+        },
+        {
+          "controlNanoseconds": 1709,
+          "requestCount": 100,
+          "requestNanoseconds": 7001297
+        },
+        {
+          "controlNanoseconds": 1665,
+          "requestCount": 100,
+          "requestNanoseconds": 6625248
+        },
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 6528617
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3167,
+          "requestCount": 100,
+          "requestNanoseconds": 1944418
+        },
+        {
+          "controlNanoseconds": 3162,
+          "requestCount": 100,
+          "requestNanoseconds": 2016417
+        },
+        {
+          "controlNanoseconds": 3037,
+          "requestCount": 100,
+          "requestNanoseconds": 1969121
+        },
+        {
+          "controlNanoseconds": 3048,
+          "requestCount": 100,
+          "requestNanoseconds": 1952329
+        },
+        {
+          "controlNanoseconds": 3166,
+          "requestCount": 100,
+          "requestNanoseconds": 1936331
+        },
+        {
+          "controlNanoseconds": 3046,
+          "requestCount": 100,
+          "requestNanoseconds": 1907716
+        },
+        {
+          "controlNanoseconds": 3000,
+          "requestCount": 100,
+          "requestNanoseconds": 1925838
+        },
+        {
+          "controlNanoseconds": 2706,
+          "requestCount": 100,
+          "requestNanoseconds": 1907208
+        },
+        {
+          "controlNanoseconds": 2666,
+          "requestCount": 100,
+          "requestNanoseconds": 1916790
+        },
+        {
+          "controlNanoseconds": 2544,
+          "requestCount": 100,
+          "requestNanoseconds": 1963668
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2583,
+          "requestCount": 100,
+          "requestNanoseconds": 2229423
+        },
+        {
+          "controlNanoseconds": 2292,
+          "requestCount": 100,
+          "requestNanoseconds": 2261838
+        },
+        {
+          "controlNanoseconds": 2293,
+          "requestCount": 100,
+          "requestNanoseconds": 2291376
+        },
+        {
+          "controlNanoseconds": 2540,
+          "requestCount": 100,
+          "requestNanoseconds": 2269955
+        },
+        {
+          "controlNanoseconds": 2458,
+          "requestCount": 100,
+          "requestNanoseconds": 2300499
+        },
+        {
+          "controlNanoseconds": 2500,
+          "requestCount": 100,
+          "requestNanoseconds": 2277872
+        },
+        {
+          "controlNanoseconds": 2458,
+          "requestCount": 100,
+          "requestNanoseconds": 2315751
+        },
+        {
+          "controlNanoseconds": 2709,
+          "requestCount": 100,
+          "requestNanoseconds": 2274917
+        },
+        {
+          "controlNanoseconds": 2125,
+          "requestCount": 100,
+          "requestNanoseconds": 2287206
+        },
+        {
+          "controlNanoseconds": 2459,
+          "requestCount": 100,
+          "requestNanoseconds": 2338793
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3082,
+          "requestCount": 100,
+          "requestNanoseconds": 2456547
+        },
+        {
+          "controlNanoseconds": 3544,
+          "requestCount": 100,
+          "requestNanoseconds": 2558506
+        },
+        {
+          "controlNanoseconds": 2751,
+          "requestCount": 100,
+          "requestNanoseconds": 2536374
+        },
+        {
+          "controlNanoseconds": 3249,
+          "requestCount": 100,
+          "requestNanoseconds": 2541921
+        },
+        {
+          "controlNanoseconds": 3336,
+          "requestCount": 100,
+          "requestNanoseconds": 2472421
+        },
+        {
+          "controlNanoseconds": 3039,
+          "requestCount": 100,
+          "requestNanoseconds": 2451123
+        },
+        {
+          "controlNanoseconds": 2629,
+          "requestCount": 100,
+          "requestNanoseconds": 2427408
+        },
+        {
+          "controlNanoseconds": 2918,
+          "requestCount": 100,
+          "requestNanoseconds": 2442416
+        },
+        {
+          "controlNanoseconds": 2957,
+          "requestCount": 100,
+          "requestNanoseconds": 2328291
+        },
+        {
+          "controlNanoseconds": 2990,
+          "requestCount": 100,
+          "requestNanoseconds": 2415248
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2332,
+          "requestCount": 100,
+          "requestNanoseconds": 3024331
+        },
+        {
+          "controlNanoseconds": 2332,
+          "requestCount": 100,
+          "requestNanoseconds": 3143419
+        },
+        {
+          "controlNanoseconds": 2459,
+          "requestCount": 100,
+          "requestNanoseconds": 3153375
+        },
+        {
+          "controlNanoseconds": 2334,
+          "requestCount": 100,
+          "requestNanoseconds": 3170834
+        },
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 3173578
+        },
+        {
+          "controlNanoseconds": 2375,
+          "requestCount": 100,
+          "requestNanoseconds": 3187668
+        },
+        {
+          "controlNanoseconds": 1542,
+          "requestCount": 100,
+          "requestNanoseconds": 3173535
+        },
+        {
+          "controlNanoseconds": 1918,
+          "requestCount": 100,
+          "requestNanoseconds": 3178664
+        },
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 3181995
+        },
+        {
+          "controlNanoseconds": 2126,
+          "requestCount": 100,
+          "requestNanoseconds": 3162384
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2541,
+          "requestCount": 100,
+          "requestNanoseconds": 100791
+        },
+        {
+          "controlNanoseconds": 2544,
+          "requestCount": 100,
+          "requestNanoseconds": 105667
+        },
+        {
+          "controlNanoseconds": 2375,
+          "requestCount": 100,
+          "requestNanoseconds": 106170
+        },
+        {
+          "controlNanoseconds": 2417,
+          "requestCount": 100,
+          "requestNanoseconds": 95626
+        },
+        {
+          "controlNanoseconds": 2625,
+          "requestCount": 100,
+          "requestNanoseconds": 101794
+        },
+        {
+          "controlNanoseconds": 2833,
+          "requestCount": 100,
+          "requestNanoseconds": 116875
+        },
+        {
+          "controlNanoseconds": 2459,
+          "requestCount": 100,
+          "requestNanoseconds": 111085
+        },
+        {
+          "controlNanoseconds": 2709,
+          "requestCount": 100,
+          "requestNanoseconds": 111497
+        },
+        {
+          "controlNanoseconds": 2125,
+          "requestCount": 100,
+          "requestNanoseconds": 102126
+        },
+        {
+          "controlNanoseconds": 2208,
+          "requestCount": 100,
+          "requestNanoseconds": 95375
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-compliant",
+        "inputs": "sRGB RGBA foreground (0, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Budgeted enhancement: compliant",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2833,
+          "requestCount": 100,
+          "requestNanoseconds": 75418
+        },
+        {
+          "controlNanoseconds": 2580,
+          "requestCount": 100,
+          "requestNanoseconds": 68458
+        },
+        {
+          "controlNanoseconds": 2749,
+          "requestCount": 100,
+          "requestNanoseconds": 68915
+        },
+        {
+          "controlNanoseconds": 2669,
+          "requestCount": 100,
+          "requestNanoseconds": 69082
+        },
+        {
+          "controlNanoseconds": 2669,
+          "requestCount": 100,
+          "requestNanoseconds": 67960
+        },
+        {
+          "controlNanoseconds": 2583,
+          "requestCount": 100,
+          "requestNanoseconds": 67211
+        },
+        {
+          "controlNanoseconds": 2579,
+          "requestCount": 100,
+          "requestNanoseconds": 67166
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 66835
+        },
+        {
+          "controlNanoseconds": 2168,
+          "requestCount": 100,
+          "requestNanoseconds": 64205
+        },
+        {
+          "controlNanoseconds": 2208,
+          "requestCount": 100,
+          "requestNanoseconds": 58250
+        }
+      ],
+      "scenario": {
+        "expected": "Available CIEDE2000 100 and contrast 21",
+        "id": "comparison-black-white",
+        "inputs": "sRGB RGBA first (0, 0, 0, 1), second (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Compute all public color-comparison metrics",
+        "settings": "comparisonResult(with:)",
+        "unit": "comparison"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2087,
+          "requestCount": 100,
+          "requestNanoseconds": 109418
+        },
+        {
+          "controlNanoseconds": 1419,
+          "requestCount": 100,
+          "requestNanoseconds": 112456
+        },
+        {
+          "controlNanoseconds": 1542,
+          "requestCount": 100,
+          "requestNanoseconds": 111205
+        },
+        {
+          "controlNanoseconds": 1286,
+          "requestCount": 100,
+          "requestNanoseconds": 116579
+        },
+        {
+          "controlNanoseconds": 1586,
+          "requestCount": 100,
+          "requestNanoseconds": 115873
+        },
+        {
+          "controlNanoseconds": 1793,
+          "requestCount": 100,
+          "requestNanoseconds": 112413
+        },
+        {
+          "controlNanoseconds": 1541,
+          "requestCount": 100,
+          "requestNanoseconds": 114041
+        },
+        {
+          "controlNanoseconds": 1498,
+          "requestCount": 100,
+          "requestNanoseconds": 112915
+        },
+        {
+          "controlNanoseconds": 1790,
+          "requestCount": 100,
+          "requestNanoseconds": 121212
+        },
+        {
+          "controlNanoseconds": 1455,
+          "requestCount": 100,
+          "requestNanoseconds": 119584
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1583,
+          "requestCount": 100,
+          "requestNanoseconds": 220715
+        },
+        {
+          "controlNanoseconds": 1501,
+          "requestCount": 100,
+          "requestNanoseconds": 220133
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 207748
+        },
+        {
+          "controlNanoseconds": 1500,
+          "requestCount": 100,
+          "requestNanoseconds": 218095
+        },
+        {
+          "controlNanoseconds": 1624,
+          "requestCount": 100,
+          "requestNanoseconds": 210576
+        },
+        {
+          "controlNanoseconds": 1596,
+          "requestCount": 100,
+          "requestNanoseconds": 217553
+        },
+        {
+          "controlNanoseconds": 1707,
+          "requestCount": 100,
+          "requestNanoseconds": 209085
+        },
+        {
+          "controlNanoseconds": 1619,
+          "requestCount": 100,
+          "requestNanoseconds": 217499
+        },
+        {
+          "controlNanoseconds": 1539,
+          "requestCount": 100,
+          "requestNanoseconds": 209613
+        },
+        {
+          "controlNanoseconds": 1579,
+          "requestCount": 100,
+          "requestNanoseconds": 217169
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 119752
+        },
+        {
+          "controlNanoseconds": 1544,
+          "requestCount": 100,
+          "requestNanoseconds": 121042
+        },
+        {
+          "controlNanoseconds": 2000,
+          "requestCount": 100,
+          "requestNanoseconds": 116873
+        },
+        {
+          "controlNanoseconds": 1541,
+          "requestCount": 100,
+          "requestNanoseconds": 115885
+        },
+        {
+          "controlNanoseconds": 1995,
+          "requestCount": 100,
+          "requestNanoseconds": 114836
+        },
+        {
+          "controlNanoseconds": 2001,
+          "requestCount": 100,
+          "requestNanoseconds": 115255
+        },
+        {
+          "controlNanoseconds": 1712,
+          "requestCount": 100,
+          "requestNanoseconds": 115614
+        },
+        {
+          "controlNanoseconds": 1792,
+          "requestCount": 100,
+          "requestNanoseconds": 115051
+        },
+        {
+          "controlNanoseconds": 1832,
+          "requestCount": 100,
+          "requestNanoseconds": 127112
+        },
+        {
+          "controlNanoseconds": 1586,
+          "requestCount": 100,
+          "requestNanoseconds": 116413
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1541,
+          "requestCount": 100,
+          "requestNanoseconds": 368250
+        },
+        {
+          "controlNanoseconds": 1582,
+          "requestCount": 100,
+          "requestNanoseconds": 355249
+        },
+        {
+          "controlNanoseconds": 1622,
+          "requestCount": 100,
+          "requestNanoseconds": 342414
+        },
+        {
+          "controlNanoseconds": 1624,
+          "requestCount": 100,
+          "requestNanoseconds": 349211
+        },
+        {
+          "controlNanoseconds": 1743,
+          "requestCount": 100,
+          "requestNanoseconds": 341499
+        },
+        {
+          "controlNanoseconds": 1542,
+          "requestCount": 100,
+          "requestNanoseconds": 341795
+        },
+        {
+          "controlNanoseconds": 1375,
+          "requestCount": 100,
+          "requestNanoseconds": 363295
+        },
+        {
+          "controlNanoseconds": 1416,
+          "requestCount": 100,
+          "requestNanoseconds": 348214
+        },
+        {
+          "controlNanoseconds": 1455,
+          "requestCount": 100,
+          "requestNanoseconds": 350372
+        },
+        {
+          "controlNanoseconds": 1667,
+          "requestCount": 100,
+          "requestNanoseconds": 348578
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 3043,
+          "requestCount": 100,
+          "requestNanoseconds": 173456
+        },
+        {
+          "controlNanoseconds": 2959,
+          "requestCount": 100,
+          "requestNanoseconds": 170417
+        },
+        {
+          "controlNanoseconds": 2539,
+          "requestCount": 100,
+          "requestNanoseconds": 160581
+        },
+        {
+          "controlNanoseconds": 2458,
+          "requestCount": 100,
+          "requestNanoseconds": 159833
+        },
+        {
+          "controlNanoseconds": 2625,
+          "requestCount": 100,
+          "requestNanoseconds": 167623
+        },
+        {
+          "controlNanoseconds": 2666,
+          "requestCount": 100,
+          "requestNanoseconds": 161664
+        },
+        {
+          "controlNanoseconds": 2581,
+          "requestCount": 100,
+          "requestNanoseconds": 158916
+        },
+        {
+          "controlNanoseconds": 2457,
+          "requestCount": 100,
+          "requestNanoseconds": 159336
+        },
+        {
+          "controlNanoseconds": 2959,
+          "requestCount": 100,
+          "requestNanoseconds": 169537
+        },
+        {
+          "controlNanoseconds": 2794,
+          "requestCount": 100,
+          "requestNanoseconds": 177332
+        }
+      ],
+      "scenario": {
+        "expected": "Seven successes; red coordinates and #FF0000FF",
+        "id": "component-results-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Convert fixed red to all seven independent component results",
+        "settings": "componentConversionResults()",
+        "unit": "aggregate conversion"
+      },
+      "run": 2
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2956,
+          "requestCount": 100,
+          "requestNanoseconds": 173538
+        },
+        {
+          "controlNanoseconds": 2745,
+          "requestCount": 100,
+          "requestNanoseconds": 170871
+        },
+        {
+          "controlNanoseconds": 2921,
+          "requestCount": 100,
+          "requestNanoseconds": 180581
+        },
+        {
+          "controlNanoseconds": 2712,
+          "requestCount": 100,
+          "requestNanoseconds": 161874
+        },
+        {
+          "controlNanoseconds": 2668,
+          "requestCount": 100,
+          "requestNanoseconds": 162081
+        },
+        {
+          "controlNanoseconds": 2793,
+          "requestCount": 100,
+          "requestNanoseconds": 172370
+        },
+        {
+          "controlNanoseconds": 3000,
+          "requestCount": 100,
+          "requestNanoseconds": 179960
+        },
+        {
+          "controlNanoseconds": 2958,
+          "requestCount": 100,
+          "requestNanoseconds": 174454
+        },
+        {
+          "controlNanoseconds": 3045,
+          "requestCount": 100,
+          "requestNanoseconds": 165248
+        },
+        {
+          "controlNanoseconds": 2960,
+          "requestCount": 100,
+          "requestNanoseconds": 181086
+        }
+      ],
+      "scenario": {
+        "expected": "Seven successes; red coordinates and #FF0000FF",
+        "id": "component-results-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Convert fixed red to all seven independent component results",
+        "settings": "componentConversionResults()",
+        "unit": "aggregate conversion"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1250,
+          "requestCount": 100,
+          "requestNanoseconds": 368076
+        },
+        {
+          "controlNanoseconds": 1376,
+          "requestCount": 100,
+          "requestNanoseconds": 344995
+        },
+        {
+          "controlNanoseconds": 1459,
+          "requestCount": 100,
+          "requestNanoseconds": 343790
+        },
+        {
+          "controlNanoseconds": 1627,
+          "requestCount": 100,
+          "requestNanoseconds": 341539
+        },
+        {
+          "controlNanoseconds": 1749,
+          "requestCount": 100,
+          "requestNanoseconds": 376331
+        },
+        {
+          "controlNanoseconds": 1708,
+          "requestCount": 100,
+          "requestNanoseconds": 353834
+        },
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 342006
+        },
+        {
+          "controlNanoseconds": 1630,
+          "requestCount": 100,
+          "requestNanoseconds": 341414
+        },
+        {
+          "controlNanoseconds": 1627,
+          "requestCount": 100,
+          "requestNanoseconds": 358411
+        },
+        {
+          "controlNanoseconds": 1458,
+          "requestCount": 100,
+          "requestNanoseconds": 347203
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2457,
+          "requestCount": 100,
+          "requestNanoseconds": 118921
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 114589
+        },
+        {
+          "controlNanoseconds": 2328,
+          "requestCount": 100,
+          "requestNanoseconds": 114787
+        },
+        {
+          "controlNanoseconds": 1581,
+          "requestCount": 100,
+          "requestNanoseconds": 120835
+        },
+        {
+          "controlNanoseconds": 2043,
+          "requestCount": 100,
+          "requestNanoseconds": 114335
+        },
+        {
+          "controlNanoseconds": 2249,
+          "requestCount": 100,
+          "requestNanoseconds": 113333
+        },
+        {
+          "controlNanoseconds": 2537,
+          "requestCount": 100,
+          "requestNanoseconds": 115379
+        },
+        {
+          "controlNanoseconds": 2205,
+          "requestCount": 100,
+          "requestNanoseconds": 113498
+        },
+        {
+          "controlNanoseconds": 2131,
+          "requestCount": 100,
+          "requestNanoseconds": 114580
+        },
+        {
+          "controlNanoseconds": 2416,
+          "requestCount": 100,
+          "requestNanoseconds": 119839
+        }
+      ],
+      "scenario": {
+        "expected": "HSL (0, 1, 0.5), tolerance 0.001",
+        "id": "hsl-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to HSL components",
+        "settings": "hslComponents()",
+        "unit": "conversion"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1666,
+          "requestCount": 100,
+          "requestNanoseconds": 248879
+        },
+        {
+          "controlNanoseconds": 1666,
+          "requestCount": 100,
+          "requestNanoseconds": 194785
+        },
+        {
+          "controlNanoseconds": 1583,
+          "requestCount": 100,
+          "requestNanoseconds": 193912
+        },
+        {
+          "controlNanoseconds": 1583,
+          "requestCount": 100,
+          "requestNanoseconds": 195214
+        },
+        {
+          "controlNanoseconds": 1541,
+          "requestCount": 100,
+          "requestNanoseconds": 202541
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 215497
+        },
+        {
+          "controlNanoseconds": 1500,
+          "requestCount": 100,
+          "requestNanoseconds": 206251
+        },
+        {
+          "controlNanoseconds": 1625,
+          "requestCount": 100,
+          "requestNanoseconds": 211911
+        },
+        {
+          "controlNanoseconds": 1665,
+          "requestCount": 100,
+          "requestNanoseconds": 209588
+        },
+        {
+          "controlNanoseconds": 1584,
+          "requestCount": 100,
+          "requestNanoseconds": 209296
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 1293,
+          "requestCount": 100,
+          "requestNanoseconds": 128206
+        },
+        {
+          "controlNanoseconds": 1788,
+          "requestCount": 100,
+          "requestNanoseconds": 122205
+        },
+        {
+          "controlNanoseconds": 1336,
+          "requestCount": 100,
+          "requestNanoseconds": 121209
+        },
+        {
+          "controlNanoseconds": 998,
+          "requestCount": 100,
+          "requestNanoseconds": 124626
+        },
+        {
+          "controlNanoseconds": 1624,
+          "requestCount": 100,
+          "requestNanoseconds": 121295
+        },
+        {
+          "controlNanoseconds": 1879,
+          "requestCount": 100,
+          "requestNanoseconds": 120661
+        },
+        {
+          "controlNanoseconds": 1666,
+          "requestCount": 100,
+          "requestNanoseconds": 122958
+        },
+        {
+          "controlNanoseconds": 1500,
+          "requestCount": 100,
+          "requestNanoseconds": 122421
+        },
+        {
+          "controlNanoseconds": 1332,
+          "requestCount": 100,
+          "requestNanoseconds": 121830
+        },
+        {
+          "controlNanoseconds": 1624,
+          "requestCount": 100,
+          "requestNanoseconds": 121415
+        }
+      ],
+      "scenario": {
+        "expected": "LAB (53.2408, 80.0925, 67.2032), tolerance 0.001",
+        "id": "lab-red",
+        "inputs": "sRGB RGBA (1, 0, 0, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Convert fixed red to D65 LAB components",
+        "settings": "labComponents()",
+        "unit": "conversion"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2711,
+          "requestCount": 100,
+          "requestNanoseconds": 64584
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 59668
+        },
+        {
+          "controlNanoseconds": 2584,
+          "requestCount": 100,
+          "requestNanoseconds": 60079
+        },
+        {
+          "controlNanoseconds": 2918,
+          "requestCount": 100,
+          "requestNanoseconds": 66750
+        },
+        {
+          "controlNanoseconds": 3041,
+          "requestCount": 100,
+          "requestNanoseconds": 66793
+        },
+        {
+          "controlNanoseconds": 2918,
+          "requestCount": 100,
+          "requestNanoseconds": 67208
+        },
+        {
+          "controlNanoseconds": 2791,
+          "requestCount": 100,
+          "requestNanoseconds": 59955
+        },
+        {
+          "controlNanoseconds": 2458,
+          "requestCount": 100,
+          "requestNanoseconds": 60085
+        },
+        {
+          "controlNanoseconds": 2710,
+          "requestCount": 100,
+          "requestNanoseconds": 59919
+        },
+        {
+          "controlNanoseconds": 2583,
+          "requestCount": 100,
+          "requestNanoseconds": 59668
+        }
+      ],
+      "scenario": {
+        "expected": "Available CIEDE2000 100 and contrast 21",
+        "id": "comparison-black-white",
+        "inputs": "sRGB RGBA first (0, 0, 0, 1), second (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Compute all public color-comparison metrics",
+        "settings": "comparisonResult(with:)",
+        "unit": "comparison"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "unused",
+      "samples": [
+        {
+          "controlNanoseconds": 2502,
+          "requestCount": 100,
+          "requestNanoseconds": 97040
+        },
+        {
+          "controlNanoseconds": 2375,
+          "requestCount": 100,
+          "requestNanoseconds": 101164
+        },
+        {
+          "controlNanoseconds": 2417,
+          "requestCount": 100,
+          "requestNanoseconds": 96955
+        },
+        {
+          "controlNanoseconds": 2332,
+          "requestCount": 100,
+          "requestNanoseconds": 102748
+        },
+        {
+          "controlNanoseconds": 2459,
+          "requestCount": 100,
+          "requestNanoseconds": 102751
+        },
+        {
+          "controlNanoseconds": 2416,
+          "requestCount": 100,
+          "requestNanoseconds": 102790
+        },
+        {
+          "controlNanoseconds": 2042,
+          "requestCount": 100,
+          "requestNanoseconds": 98501
+        },
+        {
+          "controlNanoseconds": 2124,
+          "requestCount": 100,
+          "requestNanoseconds": 103083
+        },
+        {
+          "controlNanoseconds": 2417,
+          "requestCount": 100,
+          "requestNanoseconds": 103540
+        },
+        {
+          "controlNanoseconds": 2456,
+          "requestCount": 100,
+          "requestNanoseconds": 103043
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-compliant",
+        "inputs": "sRGB RGBA foreground (0, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "unused"
+        ],
+        "purpose": "Budgeted enhancement: compliant",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 2207,
+          "requestCount": 100,
+          "requestNanoseconds": 3269423
+        },
+        {
+          "controlNanoseconds": 2082,
+          "requestCount": 100,
+          "requestNanoseconds": 3270284
+        },
+        {
+          "controlNanoseconds": 2207,
+          "requestCount": 100,
+          "requestNanoseconds": 3248041
+        },
+        {
+          "controlNanoseconds": 2542,
+          "requestCount": 100,
+          "requestNanoseconds": 3262546
+        },
+        {
+          "controlNanoseconds": 2000,
+          "requestCount": 100,
+          "requestNanoseconds": 3273629
+        },
+        {
+          "controlNanoseconds": 2374,
+          "requestCount": 100,
+          "requestNanoseconds": 3269625
+        },
+        {
+          "controlNanoseconds": 2497,
+          "requestCount": 100,
+          "requestNanoseconds": 3246048
+        },
+        {
+          "controlNanoseconds": 2167,
+          "requestCount": 100,
+          "requestNanoseconds": 3238375
+        },
+        {
+          "controlNanoseconds": 2084,
+          "requestCount": 100,
+          "requestNanoseconds": 3266085
+        },
+        {
+          "controlNanoseconds": 1958,
+          "requestCount": 100,
+          "requestNanoseconds": 3247665
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2786,
+          "requestCount": 100,
+          "requestNanoseconds": 2451043
+        },
+        {
+          "controlNanoseconds": 3419,
+          "requestCount": 100,
+          "requestNanoseconds": 2496213
+        },
+        {
+          "controlNanoseconds": 3160,
+          "requestCount": 100,
+          "requestNanoseconds": 2502001
+        },
+        {
+          "controlNanoseconds": 3211,
+          "requestCount": 100,
+          "requestNanoseconds": 2513501
+        },
+        {
+          "controlNanoseconds": 2746,
+          "requestCount": 100,
+          "requestNanoseconds": 2406916
+        },
+        {
+          "controlNanoseconds": 3627,
+          "requestCount": 100,
+          "requestNanoseconds": 2486249
+        },
+        {
+          "controlNanoseconds": 2836,
+          "requestCount": 100,
+          "requestNanoseconds": 2439288
+        },
+        {
+          "controlNanoseconds": 3000,
+          "requestCount": 100,
+          "requestNanoseconds": 2436544
+        },
+        {
+          "controlNanoseconds": 2495,
+          "requestCount": 100,
+          "requestNanoseconds": 2430000
+        },
+        {
+          "controlNanoseconds": 2916,
+          "requestCount": 100,
+          "requestNanoseconds": 2451465
+        }
+      ],
+      "scenario": {
+        "expected": "meetsTarget; distance <= 100.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-adjusted",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: adjusted",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 100.0",
+        "unit": "enhancement"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1871,
+          "requestCount": 100,
+          "requestNanoseconds": 2480491
+        },
+        {
+          "controlNanoseconds": 2168,
+          "requestCount": 100,
+          "requestNanoseconds": 2530301
+        },
+        {
+          "controlNanoseconds": 2292,
+          "requestCount": 100,
+          "requestNanoseconds": 2571919
+        },
+        {
+          "controlNanoseconds": 2168,
+          "requestCount": 100,
+          "requestNanoseconds": 2625210
+        },
+        {
+          "controlNanoseconds": 1792,
+          "requestCount": 100,
+          "requestNanoseconds": 2590872
+        },
+        {
+          "controlNanoseconds": 1707,
+          "requestCount": 100,
+          "requestNanoseconds": 2644624
+        },
+        {
+          "controlNanoseconds": 2792,
+          "requestCount": 100,
+          "requestNanoseconds": 2687207
+        },
+        {
+          "controlNanoseconds": 2291,
+          "requestCount": 100,
+          "requestNanoseconds": 2610918
+        },
+        {
+          "controlNanoseconds": 2208,
+          "requestCount": 100,
+          "requestNanoseconds": 2608292
+        },
+        {
+          "controlNanoseconds": 2167,
+          "requestCount": 100,
+          "requestNanoseconds": 2608171
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 2750,
+          "requestCount": 100,
+          "requestNanoseconds": 1898084
+        },
+        {
+          "controlNanoseconds": 3004,
+          "requestCount": 100,
+          "requestNanoseconds": 2008505
+        },
+        {
+          "controlNanoseconds": 2506,
+          "requestCount": 100,
+          "requestNanoseconds": 2011581
+        },
+        {
+          "controlNanoseconds": 2956,
+          "requestCount": 100,
+          "requestNanoseconds": 2080573
+        },
+        {
+          "controlNanoseconds": 2956,
+          "requestCount": 100,
+          "requestNanoseconds": 2017420
+        },
+        {
+          "controlNanoseconds": 2498,
+          "requestCount": 100,
+          "requestNanoseconds": 1931666
+        },
+        {
+          "controlNanoseconds": 2210,
+          "requestCount": 100,
+          "requestNanoseconds": 1933616
+        },
+        {
+          "controlNanoseconds": 2498,
+          "requestCount": 100,
+          "requestNanoseconds": 1964082
+        },
+        {
+          "controlNanoseconds": 3044,
+          "requestCount": 100,
+          "requestNanoseconds": 1876713
+        },
+        {
+          "controlNanoseconds": 2874,
+          "requestCount": 100,
+          "requestNanoseconds": 1866456
+        }
+      ],
+      "scenario": {
+        "expected": "bestEffort; distance <= 25.0; best effort improves contrast; compliant preserves input",
+        "id": "enhancement-best-effort",
+        "inputs": "sRGB RGBA foreground (0.8, 0.8, 0.8, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Budgeted enhancement: best-effort",
+        "settings": "AA, preserveHue, preferDarker true, distance budget 25.0",
+        "unit": "enhancement"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "empty",
+      "samples": [
+        {
+          "controlNanoseconds": 1875,
+          "requestCount": 100,
+          "requestNanoseconds": 6816213
+        },
+        {
+          "controlNanoseconds": 2126,
+          "requestCount": 100,
+          "requestNanoseconds": 7388666
+        },
+        {
+          "controlNanoseconds": 2082,
+          "requestCount": 100,
+          "requestNanoseconds": 6772375
+        },
+        {
+          "controlNanoseconds": 1998,
+          "requestCount": 100,
+          "requestNanoseconds": 6817031
+        },
+        {
+          "controlNanoseconds": 1667,
+          "requestCount": 100,
+          "requestNanoseconds": 7033957
+        },
+        {
+          "controlNanoseconds": 1792,
+          "requestCount": 100,
+          "requestNanoseconds": 6971080
+        },
+        {
+          "controlNanoseconds": 1958,
+          "requestCount": 100,
+          "requestNanoseconds": 6809709
+        },
+        {
+          "controlNanoseconds": 1748,
+          "requestCount": 100,
+          "requestNanoseconds": 6727995
+        },
+        {
+          "controlNanoseconds": 1626,
+          "requestCount": 100,
+          "requestNanoseconds": 6444293
+        },
+        {
+          "controlNanoseconds": 1544,
+          "requestCount": 100,
+          "requestNanoseconds": 7116043
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 3
+    },
+    {
+      "cacheMode": "primed",
+      "samples": [
+        {
+          "controlNanoseconds": 3088,
+          "requestCount": 100,
+          "requestNanoseconds": 6595590
+        },
+        {
+          "controlNanoseconds": 2674,
+          "requestCount": 100,
+          "requestNanoseconds": 6433624
+        },
+        {
+          "controlNanoseconds": 3083,
+          "requestCount": 100,
+          "requestNanoseconds": 5971747
+        },
+        {
+          "controlNanoseconds": 2379,
+          "requestCount": 100,
+          "requestNanoseconds": 5876168
+        },
+        {
+          "controlNanoseconds": 2670,
+          "requestCount": 100,
+          "requestNanoseconds": 6493826
+        },
+        {
+          "controlNanoseconds": 2714,
+          "requestCount": 100,
+          "requestNanoseconds": 5876879
+        },
+        {
+          "controlNanoseconds": 3207,
+          "requestCount": 100,
+          "requestNanoseconds": 6286130
+        },
+        {
+          "controlNanoseconds": 2911,
+          "requestCount": 100,
+          "requestNanoseconds": 6256751
+        },
+        {
+          "controlNanoseconds": 2086,
+          "requestCount": 100,
+          "requestNanoseconds": 6495498
+        },
+        {
+          "controlNanoseconds": 2579,
+          "requestCount": 100,
+          "requestNanoseconds": 5983200
+        }
+      ],
+      "scenario": {
+        "expected": "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
+        "id": "palette-red-five",
+        "inputs": "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
+        "modes": [
+          "empty",
+          "primed"
+        ],
+        "purpose": "Generate and assess one five-color palette (stochastic candidate search)",
+        "settings": "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
+        "unit": "palette"
+      },
+      "run": 3
+    }
+  ]
+}
