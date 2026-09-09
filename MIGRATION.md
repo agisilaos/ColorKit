@@ -1,6 +1,6 @@
 # Migration Guide
 
-## Unreleased additions for ColorKit 3.1
+## ColorKit 3.1.0
 
 ### Component conversion results
 
