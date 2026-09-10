@@ -29,17 +29,17 @@ outside the normal formatting/lint inventory once preserved.
   conversion, enhancement, palette/export workflows, and actor-isolated theming
   and preview creation. Ordinary color work remains nonisolated.
 
-The 3.1.0 baseline is pinned separately to
-`4bcc311c74e74096217097f8e38b6d93a147248e`, the peeled commit of `v3.1.0`.
-`3.1.0/ComponentResults.swift` preserves typed, inferred, and unbound
-`componentConversionResults` references in a nonisolated public client. It consumes
-all seven results independently, reads every component payload field, requires the
-released Sendable/Equatable conformances, and exhaustively handles both Result
-cases and all six `ColorConversionIssue` cases. Ordinary sRGB and Display P3
-workflows cover client handling of success and independently unavailable bounded
-representations; typechecking does not execute or assert those outcomes.
-This is a standalone frozen copy extended from `scripts/fixtures/component_results.swift`,
-not a dependency on that mutable documentation fixture. The 3.0.0 clients remain unchanged.
+The 3.1.0 baseline pins the peeled `v3.1.0` commit
+`4bcc311c74e74096217097f8e38b6d93a147248e`. Its standalone `ComponentResults.swift`
+client preserves nonisolated method references, all seven independent results and
+payload fields, Sendable/Equatable conformances, and exhaustive Result/issue handling.
+sRGB and Display P3 workflows are typechecked; runtime outcomes remain covered by
+`ColorComponentConversionResultsTests` and `PublicComponentConversionTests`.
+
+The normal checker discovers both baselines automatically. Each added release costs
+one baseline build, one API extraction/comparison, and two client typechecks per
+platform; candidate work is shared. The initial local 3.1.0 phases added about
+16 seconds total on Xcode 26.5 (timing varies).
 
 Do not edit existing client files to make an API change pass. Git compares the
 fixture directory against the PR base (`--fixture-base`, default `origin/main`)
@@ -50,8 +50,6 @@ To extend coverage, add a separate Swift file to the release directory. It must
 compile against that release. For later releases, add a directory containing a
 `revision` file and clients for newly shipped APIs. Fetch full history before
 running the checker in a shallow clone.
-Release directories are discovered automatically, so the normal checker, CI, and
-release preflight exercise both baselines without a separate command or registry.
 
 ## Builds and diagnostics
 
@@ -60,8 +58,6 @@ with the same compiler, SDK, architecture, and settings on both platforms.
 It compiles the clients against each module and compares their public APIs.
 There is no compatibility cache: release builds and API extraction run every time.
 This costs extra build time but avoids cache keys, receipts, and invalidation rules.
-Adding 3.1.0 adds one release build, one release API extraction/comparison, and two
-client typechecks per platform. Candidate builds and API extraction remain shared.
 Temporary release sources and builds are removed when the check finishes.
 
 Build products and logs default to `.build/compatibility`; override with `--storage`.
@@ -89,7 +85,6 @@ Only concrete gaps receive additional assertions.
 | Assessed palettes preserve their original palette | `ColorAccessibilityResultTests` |
 | Deprecated arbitrary-view simulation remains a no-op | `ColorVisionSimulationTests.testLegacyArbitraryViewModifierLeavesRenderedContentUnchanged` |
 | Theme selection and registry behavior | `ThemeTests`, serialized `ThemeManagerIntegrationTests` |
-| Independent component results, successful payloads, gamut and resolution failures | `ColorComponentConversionResultsTests`, `PublicComponentConversionTests` |
 
 Compilation, API inventories, and these tests provide bounded evidence. They do
 not prove every possible client workflow, binary compatibility, old-compiler
