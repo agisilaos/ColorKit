@@ -1,7 +1,9 @@
 import SwiftUI
 
-/// Selects only verifiable, in-budget candidates from the existing strategy paths.
-struct BudgetedEnhancement {
+@testable import ColorKit
+
+// Frozen collect/sort/scan implementation from d2bcf32. Keep independent of production selection.
+struct ReferenceBudgetedEnhancement {
     let configuration: AccessibilityEnhancer.Configuration
 
     func result(for original: Color, against background: Color) -> ColorAccessibilityResult {
@@ -18,26 +20,12 @@ struct BudgetedEnhancement {
         )
         guard originalResult.status == .bestEffort, budget > 0 else { return originalResult }
 
-        var passing: ColorAccessibilityResult?
-        var bestEffort = originalResult
+        var candidates: [ColorAccessibilityResult] = []
         func examine(_ candidate: Color) {
             guard let distance = distance(from: resolvedOriginal, to: candidate), distance <= budget,
                   let contrast = StrictWCAGContrast.measure(foreground: candidate, background: background).ratio
             else { return }
-            let candidateResult = result(color: candidate, contrast: contrast, distance: distance)
-            if candidateResult.meetsTarget {
-                if passing == nil || (
-                    configuration.strategy == .minimumChange &&
-                    distance < (passing?.perceptualDistance ?? .infinity)
-                ) {
-                    passing = candidateResult
-                }
-            } else if contrast > (bestEffort.contrastRatio ?? 0) || (
-                contrast == bestEffort.contrastRatio &&
-                distance < (bestEffort.perceptualDistance ?? .infinity)
-            ) {
-                bestEffort = candidateResult
-            }
+            candidates.append(result(color: candidate, contrast: contrast, distance: distance))
         }
         let fallback = EnhancementCandidateSearch(configuration: configuration).candidate(
             for: original,
@@ -48,7 +36,30 @@ struct BudgetedEnhancement {
         }
         examine(fallback)
 
-        return passing ?? bestEffort
+        if configuration.strategy == .minimumChange {
+            // Explicit offsets preserve strategy order when distances are equal.
+            candidates = candidates.enumerated()
+                .sorted {
+                    let first = $0.element.perceptualDistance ?? .infinity
+                    let second = $1.element.perceptualDistance ?? .infinity
+                    return first == second ? $0.offset < $1.offset : first < second
+                }
+                .map(\.element)
+        }
+
+        var best = originalResult
+        for candidate in candidates {
+            if candidate.meetsTarget { return candidate }
+            let contrast = candidate.contrastRatio ?? 0
+            let bestContrast = best.contrastRatio ?? 0
+            if contrast > bestContrast || (
+                contrast == bestContrast &&
+                (candidate.perceptualDistance ?? .infinity) < (best.perceptualDistance ?? .infinity)
+            ) {
+                best = candidate
+            }
+        }
+        return best
     }
 
     private func distance(from original: ResolvedSRGBA?, to candidate: Color) -> Double? {
