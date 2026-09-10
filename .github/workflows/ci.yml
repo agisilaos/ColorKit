@@ -79,6 +79,9 @@ jobs:
       - name: Test Benchmark Correctness in Release Mode
         run: swift test --package-path Benchmarks -c release
 
+      - name: Test Standalone Contrast Pair Report
+        run: swift test --package-path Examples/ContrastPairReport
+
       - name: Build and Test Canonical Matrix
         run: scripts/run_tests.sh --results-dir TestResults
 
