@@ -29,6 +29,18 @@ outside the normal formatting/lint inventory once preserved.
   conversion, enhancement, palette/export workflows, and actor-isolated theming
   and preview creation. Ordinary color work remains nonisolated.
 
+The 3.1.0 baseline pins the peeled `v3.1.0` commit
+`4bcc311c74e74096217097f8e38b6d93a147248e`. Its standalone `ComponentResults.swift`
+client preserves nonisolated method references, all seven independent results and
+payload fields, Sendable/Equatable conformances, and exhaustive Result/issue handling.
+sRGB and Display P3 workflows are typechecked; runtime outcomes remain covered by
+`ColorComponentConversionResultsTests` and `PublicComponentConversionTests`.
+
+The normal checker discovers both baselines automatically. Each added release costs
+one baseline build, one API extraction/comparison, and two client typechecks per
+platform; candidate work is shared. The initial local 3.1.0 phases added about
+16 seconds total on Xcode 26.5 (timing varies).
+
 Do not edit existing client files to make an API change pass. Git compares the
 fixture directory against the PR base (`--fixture-base`, default `origin/main`)
 and rejects changes or deletions to existing files, including release revisions.
