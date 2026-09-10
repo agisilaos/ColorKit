@@ -243,6 +243,9 @@ los temas solo establecen una pareja de texto/fondo blanco y negro.
 `accessibleContrastingColor(for:)` y `suggestedColor(for:)` ignoran el nivel solicitado,
 usan heurísticas distintas y no garantizan ese nivel.
 
+Ejecuta el [informe de pares de contraste](Examples/ContrastPairReport/README.md)
+independiente para macOS para evaluar pares de primer plano/fondo con objetivos WCAG explícitos por par.
+
 ### **1️⃣2️⃣ Exportar y compartir paletas de colores**  
 ```swift
 // Crear una paleta a partir de colores

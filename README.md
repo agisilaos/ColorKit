@@ -239,6 +239,9 @@ only establish a black-and-white text/background pair.
 `accessibleContrastingColor(for:)` and `suggestedColor(for:)` ignore the requested
 level, use different heuristics, and do not guarantee that level.
 
+Run the standalone macOS [contrast pair report](Examples/ContrastPairReport/README.md)
+to assess foreground/background pairs against explicit per-pair WCAG targets.
+
 ### **1️⃣2️⃣ Export & Share Color Palettes**  
 ```swift
 // Create a palette from colors
