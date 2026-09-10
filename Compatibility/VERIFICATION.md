@@ -1,5 +1,47 @@
 # Compatibility gate verification
 
+## 3.1.0 frozen client — 2026-09-10
+
+Branch `chore/freeze-3.1-client` starts at current `origin/main`,
+`4bcc311c74e74096217097f8e38b6d93a147248e`. Verified with
+`git ls-remote origin refs/tags/v3.1.0 'refs/tags/v3.1.0^{}'`:
+the annotated tag object is `0eba424a95143c0a54ff58d9ae5edd6fca45d5d8`,
+and its peeled commit is `4bcc311c74e74096217097f8e38b6d93a147248e`.
+Local tag inspection and `git rev-parse 'v3.1.0^{commit}'` agree. The baseline
+pins that released commit, even though main currently points to it too.
+
+- `python3 scripts/check_compatibility.py`: PASS for **both 3.0.0 and 3.1.0**
+  on macOS and iOS Simulator. The new client compiles against its archived release
+  and the candidate; both releases' complete API comparisons pass on each platform.
+  Automatic directory discovery required no checker or CI changes.
+- Xcode 26.5 (17F42), Swift 6.3.2, arm64, Swift 6 language mode; client targets
+  macOS 12 and iOS 14. Diagnostics: `.build/compatibility/run-cc0ibghq/`.
+- `python3 -m unittest discover -s scripts/tests`: all 26 tests pass, including
+  existing command/API failure propagation, zero-exit breakage diagnostics,
+  release-gate failures, and fixture immutability. The added test confirms later
+  release discovery and rejection of edits/deletions to either release's client
+  and revision after preservation in the trusted Git base.
+- `git diff --check`: PASS. The 3.0.0 baseline, mutable documentation fixture,
+  production API/behavior, contrast example, and shared product docs are unchanged.
+- `swiftlint lint --strict`: PASS, zero violations in 121 files.
+
+The new fixture covers nonisolated typed/inferred/unbound method references, all
+seven independently consumed results and payload fields, released conformances,
+and exhaustive Result/issue handling. sRGB and Display P3 workflows preserve client
+source for successful and partially unavailable conversions. These workflows are
+typechecked, not executed. Runtime tests and the historical deliberate production
+mutations below were not rerun for this fixture-only extension. This is not binary,
+older-compiler, minimum-OS runtime, physical-device, or remote CI validation.
+
+The normal run's log timestamps span about 60 seconds. The added 3.1.0 baseline
+phases total about 16 seconds (macOS 9, iOS 7), measured from each baseline build
+log's creation to its API comparison completion. These are local observations,
+not a CI timing guarantee. Per platform the extra work is one release build, one
+API extraction/comparison, and two client typechecks; candidate work is shared.
+No version bump, release preflight, or release was performed.
+
+## Original 3.0.0 gate verification
+
 Validated locally on 2026-09-07 with Xcode 26.5 (17F42), Swift 6.3.2, and arm64.
 The candidate started at `3f122111681538db5bd71a01891b7619fba00ba9` plus this
 change; the release source is the pinned 3.0.0 commit in `Clients/3.0.0/revision`.

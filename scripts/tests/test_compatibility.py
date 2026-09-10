@@ -50,6 +50,28 @@ class ClientInventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Preserved clients"):
             CHECK.validate_clients(self.root, "HEAD")
 
+    def test_later_release_is_discovered_and_then_preserved(self):
+        later = self.client.parent.with_name("3.1.0")
+        later.mkdir()
+        client = later / "ComponentResults.swift"
+        revision = later / "revision"
+        client.write_text("import ColorKit\n")
+        revision.write_text("b" * 40 + "\n")
+        self.assertEqual(CHECK.validate_clients(self.root, "HEAD"), [self.client.parent, later])
+        self.git("add", "Compatibility")
+        self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+                 "-c", "commit.gpgsign=false", "commit", "-qm", "Freeze later release")
+        for path in (self.client, self.client.parent / "revision", client, revision):
+            original = path.read_text()
+            with self.subTest(path=path):
+                path.write_text("changed\n")
+                with self.assertRaisesRegex(ValueError, "Preserved clients"):
+                    CHECK.validate_clients(self.root, "HEAD")
+                path.unlink()
+                with self.assertRaisesRegex(ValueError, "Preserved clients"):
+                    CHECK.validate_clients(self.root, "HEAD")
+                path.write_text(original)
+
     def test_release_revision_cannot_move(self):
         (self.client.parent / "revision").write_text("b" * 40)
         with self.assertRaisesRegex(ValueError, "Preserved clients"):
