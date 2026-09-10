@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// The shared, bounded candidate paths. The acceptance rule belongs to the caller:
-/// legacy enhancement stops on its contrast threshold; budgeted enhancement collects
-/// the paths before ranking eligible candidates. The returned fallback is examined too.
+/// legacy enhancement stops on its contrast threshold; budgeted enhancement examines
+/// the full paths while retaining eligible winners. The returned fallback is examined too.
 struct EnhancementCandidateSearch {
     let configuration: AccessibilityEnhancer.Configuration
 
