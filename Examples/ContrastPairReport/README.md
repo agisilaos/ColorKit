@@ -10,8 +10,12 @@ swift run --package-path Examples/ContrastPairReport ContrastPairReport --empty
 swift test --package-path Examples/ContrastPairReport
 ```
 
-Edit `Samples` in `Sources/ContrastPairReport/ContrastPairReportApp.swift` to supply
+The window reports passes, shortfalls, and unavailable measurements in text.
+With `--empty`, it says “No pairs assessed.”, not a successful assessment.
+
+Edit `Samples.pairs` in `Sources/ContrastPairReport/ContrastPairReportApp.swift` to supply
 ordered foreground/background pairs with labels and explicit WCAG targets.
+Input order and duplicates are retained; labels are not identity.
 Samples cover passes, a shortfall, duplicate labels and identical pairs,
 a translucent background, and independently unresolved inputs.
 
