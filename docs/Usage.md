@@ -1,13 +1,12 @@
-# ColorKit usage
+# ColorKit recipes
 
 [Back to README](../README.md) · [Español](Usage.es-ES.md)
 
-## **🎨 Usage**  
+Focused examples using existing public APIs. Import `SwiftUI` and `ColorKit` in your client. Detailed contracts live in the linked guides.
 
-### Component conversion results
+## Convert colors
 
-Use `componentConversionResults()` when availability matters. Each field reports its
-own value or issue, so a failed Hex conversion does not discard available LAB.
+Use per-representation results when availability matters. Supply a fixed color; capture the intended appearance explicitly for dynamic colors. One unavailable representation does not discard successful conversions.
 
 <!-- swift-example: component-results -->
 ```swift
@@ -21,37 +20,20 @@ case .failure(let issue): print("Hex unavailable:", issue)
 }
 ```
 
-All seven fields describe one fixed, uncomposited color: `srgba`, `hsl`, `hsb`,
-`cmyk`, `xyz`, `lab`, and `hex`. Named or dynamic colors without fixed components
-must be resolved explicitly by the caller. Extended sRGBA and finite D65 XYZ/LAB
-are preserved; HSL, HSB, CMYK, and Hex reject RGB outside `0...1` without clipping
-or endpoint tolerance. Alpha is retained in sRGBA and eight-digit `#RRGGBBAA` Hex;
-other coordinates omit it. Hues are turns, HSL/HSB/CMYK fractions are `0...1`, and
-XYZ uses reference-white Y = 100. CMYK is an algebraic approximation, not a printer
-profile. Existing APIs remain unchanged and are not deprecated. See the
-[conversion contract](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results)
-and [adoption notes](../MIGRATION.md#component-conversion-results).
+See [component contracts](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results) for gamut, alpha, units, and failure rules.
 
-### **1️⃣ HEX <-> RGB Conversion**  
-```swift
-let color = Color(hex: "#FF5733")
-print(color.hexValue()) // "#FF5733FF"
-```
+### HSL
 
-### **2️⃣ HSL Conversion**  
+The legacy HSL accessor resolves the current appearance and clips to sRGB. It returns `nil` if resolution fails.
+
 <!-- swift-example: hsl -->
 ```swift
 let hsl = Color.red.hslComponents()
 let customColor = Color(hue: 0.5, saturation: 1.0, lightness: 0.5)
 ```
 
-`hslComponents()` resolves named and dynamic colors for the current appearance.
-It converts to sRGB and clamps wider-gamut channels to `0...1` before conversion;
-opacity is not part of HSL. It returns `nil` when resolution fails, such as for a
-pattern color. Unlike HSL, CMYK and LAB require fixed colors and do not choose an
-appearance. See [HSL migration guidance](../MIGRATION.md#hsl-resolution).
+### CMYK
 
-### **3️⃣ CMYK Conversion**  
 <!-- swift-example: cmyk -->
 ```swift
 // Convert from RGB to CMYK
@@ -63,7 +45,8 @@ let cmyk = red.cmykComponents()
 let printColor = Color(cyan: 0.2, magenta: 0.8, yellow: 0.1, key: 0.1)
 ```
 
-### **4️⃣ LAB Conversion**  
+### LAB
+
 <!-- swift-example: lab -->
 ```swift
 // Resolve a fixed color and convert it to LAB
@@ -77,76 +60,54 @@ if let lab {
 let labColor = Color(L: 50.0, a: 25.0, b: -30.0)
 ```
 
-`labComponents()` resolves fixed RGB and grayscale colors—including linear RGB and
-Display P3—to nonlinear sRGB before conversion. Finite out-of-gamut channels are
-preserved without clipping. The method returns `nil` for colors it cannot resolve,
-such as unresolved dynamic colors; alpha does not affect the LAB coordinates.
+CMYK and LAB accessors require fixed colors; they do not choose an appearance. See [color spaces](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md) for their distinct conversion policies and Hex support.
 
-### **5️⃣ Adaptive Colors (Light/Dark Mode)**  
-```swift
-Text("Adaptive Text")
-    .adaptiveColor(light: .blue, dark: .orange)
-```
+## Assess and adjust contrast
 
-### **6️⃣ Ensuring High Contrast**  
-```swift
-Text("Accessible Text")
-    .highContrastColor(base: .gray, background: .white)
-```
+The receiver is the foreground. Translucent foregrounds composite over opaque backgrounds; translucent backgrounds are unavailable. A measured pass does not certify whole-app accessibility.
 
-### **7️⃣ Detecting Theme Changes**  
+<!-- swift-example: budget -->
 ```swift
-Text("Theme Change")
-    .onAdaptiveColorChange { newScheme in
-        print("Color scheme changed to: \(newScheme)")
-    }
-```
+// Check WCAG compliance
+let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+let assessment = textColor.accessibilityResult(against: backgroundColor, targetLevel: .AA)
+print(assessment.status)
 
-### **8️⃣ Gradient Generation Utilities**  
-```swift
-let gradient = Gradient(colors: [.red, .blue])
-let linearGradient = LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom)
-```
-
-### **9️⃣ Color Blending Modes**  
-```swift
-let baseColor = Color.red
-let blendColor = Color.blue
-let blendedColor = baseColor.blended(with: blendColor, mode: .overlay)
-```
-
-### **🔟 Comprehensive Theming System**  
-```swift
-// Define a custom theme
-let oceanTheme = ColorTheme(
-    name: "Ocean",
-    primary: Color(hex: "#1E88E5"),
-    secondary: Color(hex: "#00ACC1"),
-    accent: Color(hex: "#7E57C2"),
-    background: Color(hex: "#ECEFF1"),
-    text: Color(hex: "#263238")
+// Get budgeted candidates with explicit outcomes and measurement evidence
+let suggestions = textColor.suggestAccessibleVariantResults(
+    with: backgroundColor,
+    targetLevel: .AA,
+    maxPerceptualDistance: 30
 )
-
-// Register the theme
-ThemeManager.shared.register(theme: oceanTheme)
-
-// Apply theme to a view hierarchy
-ContentView()
-    .withThemeManager()
-
-// Use themed colors in views
-Text("Themed Text")
-    .themedText(.primary)
-
-Button("Primary Button") {}
-    .themedButton(.primary)
-
-// Use semantic colors
-Rectangle()
-    .fill(Color.themed(.accent))
 ```
 
-### **1️⃣1️⃣ Auto-Generate Accessible Color Palettes**  
+### Generate an adjusted candidate
+
+<!-- swift-example: enhancement -->
+```swift
+// Generate a candidate within a distance budget, then inspect its outcome
+let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
+let targetLevel = WCAGContrastLevel.AA
+
+let result = originalColor.enhancementResult(
+    with: backgroundColor,
+    targetLevel: targetLevel
+)
+let enhancedColor = result.color
+
+if result.meetsTarget {
+    if let ratio = result.contrastRatio {
+        print("Measured contrast: \(ratio):1")
+    }
+}
+```
+
+Inspect the outcome before using a candidate. The distance budget can prevent reaching the target. Legacy color-returning enhancement ignores that budget. See [enhancement contracts](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#verifiable-results).
+
+### Assess a generated palette
+
 <!-- swift-example: accessible-palette -->
 ```swift
 let seedColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
@@ -185,211 +146,13 @@ struct ContentView: View {
 }
 ```
 
-For new callers, check `meetsTarget` or `status` before using a candidate.
-Assessed palettes retain every outcome; they impose no enhancement budget and do
-not certify contrast between entries. Legacy palettes return candidates; themes
-only establish a black-and-white text/background pair.
-`accessibleContrastingColor(for:)` and `suggestedColor(for:)` ignore the requested
-level, use different heuristics, and do not guarantee that level.
+Assessments retain every outcome and do not certify contrast between palette entries. See [assessed palettes](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#assessed-palettes) for guarantees and legacy differences.
 
-Run the standalone macOS [contrast pair report](../Examples/ContrastPairReport/README.md)
-to assess foreground/background pairs against explicit per-pair WCAG targets.
+To assess your own explicit pairs, run the standalone macOS [contrast pair report](../Examples/ContrastPairReport/README.md).
 
-### **1️⃣2️⃣ Export & Share Color Palettes**  
-```swift
-// Create a palette from colors
-let colors: [Color] = [.red, .green, .blue]
-let palette = PaletteExporter.createPalette(from: colors)
+## Compare colors
 
-// Create a palette from a theme
-let theme = ThemeManager.shared.currentTheme
-let themePalette = PaletteExporter.createPalette(from: theme)
-
-// Export to various formats
-if let jsonData = PaletteExporter.export(
-    palette: palette,
-    to: .json,
-    paletteName: "My Palette"
-) {
-    // Use the data (save to file, share, etc.)
-}
-
-// Copy to clipboard
-PaletteExporter.copyToClipboard(
-    palette: palette,
-    format: .css,
-    paletteName: "My Palette"
-)
-
-// Export accessible palette
-let accessiblePaletteData = seedColor.exportAccessiblePalette(
-    targetLevel: .AA,
-    to: .svg,
-    paletteName: "Accessible Palette"
-)
-
-// Add export functionality to any view
-myView.paletteExport(colors: colors, paletteName: "RGB Palette")
-myView.paletteExport(theme: theme)
-
-// Use the export UI directly
-PaletteExportView(palette: palette, paletteName: "My Palette")
-```
-
-### **1️⃣3️⃣ Performance Optimizations (v1.4.0+)**  
-```swift
-// ColorKit automatically caches expensive color operations
-// No code changes required to benefit from performance improvements
-
-// First call calculates and caches
-let lab1 = color1.labComponents()
-
-// Second call retrieves from cache (much faster)
-let lab1Again = color1.labComponents()
-
-// Blending with caching
-let blended = color1.blended(with: color2, mode: .overlay, amount: 0.5)
-
-// Gradient interpolation with caching
-let interpolated = color1.interpolated(with: color2, amount: 0.5, in: .lab)
-
-// Get cached contrast ratio
-if let ratio = ColorCache.shared.getCachedContrastRatio(for: color1, with: color2) {
-    print("Cached contrast ratio: \(ratio)")
-}
-
-// Cache a contrast ratio
-ColorCache.shared.cacheContrastRatio(for: color1, with: color2, ratio: 4.5)
-
-// If needed, manually clear caches
-ColorCache.shared.clearCache()
-```
-
-For more details on performance improvements, see [PERFORMANCE_IMPROVEMENTS.md](../PERFORMANCE_IMPROVEMENTS.md).
-
-### **1️⃣4️⃣ AccessibilityEnhancer (v1.5.0+)**  
-<!-- swift-example: enhancement -->
-```swift
-// Generate a candidate within a distance budget, then inspect its outcome
-let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
-let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
-let targetLevel = WCAGContrastLevel.AA
-
-let result = originalColor.enhancementResult(
-    with: backgroundColor,
-    targetLevel: targetLevel
-)
-let enhancedColor = result.color
-
-if result.meetsTarget {
-    if let ratio = result.contrastRatio {
-        print("Measured contrast: \(ratio):1")
-    }
-}
-```
-
-### **1️⃣5️⃣ Preview Catalog**
-The Preview Catalog provides interactive demonstrations of ColorKit's features:
-
-<!-- swift-example: catalog -->
-```swift
-import ColorKit
-
-struct ContentView: View {
-    var body: some View {
-        MainCatalogView()
-    }
-}
-```
-
-Available previews:
-
-1. **BlendingPreview**
-   - Interactive color blending with all blend modes
-   - Real-time blend amount control
-   - Performance metrics
-
-2. **GradientPreview**
-   - Linear, radial, and angular gradient creation
-   - Color stop management
-   - Code generation
-
-3. **ThemePreview**
-   - Light/dark mode testing
-   - UI component showcase
-   - Theme code generation
-
-4. **PerformanceBenchmark**
-   - Operation benchmarking
-   - Caching metrics
-   - Iteration control
-
-5. **ColorDebuggerPreview**
-   - Color space visualization
-   - Component analysis
-   - Visual comparison tools
-   - Performance monitoring
-
-6. **PaletteStudioPreview**
-   - Palette generation
-   - Export functionality
-   - Harmony rules
-   - Theme generation
-
-7. **ColorAnimationPreview**
-   - Color transition testing
-   - Interpolation modes
-   - Timing curves
-   - Performance metrics
-
-8. **AccessibilityLabPreview**
-   - WCAG contrast checking
-   - Color enhancement strategies
-   - Accessible color suggestions
-   - Educational guidelines
-
-Each preview is designed to help developers understand and utilize ColorKit's features effectively. Access them through the `MainCatalogView` or individually:
-
-<!-- swift-example: previews -->
-```swift
-// Use individual previews
-ColorSpacePreview()
-BlendingPreview()
-GradientPreview()
-ThemePreview()
-PerformanceBenchmark()
-ColorDebuggerPreview()
-PaletteStudioPreview()
-ColorAnimationPreview()
-AccessibilityLabPreview()
-```
-
-## **🎨 Debugging Tools**  
-
-ColorKit now includes advanced debugging tools to help developers inspect colors, validate accessibility compliance, and ensure correct implementation. These tools include:
-
-### **Color Inspection**  
-
-Inspect colors in multiple color spaces (RGB, HSL, HSB, CMYK, LAB, XYZ):
-
-```swift
-// Get color components in all color spaces
-let components = myColor.colorSpaceComponents()
-print(components.description)
-
-// Display visual color inspector in SwiftUI
-ColorSpaceInspectorView(color: myColor)
-```
-
-`rgbaComponents()` resolves the current appearance: UIKit preserves extended sRGB;
-AppKit converts to bounded sRGB. Failure returns `(0, 0, 0, 0)`, indistinguishable
-from transparent black. Aggregate components inherit that policy, substitute zeros
-for failed HSL/CMYK, extract HSB without a success flag, and derive LAB/XYZ from RGB
-even on failure. Use optional conversions when availability matters.
-
-### **Color Comparison**  
-
-Compare fixed, opaque, in-gamut sRGB colors using component differences, WCAG metrics, and CIEDE2000:
+CIEDE2000 comparison requires fixed, opaque, in-gamut sRGB inputs. Unavailable measurements remain explicit.
 
 <!-- swift-example: comparison -->
 ```swift
@@ -407,43 +170,44 @@ case .unavailable(let issues):
 ColorComparisonView(color1: color1, color2: color2)
 ```
 
-Dynamic, translucent, nonfinite, and out-of-sRGB inputs return explicit issues instead of fabricated measurements.
+The legacy similarity predicate uses CIE76, not CIEDE2000; thresholds are not interchangeable. See [comparison contracts](../Sources/ColorKit/Documentation.docc/Utilities-article.md).
 
-`isPerceptuallySimilar(to:threshold:)` uses CIE76 in D65 LAB and `distance < threshold`
-without validating the threshold. Equality or unavailable LAB returns `false`.
-It ignores alpha without compositing and accepts extended sRGB when LAB is available.
-CIEDE2000 requires opaque, in-gamut inputs; thresholds are not interchangeable.
+## Explore the catalog
 
-### **WCAG Accessibility Debugging**  
+The catalog demonstrates blending, gradients, themes, palettes, inspection, animation, and accessibility. Embed it in a SwiftUI host:
 
-Validate and improve color accessibility:
-
-In `foreground.contrastResult(with: background)`, the receiver is the foreground.
-A translucent foreground composites over the opaque background; a translucent
-background is unavailable. Reversing the arguments can change the result.
-
-<!-- swift-example: budget -->
+<!-- swift-example: catalog -->
 ```swift
-// Check WCAG compliance
-let textColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
-let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
-let assessment = textColor.accessibilityResult(against: backgroundColor, targetLevel: .AA)
-print(assessment.status)
+import ColorKit
 
-// Get budgeted candidates with explicit outcomes and measurement evidence
-let suggestions = textColor.suggestAccessibleVariantResults(
-    with: backgroundColor,
-    targetLevel: .AA,
-    maxPerceptualDistance: 30
-)
+struct ContentView: View {
+    var body: some View {
+        MainCatalogView()
+    }
+}
 ```
 
-Result-bearing enhancement enforces an inclusive CIEDE2000 Delta E 00 budget
-from the original foreground (finite `0...100`, default `30`). It returns in-budget
-best effort when no examined candidate passes, or an explicit `invalidConfiguration`
-or `unavailable` outcome. Legacy color-returning enhancement ignores the budget and does not guarantee the target.
-See [enhancement migration guidance](../MIGRATION.md#enhancement-distance-budgets).
+Or embed an individual preview:
 
-See [Color Debugging Documentation](../Sources/ColorKit/Utilities/DOCUMENTATION.md) for more details.
+<!-- swift-example: previews -->
+```swift
+// Use individual previews
+ColorSpacePreview()
+BlendingPreview()
+GradientPreview()
+ThemePreview()
+PerformanceBenchmark()
+ColorDebuggerPreview()
+PaletteStudioPreview()
+ColorAnimationPreview()
+AccessibilityLabPreview()
+```
 
----
+## More recipes
+
+- [Themes and adaptive colors](../Sources/ColorKit/Documentation.docc/Theming-article.md)
+- [Palette export and sharing](../Sources/ColorKit/Utilities/PaletteExporter.md)
+- [Blending and gradients](../Sources/ColorKit/Documentation.docc/Utilities-article.md#gradient-generation)
+- [Inspection tools](../Sources/ColorKit/Utilities/DOCUMENTATION.md)
+- [Performance and caching](../PERFORMANCE_IMPROVEMENTS.md)
+- [Migration and compatibility](../MIGRATION.md)
