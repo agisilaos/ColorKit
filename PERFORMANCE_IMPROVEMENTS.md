@@ -63,7 +63,8 @@ ColorCache.shared.clearContrastCache()
 
 ## Benchmarking
 
-For reference data, run `python3 Benchmarks/run.py --output .build/benchmark-results/first`
+Use the [maintained standalone runner](Benchmarks/README.md) for reference data.
+Run `python3 Benchmarks/run.py --output .build/benchmark-results/first`
 from the repository root. It builds the separate macOS runner in Release mode and
 saves repeated timings and environment metadata in a new output directory.
 

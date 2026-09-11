@@ -9,6 +9,7 @@ All notable changes to ColorKit will be documented in this file.
 - Shorten the English and Spanish READMEs and usage guides while preserving checked examples; align contributor guidance with current CI and documentation coverage.
 
 ### Tooling
+- Remove the obsolete standalone benchmark example; use the maintained Release runner in `Benchmarks` for reference measurements.
 - Add a standalone macOS contrast-pair report with explicit targets, per-pair outcomes, and focused tests run in CI. No new library API is introduced.
 - Preserve the released 3.1.0 component-conversion client alongside the 3.0.0 compatibility baseline.
 
