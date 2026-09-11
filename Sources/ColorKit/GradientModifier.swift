@@ -85,13 +85,9 @@ public extension View {
         in colorSpace: GradientColorSpace = .rgb,
         steps: Int = 10
     ) -> some View {
-        self.modifier(LinearGradientModifier(
-            startColor: startColor,
-            endColor: endColor,
-            direction: direction,
-            colorSpace: colorSpace,
-            steps: steps
-        ))
+        modifier(GradientBackgroundModifier(direction: direction) {
+            startColor.linearGradient(to: endColor, steps: steps, in: colorSpace)
+        })
     }
 
     /// Applies a complementary gradient background.
@@ -124,12 +120,9 @@ public extension View {
         in colorSpace: GradientColorSpace = .hsl,
         steps: Int = 10
     ) -> some View {
-        self.modifier(ComplementaryGradientModifier(
-            baseColor: baseColor,
-            direction: direction,
-            colorSpace: colorSpace,
-            steps: steps
-        ))
+        modifier(GradientBackgroundModifier(direction: direction) {
+            baseColor.complementaryGradient(steps: steps, in: colorSpace)
+        })
     }
 
     /// Applies an analogous gradient background.
@@ -164,13 +157,9 @@ public extension View {
         in colorSpace: GradientColorSpace = .hsl,
         steps: Int = 10
     ) -> some View {
-        self.modifier(AnalogousGradientModifier(
-            baseColor: baseColor,
-            direction: direction,
-            angle: angle,
-            colorSpace: colorSpace,
-            steps: steps
-        ))
+        modifier(GradientBackgroundModifier(direction: direction) {
+            baseColor.analogousGradient(steps: steps, angle: angle, in: colorSpace)
+        })
     }
 
     /// Applies a triadic gradient background.
@@ -202,12 +191,9 @@ public extension View {
         in colorSpace: GradientColorSpace = .hsl,
         steps: Int = 5
     ) -> some View {
-        self.modifier(TriadicGradientModifier(
-            baseColor: baseColor,
-            direction: direction,
-            colorSpace: colorSpace,
-            steps: steps
-        ))
+        modifier(GradientBackgroundModifier(direction: direction) {
+            baseColor.triadicGradient(steps: steps, in: colorSpace)
+        })
     }
 
     /// Applies a monochromatic gradient background.
@@ -240,12 +226,9 @@ public extension View {
         lightnessRange: ClosedRange<CGFloat> = 0.1...0.9,
         steps: Int = 10
     ) -> some View {
-        self.modifier(MonochromaticGradientModifier(
-            baseColor: baseColor,
-            direction: direction,
-            lightnessRange: lightnessRange,
-            steps: steps
-        ))
+        modifier(GradientBackgroundModifier(direction: direction) {
+            baseColor.monochromaticGradient(steps: steps, lightnessRange: lightnessRange)
+        })
     }
 }
 
@@ -335,190 +318,14 @@ public enum GradientDirection {
 }
 
 // MARK: - Gradient Modifiers
-/// A view modifier that applies a linear gradient background.
-///
-/// This modifier creates a smooth transition between two colors along
-/// a specified direction. It supports different color spaces and
-/// customizable step counts for fine-tuning the gradient appearance.
-///
-/// Example:
-/// ```swift
-/// Text("Gradient")
-///     .modifier(LinearGradientModifier(
-///         startColor: .blue,
-///         endColor: .purple,
-///         direction: .topToBottom,
-///         colorSpace: .hsl,
-///         steps: 10
-///     ))
-/// ```
-struct LinearGradientModifier: ViewModifier {
-    let startColor: Color
-    let endColor: Color
+private struct GradientBackgroundModifier: ViewModifier {
     let direction: GradientDirection
-    let colorSpace: GradientColorSpace
-    let steps: Int
+    let colors: () -> [Color]
 
     func body(content: Content) -> some View {
         content.background(
             LinearGradient(
-                colors: startColor.linearGradient(
-                    to: endColor,
-                    steps: steps,
-                    in: colorSpace
-                ),
-                startPoint: direction.points.start,
-                endPoint: direction.points.end
-            )
-        )
-    }
-}
-
-/// A view modifier that applies a complementary gradient background.
-///
-/// This modifier creates a gradient between a color and its complement
-/// (opposite on the color wheel). It's useful for creating high-contrast,
-/// eye-catching backgrounds.
-///
-/// Example:
-/// ```swift
-/// Button(action: {}) {
-///     Text("Action")
-/// }
-/// .modifier(ComplementaryGradientModifier(
-///     baseColor: .blue,
-///     direction: .leadingToTrailing,
-///     colorSpace: .hsl,
-///     steps: 10
-/// ))
-/// ```
-struct ComplementaryGradientModifier: ViewModifier {
-    let baseColor: Color
-    let direction: GradientDirection
-    let colorSpace: GradientColorSpace
-    let steps: Int
-
-    func body(content: Content) -> some View {
-        content.background(
-            LinearGradient(
-                colors: baseColor.complementaryGradient(
-                    steps: steps,
-                    in: colorSpace
-                ),
-                startPoint: direction.points.start,
-                endPoint: direction.points.end
-            )
-        )
-    }
-}
-
-/// A view modifier that applies an analogous gradient background.
-///
-/// This modifier creates a gradient using colors adjacent on the color wheel.
-/// It produces harmonious, natural-looking transitions that are easy on the eyes.
-///
-/// Example:
-/// ```swift
-/// Rectangle()
-///     .modifier(AnalogousGradientModifier(
-///         baseColor: .blue,
-///         direction: .topToBottom,
-///         angle: 0.1,
-///         colorSpace: .hsl,
-///         steps: 15
-///     ))
-///     .frame(height: 200)
-/// ```
-struct AnalogousGradientModifier: ViewModifier {
-    let baseColor: Color
-    let direction: GradientDirection
-    let angle: CGFloat
-    let colorSpace: GradientColorSpace
-    let steps: Int
-
-    func body(content: Content) -> some View {
-        content.background(
-            LinearGradient(
-                colors: baseColor.analogousGradient(
-                    steps: steps,
-                    angle: angle,
-                    in: colorSpace
-                ),
-                startPoint: direction.points.start,
-                endPoint: direction.points.end
-            )
-        )
-    }
-}
-
-/// A view modifier that applies a triadic gradient background.
-///
-/// This modifier creates a gradient using three colors evenly spaced
-/// around the color wheel. It produces vibrant, balanced color schemes
-/// that work well for dynamic interfaces.
-///
-/// Example:
-/// ```swift
-/// Circle()
-///     .modifier(TriadicGradientModifier(
-///         baseColor: .blue,
-///         direction: .topToBottom,
-///         colorSpace: .hsl,
-///         steps: 7
-///     ))
-///     .frame(width: 200, height: 200)
-/// ```
-struct TriadicGradientModifier: ViewModifier {
-    let baseColor: Color
-    let direction: GradientDirection
-    let colorSpace: GradientColorSpace
-    let steps: Int
-
-    func body(content: Content) -> some View {
-        content.background(
-            LinearGradient(
-                colors: baseColor.triadicGradient(
-                    steps: steps,
-                    in: colorSpace
-                ),
-                startPoint: direction.points.start,
-                endPoint: direction.points.end
-            )
-        )
-    }
-}
-
-/// A view modifier that applies a monochromatic gradient background.
-///
-/// This modifier creates a gradient by varying the lightness of a single
-/// color. It's perfect for subtle, professional-looking backgrounds and
-/// non-distracting UI elements.
-///
-/// Example:
-/// ```swift
-/// VStack {
-///     Text("Header")
-///         .modifier(MonochromaticGradientModifier(
-///             baseColor: .blue,
-///             direction: .topToBottom,
-///             lightnessRange: 0.3...0.7,
-///             steps: 8
-///         ))
-/// }
-/// ```
-struct MonochromaticGradientModifier: ViewModifier {
-    let baseColor: Color
-    let direction: GradientDirection
-    let lightnessRange: ClosedRange<CGFloat>
-    let steps: Int
-
-    func body(content: Content) -> some View {
-        content.background(
-            LinearGradient(
-                colors: baseColor.monochromaticGradient(
-                    steps: steps,
-                    lightnessRange: lightnessRange
-                ),
+                colors: colors(),
                 startPoint: direction.points.start,
                 endPoint: direction.points.end
             )
