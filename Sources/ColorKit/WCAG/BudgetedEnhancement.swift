@@ -52,8 +52,7 @@ struct BudgetedEnhancement {
     }
 
     private func distance(from original: ResolvedSRGBA?, to candidate: Color) -> Double? {
-        guard case let .available(difference) = Color.comparisonResult(first: original, second: ResolvedSRGBA.resolve(candidate)) else { return nil }
-        return difference.perceptualDifference
+        Color.perceptualDistance(first: original, second: ResolvedSRGBA.resolve(candidate))
     }
 
     private func result(color: Color, contrast: Double?, distance: Double?) -> ColorAccessibilityResult {
