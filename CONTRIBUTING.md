@@ -26,7 +26,7 @@ The library requires Swift tools 6.0, iOS 14, and macOS 12. Examples may have hi
 
 The READMEs contain checked quick starts and catalog examples. The bilingual [usage guides](docs/Usage.md) contain the conversion and workflow recipes. Keep snippets self-contained and translations semantically aligned.
 
-The checker executes the guides' HSL, CMYK, LAB, and component-result recipes in both languages. Keep their variables aligned with `README_CHECKS`, the existing postcondition table in the script.
+The checker executes the guides' HSL, CMYK, LAB, component-result, and bounded-enhancement recipes in both languages. Keep their variables aligned with `README_CHECKS`, the existing postcondition table in the script.
 
 Named HSL inputs are checked for availability and normalized finite components, not appearance-specific values. Fixed conversion examples use numeric or availability postconditions. Add checks when examples promise specific results.
 
