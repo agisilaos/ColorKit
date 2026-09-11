@@ -205,17 +205,7 @@ public extension Color {
         let triad1 = Color(hue: triad1Hue, saturation: hsl.saturation, lightness: hsl.lightness)
         let triad2 = Color(hue: triad2Hue, saturation: hsl.saturation, lightness: hsl.lightness)
 
-        // Generate gradients between each pair of triadic colors
-        let gradient1 = self.linearGradient(to: triad1, steps: steps, in: colorSpace)
-        let gradient2 = triad1.linearGradient(to: triad2, steps: steps, in: colorSpace)
-        let gradient3 = triad2.linearGradient(to: self, steps: steps, in: colorSpace)
-
-        // Combine gradients, removing duplicates at the connection points
-        var result = gradient1
-        result.append(contentsOf: gradient2.dropFirst())
-        result.append(contentsOf: gradient3.dropFirst())
-
-        return result
+        return gradient(through: [self, triad1, triad2, self], steps: steps, in: colorSpace)
     }
 
     /// Creates a monochromatic gradient by varying the lightness.
@@ -299,17 +289,7 @@ public extension Color {
         let split1 = Color(hue: split1Hue, saturation: hsl.saturation, lightness: hsl.lightness)
         let split2 = Color(hue: split2Hue, saturation: hsl.saturation, lightness: hsl.lightness)
 
-        // Generate gradients between colors
-        let gradient1 = self.linearGradient(to: split1, steps: steps, in: colorSpace)
-        let gradient2 = split1.linearGradient(to: split2, steps: steps, in: colorSpace)
-        let gradient3 = split2.linearGradient(to: self, steps: steps, in: colorSpace)
-
-        // Combine gradients
-        var result = gradient1
-        result.append(contentsOf: gradient2.dropFirst())
-        result.append(contentsOf: gradient3.dropFirst())
-
-        return result
+        return gradient(through: [self, split1, split2, self], steps: steps, in: colorSpace)
     }
 
     /// Creates a tetradic (double complementary) gradient.
@@ -354,18 +334,15 @@ public extension Color {
         let color3 = Color(hue: hue3, saturation: hsl.saturation, lightness: hsl.lightness)
         let color4 = Color(hue: hue4, saturation: hsl.saturation, lightness: hsl.lightness)
 
-        // Generate gradients between each pair of colors
-        let gradient1 = self.linearGradient(to: color2, steps: steps, in: colorSpace)
-        let gradient2 = color2.linearGradient(to: color3, steps: steps, in: colorSpace)
-        let gradient3 = color3.linearGradient(to: color4, steps: steps, in: colorSpace)
-        let gradient4 = color4.linearGradient(to: self, steps: steps, in: colorSpace)
+        return gradient(through: [self, color2, color3, color4, self], steps: steps, in: colorSpace)
+    }
 
-        // Combine gradients
-        var result = gradient1
-        result.append(contentsOf: gradient2.dropFirst())
-        result.append(contentsOf: gradient3.dropFirst())
-        result.append(contentsOf: gradient4.dropFirst())
-
+    private func gradient(through stops: [Color], steps: Int, in colorSpace: GradientColorSpace) -> [Color] {
+        var result: [Color] = []
+        for (start, end) in zip(stops, stops.dropFirst()) {
+            let segment = start.linearGradient(to: end, steps: steps, in: colorSpace)
+            result.append(contentsOf: segment.dropFirst(result.isEmpty ? 0 : 1))
+        }
         return result
     }
 }
