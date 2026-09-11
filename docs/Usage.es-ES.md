@@ -104,7 +104,7 @@ if result.meetsTarget {
 }
 ```
 
-Comprueba el resultado antes de usar el candidato. El límite de distancia puede impedir alcanzar el objetivo. La mejora heredada que devuelve un color ignora ese límite. Consulta [accesibilidad](../Sources/ColorKit/Documentation.docc/Accessibility-article.md).
+Comprueba el resultado antes de usar el candidato. El límite de distancia puede impedir alcanzar el objetivo. La mejora heredada que devuelve un color ignora ese límite. Consulta [contratos de mejora](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#verifiable-results).
 
 ### Evaluar una paleta generada
 
