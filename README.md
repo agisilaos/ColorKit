@@ -1,5 +1,8 @@
 # ColorKit 🎨
 
+![Swift Package Manager](https://img.shields.io/badge/SPM-Supported-green)
+![Swift Version](https://img.shields.io/badge/Swift-6.0%2B-blue)
+
 Color conversion, contrast assessment, and adaptive themes for SwiftUI.
 
 **Swift 6+ · iOS 14+ · macOS 12+**
