@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- Consolidate utility, export, inspector, and accessibility guides in DocC, retain links from the old paths, and compile the consolidated examples.
 - Simplify enhancement candidate selection to retain two request-local results instead of collecting and sorting candidates, preserving selection order, ties, budgets, and observable outcomes.
 - Shorten the English and Spanish READMEs and usage guides while preserving checked examples; align contributor guidance with current CI and documentation coverage.
 

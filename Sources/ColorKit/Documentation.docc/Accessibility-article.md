@@ -52,6 +52,29 @@ for result in results {
 level and use different endpoint heuristics. Prefer `accessibleContrastingColorResult(for:)`
 and inspect its outcome; even the stronger black-or-white endpoint may miss the target.
 
+Configure `targetLevel`, `paletteSize`, and `includeBlackAndWhite` when generating
+a palette. Candidate generation targets contrast against the seed, but included
+and fallback colors may not pass. Assessment preserves generation order and keeps
+below-target outcomes visible.
+
+<!-- swift-example: palette-configuration -->
+```swift
+let seed = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let background = Color(.sRGB, red: 1, green: 1, blue: 1)
+let generator = AccessiblePaletteGenerator(configuration: .init(
+    targetLevel: .AAA, paletteSize: 8, includeBlackAndWhite: true
+))
+let assessed = generator.generateAssessedPalette(from: seed, against: background)
+let passing = assessed.filter(\.meetsTarget).map(\.color)
+let endpoint = background.accessibleContrastingColorResult(for: .AAA)
+let theme = seed.generateAccessibleTheme(name: "Brand", targetLevel: .AA)
+ThemeManager.shared.register(theme: theme)
+ThemeManager.shared.switchToTheme(named: theme.name)
+```
+
+Registering a generated theme does not certify every role combination. See
+<doc:Theming-article> for theme ownership and <doc:Utilities-article> for palette export.
+
 ### Verifiable Results
 
 Color-returning helpers remain available for compatibility. When correctness depends
@@ -124,7 +147,10 @@ nonfinite, or outside the sRGB gamut.
 This API transforms fixed colors, not arbitrary rendered content. The deprecated
 `colorBlindnessPreview(type:)` modifier remains source compatible but leaves its
 content unchanged. Achromatopsia is not supported because a generic grayscale
-conversion is not established by the selected model.
+conversion is not established by the selected model. The simulation is not a
+diagnostic tool or an exact representation of every person's perception. See the
+[original paper](https://doi.org/10.1109/TVCG.2009.113) and
+[published matrices](https://www.inf.ufrgs.br/~oliveira/students_dissertations/Masters/Gustavo_Machado_Masters_thesis_UFRGS_2010.pdf).
 
 ### Adaptive Colors
 
@@ -162,9 +188,32 @@ requested ratio even though it is the stronger of the two endpoints.
 opacity and reports whether the result actually meets a level, use
 `accessibilityResult(against:targetLevel:)` or `contrastResult(with:)`.
 
+### Compliance Previews and Suggestions
+
+The legacy `wcagCompliance(with:)` returns a ratio and AA/AAA flags. The matching
+view modifier displays those measurements. These helpers retain legacy opacity
+handling; use the result-bearing contrast interface above when that distinction matters.
+
+<!-- swift-example: compliance-tools -->
+```swift
+let foreground = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
+let background = Color(.sRGB, red: 1, green: 1, blue: 1)
+let compliance = foreground.wcagCompliance(with: background)
+print(compliance.contrastRatio, compliance.passesAA, compliance.passesAAA)
+Text("Preview").wcagCompliance(foreground: foreground, background: background)
+let custom = WCAGColorSuggestions(baseColor: background, targetColor: foreground, targetLevel: .AAA)
+let alternatives = custom.generateSuggestions(preserveHue: false)
+ColorKit.WCAG.demoView()
+ColorKit.ColorInspector.accessiblePaletteDemoView()
+```
+
+`preserveHue` requests candidates in the same color family; assess the returned
+colors against their intended background before using them.
+
 ## WCAG Guidelines
 
-ColorKit supports both WCAG 2.1 AA and AAA levels:
+ColorKit supports both WCAG 2.1 AA and AAA levels. Large text is at least 18pt,
+or 14pt bold; see the [WCAG contrast guidance](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html).
 
 - **AA Level**
   - Normal text: 4.5:1 minimum contrast ratio
@@ -199,7 +248,7 @@ ColorKit supports both WCAG 2.1 AA and AAA levels:
 - `Color.enhanced(with:targetLevel:)`
 - `Color.enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)`
 - ``AccessibilityEnhancer``
-- `Color.suggestedAccessibleColors(for:level:)`
+- ``WCAGColorSuggestions``
 - `Color.suggestAccessibleVariantResults(with:targetLevel:count:maxPerceptualDistance:)`
 - `Color.accessibleContrastingColorResult(for:)`
 

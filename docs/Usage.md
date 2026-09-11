@@ -206,8 +206,8 @@ AccessibilityLabPreview()
 ## More recipes
 
 - [Themes and adaptive colors](../Sources/ColorKit/Documentation.docc/Theming-article.md)
-- [Palette export and sharing](../Sources/ColorKit/Utilities/PaletteExporter.md)
+- [Palette export and sharing](../Sources/ColorKit/Documentation.docc/Utilities-article.md#palette-export)
 - [Blending and gradients](../Sources/ColorKit/Documentation.docc/Utilities-article.md#gradient-generation)
-- [Inspection tools](../Sources/ColorKit/Utilities/DOCUMENTATION.md)
+- [Inspection tools](../Sources/ColorKit/Documentation.docc/Utilities-article.md#inspection-tools)
 - [Performance and caching](../PERFORMANCE_IMPROVEMENTS.md)
 - [Migration and compatibility](../MIGRATION.md)
