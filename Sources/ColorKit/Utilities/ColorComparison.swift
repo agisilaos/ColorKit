@@ -38,6 +38,14 @@ public extension Color {
         return .available(ColorComparisonCalculator.difference(first: first, second: second))
     }
 
+    /// Measures only distance, with the same eligibility as a full comparison.
+    internal static func perceptualDistance(first: ResolvedSRGBA?, second: ResolvedSRGBA?) -> Double? {
+        guard comparisonIssues(for: first).isEmpty,
+              comparisonIssues(for: second).isEmpty,
+              let first, let second else { return nil }
+        return ColorComparisonCalculator.perceptualDistance(first: first, second: second)
+    }
+
     private static func comparisonIssues(for resolved: ResolvedSRGBA?) -> [ColorComparisonInputIssue] {
         guard let resolved else { return [.unresolved] }
 
@@ -116,8 +124,6 @@ private enum ColorComparisonCalculator {
         let secondRGB = rgb(second)
         let firstHSL = SRGBColorConversion.hsl(from: firstRGB)
         let secondHSL = SRGBColorConversion.hsl(from: secondRGB)
-        let firstLAB = lab(firstRGB)
-        let secondLAB = lab(secondRGB)
         let contrastRatio = SRGBColorConversion.wcagContrastRatio(
             between: firstRGB,
             and: secondRGB
@@ -135,13 +141,19 @@ private enum ColorComparisonCalculator {
                 saturation: abs(firstHSL.saturation - secondHSL.saturation) * 100,
                 lightness: abs(firstHSL.lightness - secondHSL.lightness) * 100
             ),
-            perceptualDifference: CIEDE2000.difference(between: firstLAB, and: secondLAB),
+            perceptualDifference: perceptualDistance(first: first, second: second),
             perceptualDifferenceMetric: .ciede2000,
             contrastRatio: contrastRatio,
             wcagComplianceLevels: WCAGContrastLevel.allCases.filter {
                 contrastRatio >= $0.minimumRatio
             }
         )
+    }
+
+    static func perceptualDistance(first: ResolvedSRGBA, second: ResolvedSRGBA) -> Double {
+        let firstLAB = lab(rgb(first))
+        let secondLAB = lab(rgb(second))
+        return CIEDE2000.difference(between: firstLAB, and: secondLAB)
     }
 
     private static func rgb(

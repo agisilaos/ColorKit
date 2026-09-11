@@ -4,6 +4,36 @@ import Testing
 @testable import ColorKit
 
 struct ColorComparisonResultTests {
+    @Test("Distance-only measurement preserves exact comparison values and eligibility")
+    func distanceOnlyComparison() throws {
+        let values: [CGFloat] = [0, 0.04045.nextDown, 0.04045, 0.04045.nextUp, 0.2, 0.5, 1]
+        var inputs: [ResolvedSRGBA?] = [nil]
+        for red in values {
+            for green in values {
+                inputs.append(try #require(ResolvedSRGBA(sRGBComponents: [red, green, 0.3, 1])))
+            }
+            inputs.append(try #require(ResolvedSRGBA(sRGBComponents: [red, red, red, 1])))
+        }
+        for components: [CGFloat] in [
+            [0.2, 0.3, 0.4, 0], [0.2, 0.3, 0.4, 0.5], [0.2, 0.3, 0.4, CGFloat(1).nextDown],
+            [-CGFloat.leastNonzeroMagnitude, 0, 0, 1], [CGFloat(1).nextUp, 0, 0, 1],
+            [1.2, 0.2, 0.3, 0.5]
+        ] {
+            inputs.append(try #require(ResolvedSRGBA(sRGBComponents: components)))
+        }
+        for first in inputs {
+            for second in inputs {
+                let distance = Color.perceptualDistance(first: first, second: second)
+                switch Color.comparisonResult(first: first, second: second) {
+                case let .available(difference):
+                    #expect(distance?.bitPattern == difference.perceptualDifference.bitPattern)
+                case .unavailable:
+                    #expect(distance == nil)
+                }
+            }
+        }
+    }
+
     @Test("Returns a complete CIEDE2000 comparison for comparable colors")
     func returnsAvailableComparison() {
         let white = Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 1)

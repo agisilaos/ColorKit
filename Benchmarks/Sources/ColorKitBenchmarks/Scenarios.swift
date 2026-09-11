@@ -154,6 +154,43 @@ func scenarios() -> [Scenario] {
         ))
     }
 
+    let chromatic = Color(.sRGB, red: 0.7, green: 0.7, blue: 1)
+    for strategy in AdjustmentStrategy.allCases {
+        for preferDarker in [false, true] {
+            let enhancer = AccessibilityEnhancer(configuration: .init(
+                targetLevel: .AAA, strategy: strategy, maxPerceptualDistance: 30, preferDarker: preferDarker
+            ))
+            cases.append(Scenario(
+                description: ScenarioDescription(
+                    id: "enhancement-\(strategy.rawValue)-\(preferDarker)",
+                    purpose: "Complete chromatic enhancement including strategy fallbacks",
+                    inputs: "sRGB foreground (0.7, 0.7, 1, 1), background (1, 1, 1, 1)",
+                    settings: "AAA, \(strategy.rawValue), preferDarker \(preferDarker), budget 30",
+                    expected: "Measurable in-budget result; contrast at least the original",
+                    unit: "enhancement",
+                    modes: [.empty, .primed]
+                ),
+                input: (chromatic, white),
+                operation: { enhancer.enhanceColorResult($0.0, against: $0.1) },
+                validate: { value in
+                    guard case let .available(difference) = chromatic.comparisonResult(with: value.color),
+                          let contrast = value.contrastRatio, let distance = value.perceptualDistance,
+                          let originalContrast = chromatic.accessibilityResult(against: white).contrastRatio
+                    else { throw BenchmarkError.invalidFixture("Missing chromatic enhancement evidence") }
+                    try requireFixture(
+                        value.targetLevel == .AAA && value.maximumPerceptualDistance == 30
+                            && value.isWithinPerceptualDistanceBudget == true
+                            && distance.bitPattern == difference.perceptualDifference.bitPattern
+                            && contrast == value.color.accessibilityResult(against: white).contrastRatio
+                            && contrast >= originalContrast
+                            && value.status == (contrast >= 7 ? .meetsTarget : .bestEffort),
+                        "Incorrect chromatic enhancement result"
+                    )
+                }
+            ))
+        }
+    }
+
     let generator = AccessiblePaletteGenerator(configuration: .init(
         targetLevel: .AA, paletteSize: 5, includeBlackAndWhite: true
     ))
