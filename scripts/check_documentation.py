@@ -20,8 +20,10 @@ EXAMPLES = {
     "docs/Usage.es-ES.md": README_EXAMPLES,
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
-    DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette"},
-    DOCC + "Utilities-article.md": {"similarity"},
+    DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette",
+                                         "palette-configuration", "compliance-tools"},
+    DOCC + "Utilities-article.md": {"similarity", "comparison", "cache", "palette-export",
+                                     "inspection", "gradients", "blending"},
     "PERFORMANCE_IMPROVEMENTS.md": {"cache", "benchmark"},
     "MIGRATION.md": {"cvd", "enhancement-budget", "enhancement-references", "comparison"},
 }
