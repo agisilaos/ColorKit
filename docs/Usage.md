@@ -106,20 +106,28 @@ let suggestions = textColor.suggestAccessibleVariantResults(
 <!-- swift-example: enhancement -->
 ```swift
 // Generate a candidate within a distance budget, then inspect its outcome
-let originalColor = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
+let originalColor = Color(.sRGB, red: 0.6, green: 0.6, blue: 0.6)
 let backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
 let targetLevel = WCAGContrastLevel.AA
 
 let result = originalColor.enhancementResult(
     with: backgroundColor,
-    targetLevel: targetLevel
+    targetLevel: targetLevel,
+    maxPerceptualDistance: 30
 )
-let enhancedColor = result.color
 
-if result.meetsTarget {
+switch result.status {
+case .meetsTarget:
+    print("Candidate:", result.color)
     if let ratio = result.contrastRatio {
-        print("Measured contrast: \(ratio):1")
+        print("Measured contrast:", ratio)
     }
+case .bestEffort:
+    print("Candidate remains below the target:", result.minimumContrastRatio)
+case .unavailable:
+    print("Required contrast or distance measurement is unavailable")
+case .invalidConfiguration:
+    print("Use a finite distance budget from 0 through 100")
 }
 ```
 

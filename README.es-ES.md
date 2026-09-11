@@ -26,6 +26,8 @@ En Xcode, selecciona **File → Add Packages** e introduce:
 https://github.com/agisilaos/ColorKit.git
 ```
 
+Añade el producto de biblioteca **ColorKit** al target que lo importará.
+
 ¿Actualizas un proyecto existente? Consulta la [guía de migración](MIGRATION.md) antes de cambiar el requisito de versión.
 
 ## Inicio rápido

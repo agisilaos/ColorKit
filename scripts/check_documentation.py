@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile public Markdown examples and verify selected conversion results."""
+"""Compile public Markdown examples and verify selected conversion and enhancement results."""
 
 import argparse
 from pathlib import Path
@@ -31,6 +31,18 @@ MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
 # Postconditions use the actual usage-guide variables, not copied implementations.
 # Renaming a variable requires updating its check; removing a result cannot pass silently.
 README_CHECKS = {
+    "enhancement": """
+checkExample(result.status == .meetsTarget || result.status == .bestEffort,
+    "Fixed opaque inputs with a valid budget must yield a verifiable candidate")
+checkExample(result.maximumPerceptualDistance == 30 && result.isWithinPerceptualDistanceBudget == true,
+    "The example must request and respect its explicit distance budget")
+guard case .available(let difference) = originalColor.comparisonResult(with: result.color) else {
+    failExample("Expected a comparable enhancement candidate")
+}
+checkExample(difference.perceptualDifference <= 30, "Candidate exceeds the example's distance budget")
+checkExample(result.meetsTarget == result.color.accessibilityResult(
+    against: backgroundColor, targetLevel: targetLevel).meetsTarget, "Candidate must match its reported outcome")
+""",
     "component-results": """
 guard case .success(let coordinates) = conversions.lab else { failExample("P3 red must retain LAB") }
 checkExample(coordinates.lightness.isFinite && coordinates.a.isFinite && coordinates.b.isFinite,
@@ -148,7 +160,7 @@ def check(derived_data):
         run(*compiler, "-profile-generate", "-parse-as-library", "-I", modules, *runtime_files, entry,
             modules / "ColorKit.o", "-o", executable)
         run("env", f"LLVM_PROFILE_FILE={scratch / 'examples.profraw'}", executable)
-        print(f"Verified results of {len(runtime_files)} actual usage-guide conversion examples.", flush=True)
+        print(f"Verified results of {len(runtime_files)} actual usage-guide examples.", flush=True)
         emitter = scratch / "emit-theme"
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",
