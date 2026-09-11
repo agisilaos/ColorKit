@@ -36,7 +36,7 @@ The cache is automatically used by ColorKit methods. No changes to your code are
 // Example: First call calculates and caches
 let lab1 = color.labComponents()
 
-// Second call retrieves from cache (much faster)
+// Repeated calls can reuse cached results for eligible fixed inputs
 let lab2 = color.labComponents()
 ```
 
@@ -71,19 +71,8 @@ Consider clearing the cache in memory-sensitive situations:
 - Before performing memory-intensive operations
 - When transitioning between major sections of your app
 
-### Performance Impact
+### Performance measurement
 
-The caching system provides significant performance improvements:
+Cache benefits depend on the operation, input identity, cache state, and environment. Unsupported identities bypass caching. Historical speedup ratios are not supported by reproducible measurements and should not be used as expectations.
 
-- LAB color conversion: Up to 10x faster for repeated operations
-- HSL color conversion: Up to 8x faster for repeated operations
-- WCAG calculations: Up to 12x faster for repeated operations
-- Color blending: Up to 5x faster for repeated operations
-- Gradient generation: Up to 7x faster for repeated operations
-
-These improvements are most noticeable in scenarios with repeated color operations, such as:
-
-- Complex UIs with many color calculations
-- Animations that repeatedly use the same colors
-- Accessibility checks on the same set of colors
-- Dynamic theming with color transformations
+See [performance guidance](../../../PERFORMANCE_IMPROVEMENTS.md) and the [Release benchmark runner](../../../Benchmarks/README.md) for workloads, cache preparation, and reproduction commands.

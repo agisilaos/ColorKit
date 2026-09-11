@@ -14,8 +14,10 @@ DOCC = "Sources/ColorKit/Documentation.docc/"
 README_EXAMPLES = {"accessible-palette", "enhancement", "catalog", "previews", "comparison", "budget",
                    "hsl", "cmyk", "lab", "component-results"}
 EXAMPLES = {
-    "README.md": README_EXAMPLES,
-    "README.es-ES.md": README_EXAMPLES,
+    "README.md": {"contrast", "catalog"},
+    "README.es-ES.md": {"contrast", "catalog"},
+    "docs/Usage.md": README_EXAMPLES,
+    "docs/Usage.es-ES.md": README_EXAMPLES,
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
     DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette"},
@@ -24,7 +26,7 @@ EXAMPLES = {
     "MIGRATION.md": {"cvd", "enhancement-budget", "enhancement-references", "comparison"},
 }
 MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
-# Postconditions use the actual README variables, not copied example implementations.
+# Postconditions use the actual usage-guide variables, not copied implementations.
 # Renaming a variable requires updating its check; removing a result cannot pass silently.
 README_CHECKS = {
     "component-results": """
@@ -121,7 +123,7 @@ def check(derived_data):
             source = scratch / f"example_{index}.swift"
             source.write_text(example_source(path, index, line, code))
             files.append(source)
-            if path.name in ("README.md", "README.es-ES.md") and name in README_CHECKS:
+            if path.name in ("Usage.md", "Usage.es-ES.md") and name in README_CHECKS:
                 runtime = scratch / f"runtime_{index}.swift"
                 runtime.write_text(example_source(path, index, line, code, README_CHECKS[name]))
                 runtime_files.append(runtime)
@@ -144,7 +146,7 @@ def check(derived_data):
         run(*compiler, "-profile-generate", "-parse-as-library", "-I", modules, *runtime_files, entry,
             modules / "ColorKit.o", "-o", executable)
         run("env", f"LLVM_PROFILE_FILE={scratch / 'examples.profraw'}", executable)
-        print(f"Verified results of {len(runtime_files)} actual README conversion examples.", flush=True)
+        print(f"Verified results of {len(runtime_files)} actual usage-guide conversion examples.", flush=True)
         emitter = scratch / "emit-theme"
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",

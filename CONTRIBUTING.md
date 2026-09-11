@@ -1,253 +1,95 @@
 # Contributing to ColorKit
 
-Thank you for your interest in contributing to ColorKit! This document outlines our coding standards and guidelines to help maintain consistency across the codebase.
+Keep changes focused, preserve shipped contracts, and provide evidence for behavior changes. Use [GitHub Issues](https://github.com/agisilaos/ColorKit/issues) to discuss bugs or proposed features.
 
-## Code Style Guidelines
+## Set up
 
-### General Principles
+1. Fork and clone the repository.
+2. Create a branch beginning with `feature/`, `fix/`, `refactor/`, or `chore/`.
+3. Select Xcode 26.5 to match the build and documentation CI jobs.
+4. Install SwiftLint with `brew install swiftlint`.
 
-- Write clear, self-documenting code
-- Follow Swift's official style guide
-- Keep functions focused and single-purpose
-- Use meaningful variable and function names
-- Add comments for complex logic or non-obvious decisions
-- Keep the code DRY (Don't Repeat Yourself)
+The library requires Swift tools 6.0, iOS 14, and macOS 12. Examples may have higher requirements; check their own READMEs. See [Package.swift](Package.swift) for the library configuration.
 
-### Naming Conventions
+## Implement and document
 
-- Use PascalCase for types (structs, classes, enums, protocols)
-- Use camelCase for properties, methods, and variables
-- Use lowerCamelCase for constants, following Swift naming conventions
-- Prefix boolean properties with verbs (is, has, should, etc.)
-- Use descriptive names that indicate purpose rather than type
+- Prefer clear call sites, focused functions, and established color terminology. Follow the [Swift API Design Guidelines](https://www.swift.org/documentation/api-design-guidelines/).
+- Treat [.swiftlint.yml](.swiftlint.yml) as the lint source of truth. Package builds do not run lint; CI runs `swiftlint lint --strict`.
+- Preserve released 3.x source and documented behavior, including legacy fallbacks. See [ADR 0013](docs/adr/0013-preserve-shipped-3x-client-contracts.md).
+- Add focused regression tests for changed behavior. Keep tests independent; follow the shared-state rules below when independence is impossible.
+- Document public APIs and update the relevant DocC article, English/Spanish README or usage recipes, changelog, and migration guidance when affected.
+- Keep terminology in [CONTEXT.md](CONTEXT.md). Record consequential design decisions under `docs/adr/`; do not introduce abstractions solely for anticipated needs.
 
-```swift
-// Good
-struct ColorPalette {
-    let primaryColor: Color
-    let secondaryColors: [Color]
-    var isEnabled: Bool
-}
+### Checked examples
 
-// Avoid
-struct Colors {
-    let color: Color
-    let colors: [Color]
-    var enabled: Bool
-}
-```
+`scripts/check_documentation.py` compiles actual Swift fences marked with `<!-- swift-example: example-id -->`. Add each marker to the script's explicit inventory; removing a required marker must not silently reduce coverage.
 
-### Code Organization
+The READMEs contain checked quick starts and catalog examples. The bilingual [usage guides](docs/Usage.md) contain the conversion and workflow recipes. Keep snippets self-contained and translations semantically aligned.
 
-- Group related properties and methods together
-- Use MARK comments to organize code sections
-- Keep files focused and under 500 lines when possible
-- Use extensions to organize protocol conformance
-- Place private properties and methods at the bottom of the type
+The checker executes the guides' HSL, CMYK, LAB, and component-result recipes in both languages. Keep their variables aligned with `README_CHECKS`, the existing postcondition table in the script.
 
-```swift
-struct ColorKit {
-    // MARK: - Public Properties
-    
-    // MARK: - Private Properties
-    
-    // MARK: - Initialization
-    
-    // MARK: - Public Methods
-    
-    // MARK: - Private Methods
-}
-```
+Named HSL inputs are checked for availability and normalized finite components, not appearance-specific values. Fixed conversion examples use numeric or availability postconditions. Add checks when examples promise specific results.
 
-### SwiftLint Rules
+Generated theme code is compiled too, including named, translucent, grayscale, and Display P3 inputs. Temporary generated files are not committed.
 
-Install SwiftLint with `brew install swiftlint`, then run `swiftlint lint --strict`
-from the repository root. It covers `Sources` and `Tests` and is enforced by CI;
-package builds do not run lint.
+A successful DocC build does not compile fenced Swift. Example checks cover selected snippets—not all prose, UI behavior, or performance claims. Preserve both documentation generation and compiler checks.
 
-Here are some key rules and their rationale:
+## Run checks
 
-#### Enabled Rules
-- `force_unwrapping`: Avoid force unwrapping (`!`) - use optional binding or nil coalescing
-- `force_cast`: Avoid force casting (`as!`) - use optional casting (`as?`)
-- `trailing_whitespace`: Keep files clean of trailing whitespace
-- `sorted_imports`: Keep imports organized alphabetically
-- `vertical_whitespace_closing_braces`: Maintain consistent spacing
+Optional local check: `python3 scripts/check_readme_parity.py` compares bilingual structure and changed-file coverage against `origin/main`. It requires that ref and merge-base history. CI tests the helper but does not run this document check.
 
-#### Disabled Rules
-- `line_length`: We allow longer lines (up to 120 characters) for better readability
-- `type_body_length`: Complex types may need more than 400 lines
-- `function_body_length`: Some functions may need more than 100 lines
-- `cyclomatic_complexity`: We trust developers to keep complexity reasonable
+Parity is a heuristic, not a Swift parser or translation validator. It ignores ordinary string contents and line comments; review literal values and semantic translation manually. Pi users can also invoke `/readme-parity`.
 
-### Documentation
-
-- Document public APIs using Swift-style documentation comments
-- Include parameter descriptions and return value information
-- Add examples for complex functionality
-- Keep documentation up to date with code changes
-
-```swift
-/// Creates a new color with the specified RGB components.
-///
-/// - Parameters:
-///   - red: The red component (0-255)
-///   - green: The green component (0-255)
-///   - blue: The blue component (0-255)
-///
-/// - Returns: A new Color instance
-///
-/// - Example:
-///   ```
-///   let red = Color(r: 255, g: 0, b: 0)
-///   ```
-func color(r: UInt8, g: UInt8, b: UInt8) -> Color
-```
-
-### Testing
-
-- Write unit tests for new functionality
-- Follow the Arrange-Act-Assert pattern in tests
-- Use descriptive test names that explain the scenario
-- Keep tests focused and independent
-- Use appropriate test doubles (mocks, stubs) when needed
-
-```swift
-func testColorInitialization() {
-    // Arrange
-    let red: UInt8 = 255
-    let green: UInt8 = 0
-    let blue: UInt8 = 0
-    
-    // Act
-    let color = Color(r: red, g: green, b: blue)
-    
-    // Assert
-    XCTAssertEqual(color.red, red)
-    XCTAssertEqual(color.green, green)
-    XCTAssertEqual(color.blue, blue)
-}
-```
-
-### CI Validation
-
-CI runs strict SwiftLint checks, builds the DocC catalog with warnings treated as
-errors, compiles selected public examples as a macOS client, and tests on both
-iOS and macOS. The jobs use the `macos-26` runner with
-Xcode 26.5 and an iPhone 17 simulator running iOS 26.5.
-When changing Xcode versions, also check the simulator runtime against the
-[runner image inventory](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
-
-To run the same platform checks locally with Xcode 26.5 selected:
+Run these from the repository root with Xcode 26.5 selected. These commands cover the current CI jobs:
 
 ```sh
 swiftlint lint --strict
+python3 -m unittest discover -s scripts/tests
+python3 scripts/check_compatibility.py
+swift test --package-path Benchmarks -c release
+swift test --package-path Examples/ContrastPairReport
+scripts/run_tests.sh
 xcodebuild docbuild -scheme ColorKit -destination 'generic/platform=macOS' \
-  -derivedDataPath /tmp/ColorKitDocumentation \
+  -derivedDataPath .build/documentation \
   -skipMacroValidation \
   'OTHER_DOCC_FLAGS=--warnings-as-errors'
-scripts/run_tests.sh
-python3 -m unittest discover -s scripts/tests
-python3 scripts/check_documentation.py
-python3 scripts/check_compatibility.py
+python3 scripts/check_documentation.py --derived-data .build/documentation
 ```
 
-For benchmark changes, also run `swift test --package-path Benchmarks -c release`
-and the [macOS Release runner](Benchmarks/README.md). Its correctness tests do not
-assert machine-specific duration thresholds. Record actual performance samples
-separately with other builds idle.
+CI configuration lives in [.github/workflows/ci.yml](.github/workflows/ci.yml). For local iteration, start with the relevant subset; before review, disclose which checks ran and any gaps.
 
-The zero-argument runner is the canonical CI matrix: parallel iOS and macOS tests,
-then serialized shared-state suites on each platform. Change the shared-suite list
-and pinned destinations in `scripts/run_tests.sh`, not in the workflow. Set
-`COLORKIT_IOS_DESTINATION` or `COLORKIT_MACOS_DESTINATION` for another local device.
-Build storage defaults to this checkout's `.build/xcode`; override it with
-`COLORKIT_DERIVED_DATA` when needed.
+### Platform tests and diagnostics
 
-Each matrix invocation retains raw stdout/stderr logs and result bundles in a unique directory
-under `.build/test-results`; use `--results-dir TestResults` to choose another parent.
-For a targeted run, pass a platform label, destination, and Xcode options. Only
-these explicit single-destination runs use `xcpretty` when available; add
-`--log-file path` to retain raw output (its parent directory must exist).
+The zero-argument test runner performs iOS and macOS tests with parallel testing enabled, followed by serialized shared-state suites on each platform. The pinned iOS destination is iPhone 17 with iOS 26.5.
 
-After a release PR is merged, run `scripts/check_release.sh <version>` from `main`
-before tagging. The check fetches `origin/main` and tags, then verifies the working
-tree, release metadata, synchronized commit, and tag availability, then runs the
-preserved-client/API compatibility checker and canonical behavioral test matrix.
+Keep destinations and the shared-suite list in [scripts/run_tests.sh](scripts/run_tests.sh), not duplicated in CI. Override `COLORKIT_IOS_DESTINATION`, `COLORKIT_MACOS_DESTINATION`, or `COLORKIT_DERIVED_DATA` for local needs.
 
-`ColorCacheIntegrationTests` clears `ColorCache.shared` before and after each test.
-Run it separately without parallel testing; direct cache tests use independent instances.
-`ThemeManagerIntegrationTests` also runs in this serial invocation. It preserves the
-private singleton initializer, registers unique names, uses baseline-relative
-registry assertions, and restores the previous selected value. There is no theme
-reset or removal API, so registered fixtures remain until the test process exits.
+`ColorCacheIntegrationTests` and `ThemeManagerIntegrationTests` must run without parallel testing. The canonical runner handles this. Direct cache tests use independent instances; theme tests restore selection but leave registered fixtures in the process.
 
-The `test-results` workflow artifact retains raw build logs and `.xcresult`
-bundles for 14 days, including logs from failed test commands. Check the
-"Show Xcode and Available Simulators" step if a destination cannot be found.
+Build storage defaults to `.build/xcode`. Each matrix run retains logs and result bundles under a unique `.build/test-results` directory; `--results-dir TestResults` changes the parent.
 
-### Review screenshots
+For targeted runs, use `scripts/run_tests.sh --help`. Explicit single-destination runs support `--log-file`; create its parent directory first. CI retains test and compatibility artifacts for 14 days, including failed-run diagnostics.
 
-Attach review screenshots to the pull request instead of committing them under
-`docs/screenshots/`. Keep local captures in an ignored directory. Images that
-illustrate published documentation may remain beside that documentation.
+If a simulator is missing, check CI's “Show Xcode and Available Simulators” output and the [runner image inventory](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
 
-### Release client compatibility
+### Compatibility and performance
 
-The [release compatibility gate](Compatibility/README.md) preserves 3.0.0 client
-source independently of current examples and compares public APIs on iOS and
-macOS. Existing client files and release commits are immutable relative to the PR
-base; extend coverage with new files. CI fetches full history and runs this gate
-in the existing Build and Test job.
+The [compatibility gate](Compatibility/README.md) protects pinned 3.0.0 and 3.1.0 clients and compares public APIs on iOS and macOS. Existing fixtures are immutable relative to the PR base; extend coverage with new files.
 
-### Keeping contracts and documentation synchronized
+Fetch full Git history before compatibility checks. CI passes its exact base commit with `--fixture-base`; local checks default to `origin/main`. These checks do not prove binary compatibility or minimum-OS runtime behavior.
 
-For every public API or behavior change, review these together in the same PR:
+Benchmark correctness tests do not enforce machine-specific timing thresholds. For performance claims, run the [Release benchmark](Benchmarks/README.md) with other builds idle and retain the inputs, environment, and raw samples.
 
-- Source/API comments and the relevant DocC article.
-- English and Spanish README examples and contract prose (or explain why neither is affected).
-- An Unreleased changelog entry and migration guidance for changed results, fallbacks,
-  enum cases, or deprecations—not only source-breaking signature changes.
-- Regression tests and representative public examples exercising the changed contract.
+## Submit a pull request
 
-`python3 scripts/check_documentation.py` compiles the actual Swift fences marked
-with `<!-- swift-example: example-id -->`, using public imports and the package's
-macOS 12 deployment target. Add each marker to the explicit inventory in that script.
-The READMEs share the same required example IDs; deleting or renaming a required
-marker fails the check. Keep marked examples self-contained. The checker also
-executes the actual HSL, CMYK, and LAB README snippets in both languages and verifies
-their result variables against the expected contract. Keep those variables aligned
-with `README_CHECKS`; add behavior checks when an example promises a specific result.
-Named HSL colors are checked for availability and normalized finite components, not
-appearance-specific numeric values. Fixed sRGB examples use numeric postconditions.
-It also executes the real theme-code generator and compiles its output for named
-defaults, translucent sRGB, grayscale, and Display P3 inputs. Generated files live
-in a temporary directory and are not committed.
+- Keep commits focused and explain the change, its reason, and meaningful alternatives.
+- Report commands run, results, and validation limitations. Distinguish local evidence from CI.
+- Include Unreleased notes for notable changes and migration guidance for changed results, fallbacks, enum cases, or deprecations—not only signature changes.
+- Reconcile documentation and migration notes after integrating overlapping work; rerun affected checks against the combined result.
+- Attach UI review screenshots to the PR, not `docs/screenshots/`. Keep local captures ignored. Images used by published documentation may remain in the repository.
 
-A successful DocC build validates documentation structure and links, not fenced
-Swift. The compilation and behavior checks cover selected examples, not every snippet
-or the truth of prose, visual behavior, or performance claims. Review translations
-for semantic parity and use measured, reproducible evidence for performance claims. When parallel
-branches touch the same contracts, reconcile their release and migration notes
-after integrating upstream changes and rerun all gates against the combined result.
+## Release preflight
 
-### Git Workflow
+After release preparation is merged, run `scripts/check_release.sh <version>` on clean, synchronized `main` before tagging. Omit the `v` prefix from the argument.
 
-- Write clear, descriptive commit messages
-- Keep commits focused and atomic
-- Use feature branches for new work
-- Update documentation when making API changes
-- Follow the existing PR review process
-
-### Getting Started
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes following these guidelines
-4. Run SwiftLint locally to check for style issues
-5. Write or update tests as needed
-6. Submit a pull request
-
-## Questions?
-
-If you have any questions about these guidelines or need clarification, please open an issue or reach out to the maintainers.
+The script verifies version/changelog metadata and tag availability, then runs compatibility and the canonical behavioral matrix. It does not publish a release or replace documentation, lint, example, and benchmark checks.

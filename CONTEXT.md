@@ -74,6 +74,10 @@ _Avoid_: Zero contrast, minimum ratio
 The reason one contrast input is not measurable. Issues are retained independently for the foreground and the background so one does not hide the other. A translucent foreground is composited rather than diagnosed; only a background is diagnosed as translucent.
 _Avoid_: Contrast score, ordered failure priority
 
+**Contrast pair**:
+An explicitly chosen foreground and background used together, assessed against a requested contrast target. It is directional and does not imply that other combinations in the same palette are used together.
+_Avoid_: Unordered color pair, whole-app accessibility assessment
+
 **White-preference luminance threshold**:
 The relative luminance at which black and white contrast equally against a color, approximately 0.1791. Below it white is the stronger contrasting endpoint; above it black is. It is not the midpoint of the luminance range.
 _Avoid_: Mid gray, luminance 0.5

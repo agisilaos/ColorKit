@@ -32,10 +32,18 @@ class DocumentationContract(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 self.extract(text)
 
-    def test_behavior_checks_are_required_in_both_readme_inventories(self):
+    def test_behavior_checks_are_required_in_both_usage_guide_inventories(self):
         self.assertEqual(set(DOCS.README_CHECKS), {"hsl", "cmyk", "lab", "component-results"})
-        for path in ("README.md", "README.es-ES.md"):
+        for path in ("docs/Usage.md", "docs/Usage.es-ES.md"):
             self.assertLessEqual(DOCS.README_CHECKS.keys(), DOCS.EXAMPLES[path])
+
+    def test_quick_starts_and_relocated_examples_remain_required(self):
+        for path in ("README.md", "README.es-ES.md"):
+            self.assertEqual(DOCS.EXAMPLES[path], {"contrast", "catalog"})
+        for path in ("docs/Usage.md", "docs/Usage.es-ES.md"):
+            self.assertEqual(DOCS.EXAMPLES[path], DOCS.README_EXAMPLES)
+        for path, expected in DOCS.EXAMPLES.items():
+            DOCS.extract_examples(DOCS.ROOT / path, expected)
 
     def test_runtime_checks_follow_the_unmodified_published_code(self):
         code = "let cmyk = Color.red.cmykComponents()"

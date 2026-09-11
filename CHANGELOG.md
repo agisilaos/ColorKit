@@ -4,6 +4,14 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Simplify enhancement candidate selection to retain two request-local results instead of collecting and sorting candidates, preserving selection order, ties, budgets, and observable outcomes.
+- Shorten the English and Spanish READMEs and usage guides while preserving checked examples; align contributor guidance with current CI and documentation coverage.
+
+### Tooling
+- Add a standalone macOS contrast-pair report with explicit targets, per-pair outcomes, and focused tests run in CI. No new library API is introduced.
+- Preserve the released 3.1.0 component-conversion client alongside the 3.0.0 compatibility baseline.
+
 ## [3.1.0] - 2026-09-09
 
 ### Added
