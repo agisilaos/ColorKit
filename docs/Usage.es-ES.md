@@ -4,6 +4,25 @@
 
 Ejemplos concretos con las API públicas existentes. Importa `SwiftUI` y `ColorKit` en tu proyecto. Los contratos detallados están en las guías enlazadas, en inglés.
 
+## ¿Qué API debo usar?
+
+«Fijo» significa que los componentes RGB o de escala de grises están disponibles sin elegir una apariencia. Captura primero explícitamente los colores que dependen de la apariencia; consulta los [contratos de resolución y componentes](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results). Los límites de gama siguientes se aplican después de convertir a sRGB, no al nombre del espacio de color de origen.
+
+| Tarea → método preferido de `Color` | Entradas | Retorno / fallo y límites esenciales |
+| --- | --- | --- |
+| Conversión de componentes → `componentConversionResults()` | Fijas | Siete campos `Result` independientes: `.success(value)` / `.failure(ColorConversionIssue)`. Sin recorte ni composición; alfa debe ser finito y estar en `0...1`. sRGBA extendido y XYZ/LAB finitos siguen disponibles fuera de gama; HSL/HSB/CMYK/Hex rechazan esas entradas. Solo sRGBA y Hex incluyen alfa. |
+| Medición de contraste → `contrastResult(with:)` | Primer plano fijo (receptor), fondo fijo | `ColorContrastResult`: `.available(ContrastMeasurement)` / `.unavailable(ContrastIssues)` con problemas por entrada. Ambos deben estar dentro de gama; el primer plano translúcido se compone sobre un fondo opaco. La relación es `1...21`; `passingLevels` vacío indica una medición inferior a los objetivos. |
+| Evaluación de accesibilidad → `accessibilityResult(against:targetLevel:)` | El mismo contrato de primer plano/fondo fijos que para contraste | `ColorAccessibilityResult`: color sin cambios, relación opcional y `.meetsTarget`, `.bestEffort` (medición inferior al objetivo) o `.unavailable`. Sin ajuste ni límite de distancia. |
+| Mejora → `enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)` | Primer plano y fondo fijos, dentro de gama y opacos | `ColorAccessibilityResult`: candidato, contraste/distancia opcionales y estados de evaluación más `.invalidConfiguration`. Límite inclusivo CIEDE2000 ΔE00: finito en `0...100`, predeterminado `30`; cero conserva el original. El mejor esfuerzo abarca los candidatos examinados dentro del límite, no un óptimo global. |
+| Comparación perceptual → `comparisonResult(with:)` | Dos colores fijos, dentro de gama y opacos | `ColorComparisonResult`: `.available(ColorDifference)` con CIEDE2000 / `.unavailable(ColorComparisonIssues)`. Atómico: sin mediciones parciales, recorte ni composición alfa. |
+| HSL para la apariencia actual → `hslComponents()` | La plataforma resuelve colores con nombre/dinámicos para la apariencia actual | Tupla opcional `(hue, saturation, lightness)` en `0...1`; `nil` si falla la resolución. Recorta los canales de gama amplia a sRGB y omite alfa. Para una entrada fija con fallo de gama explícito, usa `componentConversionResults().hsl`. |
+
+Los componentes cero o ΔE00 cero obtenidos con éxito son valores válidos. No disponible significa ausencia de medición, no cero ni una medición inferior al objetivo. En la mejora, puede conservarse contraste diagnóstico incluso con `.unavailable` o `.invalidConfiguration`; comprueba `status` / `meetsTarget`, no solo la relación. Consulta los [contratos de evaluación y límites](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#verifiable-results).
+
+**Código existente:** `rgbaComponents()` puede sustituir un fallo por `(0, 0, 0, 0)`; `ColorSpaceConverter.getAllColorComponents()` también oculta sustituciones. Ninguno comparte la semántica de resultados por campo. La aritmética XYZ/LAB heredada puede diferir de los resultados por componente. `contrastRatio(with:)` ignora alfa y usa valores de respaldo de luminancia; `wcagContrastRatio(with:)` usa el centinela `1` para entradas translúcidas, indistinguible de una relación medida de 1:1. La mejora heredada que devuelve colores ignora el límite de distancia y no garantiza el objetivo. Consulta los [contratos de conversión](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md) y la [compatibilidad del contraste](../MIGRATION.md).
+
+`isPerceptuallySimilar(to:threshold:)` conserva CIE76, ignora alfa, acepta entradas extendidas cuando LAB está disponible y devuelve `false` si LAB no está disponible o la distancia es igual al umbral. Sus umbrales no son umbrales CIEDE2000. El método obsoleto `compare(with:)` devuelve CIEDE2000 cuando las entradas lo permiten y, en caso contrario, un valor de respaldo identificado como `.legacyRGBDistance`. Consulta los [contratos de comparación](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-comparison) y la [migración](../MIGRATION.md).
+
 ## Convertir colores
 
 Usa resultados por representación cuando importe la disponibilidad. Proporciona un color fijo; captura explícitamente la apariencia deseada para colores dinámicos. Una representación no disponible no descarta las conversiones válidas.

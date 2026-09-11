@@ -56,7 +56,7 @@ Superar el contraste no certifica la accesibilidad de toda la aplicación. Al ge
 
 ## Guías y ejemplos
 
-- [Guía de uso](docs/Usage.es-ES.md): ejemplos de conversión, fusión, temas, paletas, exportación e inspección.
+- [¿Qué API debo usar?](docs/Usage.es-ES.md): un mapa compacto de las API, seguido de recetas de uso.
 - [Espacios de color](Sources/ColorKit/Documentation.docc/Color-Spaces-article.md): resultados por componente y contratos de conversión.
 - [Accesibilidad](Sources/ColorKit/Documentation.docc/Accessibility-article.md): objetivos de contraste, límites de ajuste y simulación.
 - [Temas](Sources/ColorKit/Documentation.docc/Theming-article.md): colores adaptables y semánticos.
