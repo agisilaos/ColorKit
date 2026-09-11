@@ -247,16 +247,4 @@ private extension Color {
         let newLightness = max(0, min(1, hsl.lightness + amount))
         return Color(hue: hsl.hue, saturation: hsl.saturation, lightness: newLightness)
     }
-
-    /// Converts a given luminance value to an HSL lightness value.
-    ///
-    /// - Parameter luminance: The luminance value to convert.
-    /// - Returns: The corresponding lightness value in HSL format.
-    func convertLuminanceToLightness(_ luminance: CGFloat) -> CGFloat {
-        if luminance <= 0.008856 {
-            return luminance * 12.92
-        } else {
-            return pow(luminance, 1.0 / 2.4) * 1.055 - 0.055
-        }
-    }
 }
