@@ -4,6 +4,25 @@
 
 Focused examples using existing public APIs. Import `SwiftUI` and `ColorKit` in your client. Detailed contracts live in the linked guides.
 
+## Which API should I use?
+
+“Fixed” means RGB or grayscale components are available without choosing an appearance. Capture appearance-dependent colors explicitly first; see [resolution and component contracts](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results). Gamut limits below apply after conversion to sRGB, not to the source color-space label.
+
+| Task → preferred method on `Color` | Inputs | Return / failure and essential limits |
+| --- | --- | --- |
+| Component conversion → `componentConversionResults()` | Fixed | Seven independent `Result` fields: `.success(value)` / `.failure(ColorConversionIssue)`. No clipping or compositing; finite alpha must be in `0...1`. Extended sRGBA and finite XYZ/LAB survive out-of-gamut input; HSL/HSB/CMYK/Hex reject it. Only sRGBA and Hex include alpha. |
+| Contrast measurement → `contrastResult(with:)` | Fixed foreground (receiver), fixed background | `ColorContrastResult`: `.available(ContrastMeasurement)` / `.unavailable(ContrastIssues)` with per-input issues. Both must be in gamut; translucent foreground composites over an opaque background. Ratio is `1...21`; empty `passingLevels` is a measured shortfall. |
+| Accessibility assessment → `accessibilityResult(against:targetLevel:)` | Same fixed foreground/background contract as contrast | `ColorAccessibilityResult`: unchanged color, optional ratio, and `.meetsTarget`, `.bestEffort` (measured below target), or `.unavailable`. No adjustment or distance budget. |
+| Enhancement → `enhancementResult(with:targetLevel:strategy:maxPerceptualDistance:)` | Fixed, in-gamut, opaque foreground and background | `ColorAccessibilityResult`: candidate, optional contrast/distance, assessment statuses plus `.invalidConfiguration`. Inclusive CIEDE2000 ΔE00 budget: finite `0...100`, default `30`; zero preserves the original. Best effort covers examined in-budget candidates, not a global optimum. |
+| Perceptual comparison → `comparisonResult(with:)` | Two fixed, in-gamut, opaque colors | `ColorComparisonResult`: `.available(ColorDifference)` using CIEDE2000 / `.unavailable(ColorComparisonIssues)`. Atomic: no partial measurements, clipping, or alpha compositing. |
+| HSL for the current appearance → `hslComponents()` | Platform resolves named/dynamic colors for the current appearance | Optional `(hue, saturation, lightness)` tuple in `0...1`; `nil` on resolution failure. Clips wider-gamut channels to sRGB and omits alpha. For fixed input with explicit gamut failure, use `componentConversionResults().hsl`. |
+
+Successful zero components or zero ΔE00 are valid values. Unavailable means no measurement, not zero or a measured shortfall. For enhancement, diagnostic contrast can remain available even with `.unavailable` or `.invalidConfiguration`; check `status` / `meetsTarget`, not the ratio alone. See [assessment and budget contracts](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#verifiable-results).
+
+**Existing callers:** `rgbaComponents()` can substitute `(0, 0, 0, 0)` on failure; `ColorSpaceConverter.getAllColorComponents()` also hides substitutions. Neither shares per-field result semantics. Legacy XYZ/LAB arithmetic can differ from component results. `contrastRatio(with:)` ignores alpha and uses luminance fallbacks; `wcagContrastRatio(with:)` uses sentinel `1` for translucent inputs, indistinguishable from a measured 1:1 ratio. Legacy color-returning enhancement ignores the distance budget and does not guarantee the target. See [conversion contracts](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md) and [contrast compatibility](../MIGRATION.md).
+
+`isPerceptuallySimilar(to:threshold:)` retains CIE76, ignores alpha, accepts extended inputs when LAB is available, and returns `false` for unavailable LAB or distance equal to the threshold. Its thresholds are not CIEDE2000 thresholds. Deprecated `compare(with:)` returns CIEDE2000 when eligible, otherwise a labeled `.legacyRGBDistance` fallback. See [comparison contracts](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-comparison) and [migration](../MIGRATION.md).
+
 ## Convert colors
 
 Use per-representation results when availability matters. Supply a fixed color; capture the intended appearance explicitly for dynamic colors. One unavailable representation does not discard successful conversions.

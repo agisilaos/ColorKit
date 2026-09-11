@@ -56,7 +56,7 @@ A contrast pass is not whole-app accessibility certification. When generating ad
 
 ## Guides and examples
 
-- [Usage guide](docs/Usage.md): conversion, blending, themes, palettes, export, and inspection examples.
+- [Which API should I use?](docs/Usage.md): a compact API map, followed by usage recipes.
 - [Color spaces](Sources/ColorKit/Documentation.docc/Color-Spaces-article.md): component results and conversion contracts.
 - [Accessibility](Sources/ColorKit/Documentation.docc/Accessibility-article.md): contrast targets, enhancement budgets, and simulation.
 - [Theming](Sources/ColorKit/Documentation.docc/Theming-article.md): adaptive and semantic colors.
