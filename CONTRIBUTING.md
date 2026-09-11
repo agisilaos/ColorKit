@@ -36,6 +36,10 @@ A successful DocC build does not compile fenced Swift. Example checks cover sele
 
 ## Run checks
 
+Optional local check: `python3 scripts/check_readme_parity.py` compares bilingual structure and changed-file coverage against `origin/main`. It requires that ref and merge-base history. CI tests the helper but does not run this document check.
+
+Parity is a heuristic, not a Swift parser or translation validator. It ignores ordinary string contents and line comments; review literal values and semantic translation manually. Pi users can also invoke `/readme-parity`.
+
 Run these from the repository root with Xcode 26.5 selected. These commands cover the current CI jobs:
 
 ```sh

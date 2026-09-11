@@ -27,8 +27,10 @@ def normalize_link(target):
 
 
 def normalize_swift(code):
-    code = re.sub(r"//.*$", "", code, flags=re.MULTILINE)
-    code = re.sub(r'"(?:\\.|[^"\\])*"', '"<translated-text>"', code)
+    # Match ordinary strings and line comments together so URL slashes inside a
+    # string cannot consume executable code following its closing quote.
+    code = re.sub(r'"(?:\\.|[^"\\])*"|//[^\n]*',
+                  lambda match: '"<translated-text>"' if match[0].startswith('"') else "", code)
     return re.sub(r"\s+", "", code)
 
 
@@ -61,8 +63,8 @@ def compare(english, spanish):
 
 
 def git_lines(*arguments):
-    result = subprocess.run(("git", *arguments), cwd=ROOT, text=True, capture_output=True)
-    return result.stdout.splitlines() if result.returncode == 0 else []
+    result = subprocess.run(("git", *arguments), cwd=ROOT, text=True, capture_output=True, check=True)
+    return result.stdout.splitlines()
 
 
 def changed_paths():
@@ -96,7 +98,13 @@ def check():
 
 
 def main():
-    results = check()
+    try:
+        results = check()
+    except (subprocess.CalledProcessError, OSError) as error:
+        detail = error.stderr if isinstance(error, subprocess.CalledProcessError) else str(error)
+        print(f"FAIL Git parity check unavailable: {(detail or str(error)).strip()}")
+        print("Ensure Git is available and origin/main and its merge-base history are fetched.")
+        return 1
     for english, spanish, issues in results:
         print(f"{'PASS' if not issues else 'FAIL'} {english} ↔ {spanish}")
         for issue in issues:
