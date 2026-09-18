@@ -10,6 +10,7 @@ Ejemplos concretos con las API públicas existentes. Importa `SwiftUI` y `ColorK
 
 | Tarea → método preferido de `Color` | Entradas | Retorno / fallo y límites esenciales |
 | --- | --- | --- |
+| Mezcla → `blendResult(with:mode:amount:)` | Base fija (receptor), segunda entrada fija | `Result<Color, ColorBlendError>`; un resultado sin cambios puede ser un éxito. Cantidad finita en `0...1`; conserva el alfa de la base y la salida extendida finita. Sin composición source-over. |
 | Conversión de componentes → `componentConversionResults()` | Fijas | Siete campos `Result` independientes: `.success(value)` / `.failure(ColorConversionIssue)`. Sin recorte ni composición; alfa debe ser finito y estar en `0...1`. sRGBA extendido y XYZ/LAB finitos siguen disponibles fuera de gama; HSL/HSB/CMYK/Hex rechazan esas entradas. Solo sRGBA y Hex incluyen alfa. |
 | Medición de contraste → `contrastResult(with:)` | Primer plano fijo (receptor), fondo fijo | `ColorContrastResult`: `.available(ContrastMeasurement)` / `.unavailable(ContrastIssues)` con problemas por entrada. Ambos deben estar dentro de gama; el primer plano translúcido se compone sobre un fondo opaco. La relación es `1...21`; `passingLevels` vacío indica una medición inferior a los objetivos. |
 | Evaluación de accesibilidad → `accessibilityResult(against:targetLevel:)` | El mismo contrato de primer plano/fondo fijos que para contraste | `ColorAccessibilityResult`: color sin cambios, relación opcional y `.meetsTarget`, `.bestEffort` (medición inferior al objetivo) o `.unavailable`. Sin ajuste ni límite de distancia. |
@@ -22,6 +23,31 @@ Los componentes cero o ΔE00 cero obtenidos con éxito son valores válidos. No 
 **Código existente:** `rgbaComponents()` puede sustituir un fallo por `(0, 0, 0, 0)`; `ColorSpaceConverter.getAllColorComponents()` también oculta sustituciones. Ninguno comparte la semántica de resultados por campo. La aritmética XYZ/LAB heredada puede diferir de los resultados por componente. `contrastRatio(with:)` ignora alfa y usa valores de respaldo de luminancia; `wcagContrastRatio(with:)` usa el centinela `1` para entradas translúcidas, indistinguible de una relación medida de 1:1. La mejora heredada que devuelve colores ignora el límite de distancia y no garantiza el objetivo. Consulta los [contratos de conversión](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md) y la [compatibilidad del contraste](../MIGRATION.md).
 
 `isPerceptuallySimilar(to:threshold:)` conserva CIE76, ignora alfa, acepta entradas extendidas cuando LAB está disponible y devuelve `false` si LAB no está disponible o la distancia es igual al umbral. Sus umbrales no son umbrales CIEDE2000. El método obsoleto `compare(with:)` devuelve CIEDE2000 cuando las entradas lo permiten y, en caso contrario, un valor de respaldo identificado como `.legacyRGBDistance`. Consulta los [contratos de comparación](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-comparison) y la [migración](../MIGRATION.md).
+
+## Mezclar con resultados explícitos
+
+Usa `blendResult(with:mode:amount:)` cuando necesites distinguir un resultado calculado de una operación no disponible. Un color sin cambios puede ser un éxito; no deduzcas la disponibilidad comparando colores. La aplicación decide el texto del error y si permite exportar.
+
+Ambas entradas deben ser fijas, incluso con cantidad cero. La cantidad debe ser finita en `0...1`; el alfa de la segunda entrada escala el efecto y se conserva el alfa de la base. Se conserva la salida sRGB extendida cuando es finita. No es composición source-over. `blended` y los métodos por modo mantienen sus valores de respaldo y límites existentes. Consulta el [contrato completo](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending).
+
+<!-- swift-example: blend-result -->
+```swift
+let base = Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75)
+let blend = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5)
+let result = base.blendResult(with: blend, mode: .multiply)
+var previewColor: Color?
+var blendError: ColorBlendError?
+switch result {
+case .success(let color):
+    previewColor = color
+case .failure(let error):
+    blendError = error
+}
+let canExport = previewColor != nil
+let unchanged = base.blendResult(
+    with: Color(.sRGB, red: 1, green: 1, blue: 1), mode: .multiply)
+let unavailable = base.blendResult(with: .primary, mode: .multiply)
+```
 
 ## Convertir colores
 

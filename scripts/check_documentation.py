@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCC = "Sources/ColorKit/Documentation.docc/"
 # Explicit inventory makes deleting a marker a failure, not a silent coverage loss.
 README_EXAMPLES = {"accessible-palette", "enhancement", "catalog", "previews", "comparison", "budget",
-                   "hsl", "cmyk", "lab", "component-results"}
+                   "hsl", "cmyk", "lab", "component-results", "blend-result"}
 EXAMPLES = {
     "README.md": {"contrast", "catalog"},
     "README.es-ES.md": {"contrast", "catalog"},
@@ -33,6 +33,20 @@ MARKER = re.compile(r"<!-- swift-example: ([a-z0-9-]+) -->")
 # Postconditions use the actual usage-guide variables, not copied implementations.
 # Renaming a variable requires updating its check; removing a result cannot pass silently.
 README_CHECKS = {
+    "blend-result": """
+checkExample(canExport && blendError == nil, "Ordinary success enables export")
+guard case .success(let color) = result,
+      case .success(let rgb) = color.componentConversionResults().srgba else {
+    failExample("Expected a computed blend")
+}
+checkExample(rgb.red == 0.125 && rgb.green == 0.25 && rgb.blue == 0.375,
+    "Expected componentwise multiply")
+guard case .success(let same) = unchanged else { failExample("Unchanged is success") }
+checkExample(same.componentConversionResults().srgba == base.componentConversionResults().srgba,
+    "Multiplying by white preserves resolved components")
+checkExample(unavailable == .failure(.unavailableInputs(base: nil, blend: .unresolvedInput)),
+    "Unresolved blend input must not masquerade as success")
+""",
     "enhancement": """
 checkExample(result.status == .meetsTarget || result.status == .bestEffort,
     "Fixed opaque inputs with a valid budget must yield a verifiable candidate")

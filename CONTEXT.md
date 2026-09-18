@@ -63,8 +63,28 @@ A blending or interpolation input converted to a resolved sRGBA snapshot before 
 _Avoid_: Raw component array, clamped operand
 
 **Unblendable operand**:
-A blending or interpolation input with no fixed components, such as a dynamic color. The operation returns its receiver unchanged, which is indistinguishable from a blend that had no effect.
+A blending or interpolation input without a resolved sRGBA snapshot, such as a dynamic color without explicitly captured fixed components.
 _Avoid_: Successful blend, identity blend
+
+**Base blend operand**:
+The first color in an ordered blend pair, whose components provide the base for the selected blend mode.
+_Avoid_: Background when implying source-over compositing
+
+**Blend operand**:
+The second color in an ordered blend pair, applied to the base according to the selected blend mode. Exchanging the operands can change the result.
+_Avoid_: Foreground when implying source-over compositing
+
+**Successful blend**:
+A blend whose result can be computed under the operation's contract. Its components may legitimately equal the base components; success does not require a visible change or preserved color identity.
+_Avoid_: Changed color, identity guarantee
+
+**Unavailable blend**:
+A blend for which no computed result can be supplied under the operation's contract. It is distinct from a successful blend that leaves the base components unchanged.
+_Avoid_: Unchanged blend, fallback color
+
+**Blend amount**:
+The requested strength of a blend-mode effect, from zero through one. The blend operand's alpha further scales that effect; the base alpha remains unchanged.
+_Avoid_: Output opacity, source-over opacity
 
 **Unavailable contrast measurement**:
 A contrast measurement ColorKit cannot establish from the supplied inputs, because an input is unresolved or outside the sRGB gamut, or the background is translucent. It is absence, not a ratio of 1 and not a failed threshold.

@@ -4,6 +4,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Add `Color.blendResult(with:mode:amount:)` with explicit success and typed failures for invalid amounts, independent operand conversion issues, and nonfinite results. Preserve base alpha and finite extended-sRGB output without consulting caches. Existing blending methods remain unchanged.
+
 ## [3.1.1] - 2026-09-18
 
 ### Changed

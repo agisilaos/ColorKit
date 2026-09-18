@@ -167,6 +167,14 @@ Text("Gradient").linearGradientBackground(from: start, to: end, in: .lab)
 
 ### Color Blending
 
+Use `blendResult(with:mode:amount:)` for explicit success or failure. The receiver is the base; the argument is the blend operand. A successful `Color` may have unchanged components. The application owns unavailable-state presentation; see the [checked caller recipe](https://github.com/agisilaos/ColorKit/blob/main/docs/Usage.md#blend-with-explicit-outcomes).
+
+Both inputs must resolve to fixed RGB/grayscale components, including at zero amount or zero blend alpha. Capture the intended appearance explicitly before supplying named/dynamic colors. The operation applies existing mode arithmetic in nonlinear extended sRGB, scales its effect by amount times blend alpha, and preserves base alpha. It does not perform source-over compositing or add gamut clipping. Individual modes retain their own bounds.
+
+Amount defaults to one and must be finite in `0...1`. `.invalidAmount` takes precedence; otherwise `.unavailableInputs(base:blend:)` retains each operand's first conversion issue independently. Nonfinite calculations or output representation produce `.nonfiniteResult`. Zero contribution skips mode arithmetic after both operands resolve. The operation neither reads nor writes the legacy cache.
+
+The following legacy methods remain available and unchanged: unresolved operands return the receiver, amounts are clamped, and full-strength results use the existing cache.
+
 <!-- swift-example: blending -->
 ```swift
 let base = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
@@ -200,6 +208,7 @@ let screen = base.blended(with: overlay, mode: .screen)
 - `Color.monochromaticGradient(steps:)`
 
 ### Blending
+- ``ColorBlendError``
 - `Color.blended(with:mode:amount:)`
 - ``BlendMode``
 - `Color.interpolated(with:amount:in:)`

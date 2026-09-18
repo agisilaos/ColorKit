@@ -51,6 +51,11 @@ compile against that release. For later releases, add a directory containing a
 `revision` file and clients for newly shipped APIs. Fetch full history before
 running the checker in a shallow clone.
 
+The current candidate also compiles `scripts/fixtures/blend_result.swift` as an
+ordinary nonisolated public client on both platforms at the minimum deployment
+targets. This checks the new blend operation before it has a release baseline;
+it is not claimed to compile against earlier releases.
+
 ## Builds and diagnostics
 
 Every run archives each pinned release, then builds the release and candidate

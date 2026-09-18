@@ -10,6 +10,7 @@ Focused examples using existing public APIs. Import `SwiftUI` and `ColorKit` in 
 
 | Task → preferred method on `Color` | Inputs | Return / failure and essential limits |
 | --- | --- | --- |
+| Blending → `blendResult(with:mode:amount:)` | Fixed base (receiver), fixed blend operand | `Result<Color, ColorBlendError>`; unchanged can be success. Finite amount in `0...1`; preserves base alpha and finite extended output. No source-over compositing. |
 | Component conversion → `componentConversionResults()` | Fixed | Seven independent `Result` fields: `.success(value)` / `.failure(ColorConversionIssue)`. No clipping or compositing; finite alpha must be in `0...1`. Extended sRGBA and finite XYZ/LAB survive out-of-gamut input; HSL/HSB/CMYK/Hex reject it. Only sRGBA and Hex include alpha. |
 | Contrast measurement → `contrastResult(with:)` | Fixed foreground (receiver), fixed background | `ColorContrastResult`: `.available(ContrastMeasurement)` / `.unavailable(ContrastIssues)` with per-input issues. Both must be in gamut; translucent foreground composites over an opaque background. Ratio is `1...21`; empty `passingLevels` is a measured shortfall. |
 | Accessibility assessment → `accessibilityResult(against:targetLevel:)` | Same fixed foreground/background contract as contrast | `ColorAccessibilityResult`: unchanged color, optional ratio, and `.meetsTarget`, `.bestEffort` (measured below target), or `.unavailable`. No adjustment or distance budget. |
@@ -22,6 +23,31 @@ Successful zero components or zero ΔE00 are valid values. Unavailable means no 
 **Existing callers:** `rgbaComponents()` can substitute `(0, 0, 0, 0)` on failure; `ColorSpaceConverter.getAllColorComponents()` also hides substitutions. Neither shares per-field result semantics. Legacy XYZ/LAB arithmetic can differ from component results. `contrastRatio(with:)` ignores alpha and uses luminance fallbacks; `wcagContrastRatio(with:)` uses sentinel `1` for translucent inputs, indistinguishable from a measured 1:1 ratio. Legacy color-returning enhancement ignores the distance budget and does not guarantee the target. See [conversion contracts](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md) and [contrast compatibility](../MIGRATION.md).
 
 `isPerceptuallySimilar(to:threshold:)` retains CIE76, ignores alpha, accepts extended inputs when LAB is available, and returns `false` for unavailable LAB or distance equal to the threshold. Its thresholds are not CIEDE2000 thresholds. Deprecated `compare(with:)` returns CIEDE2000 when eligible, otherwise a labeled `.legacyRGBDistance` fallback. See [comparison contracts](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-comparison) and [migration](../MIGRATION.md).
+
+## Blend with explicit outcomes
+
+Use `blendResult(with:mode:amount:)` when a computed result must be distinguished from an unavailable operation. An unchanged color can be a success; do not infer availability from color equality. The application owns error text and whether to enable export.
+
+Both operands must be fixed, even for zero amount. Amount must be finite in `0...1`; the blend alpha scales its effect, and base alpha is preserved. Extended-sRGB output is retained when finite. This is not source-over compositing. Existing `blended` and per-mode helpers retain their fallback and clamping behavior. See the [complete blending contract](../Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending).
+
+<!-- swift-example: blend-result -->
+```swift
+let base = Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75)
+let blend = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5)
+let result = base.blendResult(with: blend, mode: .multiply)
+var previewColor: Color?
+var blendError: ColorBlendError?
+switch result {
+case .success(let color):
+    previewColor = color
+case .failure(let error):
+    blendError = error
+}
+let canExport = previewColor != nil
+let unchanged = base.blendResult(
+    with: Color(.sRGB, red: 1, green: 1, blue: 1), mode: .multiply)
+let unavailable = base.blendResult(with: .primary, mode: .multiply)
+```
 
 ## Convert colors
 

@@ -1,5 +1,19 @@
 # Migration Guide
 
+## Unreleased
+
+### Explicit blending outcomes
+
+`blendResult(with:mode:amount:)` is additive; existing calls need no migration.
+Adopt it to distinguish a successful unchanged blend from an unavailable result.
+It requires two fixed inputs even at zero amount, rejects nonfinite or out-of-range
+amounts instead of clamping, and returns both operand conversion issues when relevant.
+It preserves base alpha rather than performing source-over compositing, retains finite
+extended-sRGB output, and bypasses the publicly writable legacy cache. Existing
+`blended` and per-mode helpers keep their receiver fallback, clamping, and cache behavior.
+See the [blending contract](Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending)
+and [caller example](docs/Usage.md#blend-with-explicit-outcomes).
+
 ## ColorKit 3.1.0
 
 ### Component conversion results
