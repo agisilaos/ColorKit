@@ -15,6 +15,9 @@ Sus cadenas en inglés son ejemplos para desarrolladores, no texto localizado de
 producto. Ambas traducciones contienen el mismo código Swift. Todas las funciones
 pertenecen al cliente; no hay extensiones de la biblioteca, nuevas conformidades
 con Error ni reparaciones automáticas.
+Las conversiones de componentes ya usan `Result<Value, ColorConversionIssue>`,
+cuyo tipo de fallo cumple `Error`. El contraste usa `.unavailable(ContrastIssues)`.
+Estas funciones presentan esos resultados; no lanzan errores.
 
 Cada resultado de componentes se trata por separado. El rojo Display P3 conserva
 LAB finito mientras Hex no está disponible. La sugerencia condicional menciona LAB
@@ -25,6 +28,9 @@ representación. Los ceros obtenidos con éxito siguen siendo valores válidos.
 
 <!-- swift-example: unavailable-results -->
 ```swift
+import ColorKit
+import SwiftUI
+
 func conversionExplanation(_ issue: ColorConversionIssue) -> (reason: String, nextStep: String?) {
     switch issue {
     case .unresolvedInput:
@@ -37,7 +43,7 @@ func conversionExplanation(_ issue: ColorConversionIssue) -> (reason: String, ne
     case .colorSpaceConversionFailed:
         return ("The platform could not produce a valid extended-sRGB snapshot.", nil)
     case .outOfSRGBGamut:
-        return ("This representation requires sRGB channels within 0...1; no clipping was applied.", nil)
+        return ("The input is outside the sRGB gamut required by this representation; no clipping was applied.", nil)
     case .nonfiniteResult:
         return ("The calculation or a required XYZ dependency produced nonfinite coordinates.", nil)
     }
