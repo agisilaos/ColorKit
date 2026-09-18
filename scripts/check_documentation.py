@@ -16,6 +16,8 @@ README_EXAMPLES = {"accessible-palette", "enhancement", "catalog", "previews", "
 EXAMPLES = {
     "README.md": {"contrast", "catalog"},
     "README.es-ES.md": {"contrast", "catalog"},
+    "docs/recipes/unavailable-results.md": {"unavailable-results"},
+    "docs/recipes/unavailable-results.es-ES.md": {"unavailable-results"},
     "docs/Usage.md": README_EXAMPLES,
     "docs/Usage.es-ES.md": README_EXAMPLES,
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
@@ -65,6 +67,57 @@ checkExample(abs(cmyk.cyan) < 0.001 && abs(cmyk.magenta - 1) < 0.001
 guard let lab else { failExample("Fixed red must resolve to LAB") }
 checkExample(abs(lab.L - 53.24) < 0.01 && abs(lab.a - 80.09) < 0.01
     && abs(lab.b - 67.20) < 0.01, "Expected red D65 LAB (53.24, 80.09, 67.20)")
+""",
+}
+
+
+RECIPE_CHECKS = {
+    "unavailable-results": """
+guard case .success(let lab) = conversions.lab,
+      case .failure(.outOfSRGBGamut) = conversions.hex else {
+    failExample("The documented P3 sample must preserve LAB and decline Hex")
+}
+checkExample([lab.lightness, lab.a, lab.b].allSatisfy { $0.isFinite }, "LAB must remain finite")
+checkExample(labText.hasPrefix("LAB (D65): L*=") && hexText.contains("available LAB result"),
+    "Retain the successful representation and condition its suggestion on availability")
+let zeroText = componentText("sRGBA red", result:
+    Color(.sRGB, red: 0, green: 0, blue: 0).componentConversionResults().srgba) { String($0.red) }
+checkExample(zeroText == "sRGBA red: 0.0", "A successful zero must not be labeled unavailable")
+for issue: ColorConversionIssue in [.unresolvedInput, .unsupportedColorModel,
+    .colorSpaceConversionFailed, .outOfSRGBGamut, .nonfiniteResult] {
+    let explanation = conversionExplanation(issue)
+    checkExample(!explanation.reason.isEmpty && explanation.nextStep == nil,
+        "Do not guess a repair or an available alternative from a conversion issue alone")
+}
+checkExample(conversionExplanation(.invalidComponents).nextStep != nil,
+    "Invalid source components justify inspection")
+checkExample(contrastExplanation(.unresolved).nextStep == nil,
+    "Unresolved contrast must not promise an appearance fix")
+let unavailableText = contrastText(contrast, target: .AA)
+checkExample(unavailableText.hasPrefix("Contrast unavailable.")
+    && unavailableText.contains("Foreground: The input is outside")
+    && unavailableText.contains("Background: The background is translucent")
+    && !unavailableText.contains(":1") && !unavailableText.contains("Below target"),
+    "Preserve independent input issues without inventing a measurement")
+let multiple = foreground.contrastResult(
+    with: Color(.displayP3, red: 1, green: 0, blue: 0, opacity: 0.5))
+let multipleText = contrastText(multiple, target: .AA)
+checkExample(multipleText.contains("Background: The input is outside")
+    && multipleText.contains("Background: The background is translucent"),
+    "Retain every issue for the same background")
+let black = Color(.sRGB, red: 0, green: 0, blue: 0)
+let white = Color(.sRGB, red: 1, green: 1, blue: 1)
+checkExample(contrastText(black.contrastResult(with: white), target: .AA).hasPrefix("Meets target:"),
+    "A measured pass must remain distinct")
+checkExample(contrastText(white.contrastResult(with: white), target: .AA).hasPrefix("Below target:"),
+    "A real measured shortfall must remain distinct from unavailability")
+let luminance = 1.05 / 4.499 - 0.05
+let gray = 1.055 * pow(luminance, 1 / 2.4) - 0.055
+let nearTarget = Color(.sRGB, red: gray, green: gray, blue: gray).contrastResult(with: white)
+checkExample(contrastText(nearTarget, target: .AA).hasPrefix("Below target:"),
+    "A ratio rounding to 4.50 must still be classified using its unrounded value")
+checkExample(inputText("Foreground", issues: []) == "Foreground: No issues reported.",
+    "An empty input issue list is not a contrast pass")
 """,
 }
 
@@ -137,9 +190,14 @@ def check(derived_data):
             source = scratch / f"example_{index}.swift"
             source.write_text(example_source(path, index, line, code))
             files.append(source)
-            if path.name in ("Usage.md", "Usage.es-ES.md") and name in README_CHECKS:
+            checks = ""
+            if path.name in ("Usage.md", "Usage.es-ES.md"):
+                checks = README_CHECKS.get(name, "")
+            elif path.parent == ROOT / "docs/recipes":
+                checks = RECIPE_CHECKS.get(name, "")
+            if checks:
                 runtime = scratch / f"runtime_{index}.swift"
-                runtime.write_text(example_source(path, index, line, code, README_CHECKS[name]))
+                runtime.write_text(example_source(path, index, line, code, checks))
                 runtime_files.append(runtime)
                 runtime_calls.append(f'print("Checking {path.name}: {name}"); example_{index}()')
         run(*compiler, "-typecheck", "-I", modules, *files)
@@ -160,7 +218,7 @@ def check(derived_data):
         run(*compiler, "-profile-generate", "-parse-as-library", "-I", modules, *runtime_files, entry,
             modules / "ColorKit.o", "-o", executable)
         run("env", f"LLVM_PROFILE_FILE={scratch / 'examples.profraw'}", executable)
-        print(f"Verified results of {len(runtime_files)} actual usage-guide examples.", flush=True)
+        print(f"Verified results of {len(runtime_files)} actual usage-guide and recipe examples.", flush=True)
         emitter = scratch / "emit-theme"
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",

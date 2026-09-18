@@ -37,6 +37,16 @@ class DocumentationContract(unittest.TestCase):
         for path in ("docs/Usage.md", "docs/Usage.es-ES.md"):
             self.assertLessEqual(DOCS.README_CHECKS.keys(), DOCS.EXAMPLES[path])
 
+    def test_unavailable_recipe_is_checked_in_both_languages(self):
+        snippets = []
+        for filename in ("unavailable-results.md", "unavailable-results.es-ES.md"):
+            relative = "docs/recipes/" + filename
+            self.assertEqual(DOCS.EXAMPLES[relative], set(DOCS.RECIPE_CHECKS))
+            examples = DOCS.extract_examples(DOCS.ROOT / relative, DOCS.EXAMPLES[relative])
+            snippets.append(examples["unavailable-results"][1])
+        # Developer-facing code is intentionally identical; prose owns translation.
+        self.assertEqual(*snippets)
+
     def test_quick_starts_and_relocated_examples_remain_required(self):
         for path in ("README.md", "README.es-ES.md"):
             self.assertEqual(DOCS.EXAMPLES[path], {"contrast", "catalog"})
