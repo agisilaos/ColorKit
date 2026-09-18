@@ -4,12 +4,17 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-09-18
+
 ### Changed
+- Avoid computing unused comparison metrics during budgeted enhancement distance checks, preserving eligibility, selected results, and distance budgets. No public API or documented behavior changes.
+- Add a bilingual API selection map, explicit package-product setup guidance, complete bounded-enhancement examples, and recipes for explaining unavailable component and contrast results without discarding successful conversions.
 - Consolidate utility, export, inspector, and accessibility guides in DocC, retain links from the old paths, and compile the consolidated examples.
 - Simplify enhancement candidate selection to retain two request-local results instead of collecting and sorting candidates, preserving selection order, ties, budgets, and observable outcomes.
 - Shorten the English and Spanish READMEs and usage guides while preserving checked examples; align contributor guidance with current CI and documentation coverage.
 
 ### Tooling
+- Exercise first-use adoption with an ordinary-import consumer fixture, and extend documentation compilation and runtime checks for enhancement and unavailable-result recipes.
 - Remove the obsolete standalone benchmark example; use the maintained Release runner in `Benchmarks` for reference measurements.
 - Add a standalone macOS contrast-pair report with explicit targets, per-pair outcomes, and focused tests run in CI. No new library API is introduced.
 - Preserve the released 3.1.0 component-conversion client alongside the 3.0.0 compatibility baseline.
