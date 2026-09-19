@@ -58,6 +58,8 @@ public struct AccessiblePaletteGenerator {
     /// This structure defines the parameters that control how color palettes
     /// are generated, including accessibility requirements and palette characteristics.
     ///
+    /// Transfer these settings between tasks and construct the processor where it is used.
+    ///
     /// Example:
     /// ```swift
     /// let config = AccessiblePaletteGenerator.Configuration(
@@ -66,7 +68,7 @@ public struct AccessiblePaletteGenerator {
     ///     includeBlackAndWhite: true // Include black and white
     /// )
     /// ```
-    public struct Configuration {
+    public struct Configuration: Sendable {
         /// The minimum contrast ratio targeted for generated candidates.
         ///
         /// This value is derived from the target WCAG level and is used when

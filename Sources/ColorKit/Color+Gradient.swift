@@ -510,7 +510,9 @@ public extension Color {
 ///     in: .lab
 /// )
 /// ```
-public enum GradientColorSpace {
+///
+/// `allCases` lists RGB, HSL, then LAB. Existing cases retain their relative order through 3.x.
+public enum GradientColorSpace: CaseIterable {
     /// Linear RGB color space interpolation
     case rgb
 

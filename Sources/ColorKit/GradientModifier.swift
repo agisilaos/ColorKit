@@ -264,7 +264,11 @@ public extension View {
 ///         direction: .leadingToTrailing
 ///     )
 /// ```
-public enum GradientDirection {
+///
+/// `allCases` follows declaration order: the four diagonals, then top-to-bottom,
+/// bottom-to-top, leading-to-trailing, and trailing-to-leading. Existing cases
+/// retain their relative order through 3.x.
+public enum GradientDirection: CaseIterable {
     /// Gradient flows from top-leading to bottom-trailing corner
     case topLeadingToBottomTrailing
 
