@@ -138,11 +138,6 @@ public extension Color {
     /// - Returns: The contrast ratio between the two colors, or the sentinel `1` when
     ///   either color is translucent.
     func wcagContrastRatio(with color: Color) -> Double {
-        // Check cache first
-        if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, with: color) {
-            return cachedRatio
-        }
-
         let first = self.rgbaComponents()
         let second = color.rgbaComponents()
 
@@ -152,6 +147,11 @@ public extension Color {
         // has no background to composite over and no way to return absence, so it
         // reports the sentinel instead.
         guard first.alpha >= 1, second.alpha >= 1 else { return 1 }
+
+        // Caller-populated cache entries cannot override the opacity requirement.
+        if let cachedRatio = ColorCache.shared.getCachedContrastRatio(for: self, with: color) {
+            return cachedRatio
+        }
 
         let ratio = SRGBColorConversion.wcagContrastRatio(
             between: (red: first.red, green: first.green, blue: first.blue),
