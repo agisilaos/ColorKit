@@ -16,23 +16,33 @@ import SwiftUI
 /// - Theme management and generation
 /// - Gradient creation and manipulation
 ///
-/// Example usage:
+/// Measure a fixed foreground/background pair and handle unavailable contrast explicitly:
+/// <!-- swift-example: introductory-contrast -->
 /// ```swift
-/// // Check WCAG compliance
-/// let contrast = Color.blue.contrastRatio(with: .white)
-/// let isAccessible = Color.blue.isAccessible(against: .white)
+/// let foreground = Color(.sRGB, red: 0, green: 0, blue: 0)
+/// let background = Color(.sRGB, red: 1, green: 1, blue: 1)
+/// let contrast = foreground.contrastResult(with: background)
+/// switch contrast {
+/// case .available(let measurement):
+///     print("Contrast: \(measurement.ratio):1")
+///     print("Meets AA: \(measurement.ratio >= WCAGContrastLevel.AA.minimumRatio)")
+/// case .unavailable(let issues):
+///     print("Contrast unavailable: \(issues)")
+/// }
+/// ```
 ///
-/// // Generate accessible palette
-/// let palette = ColorKit.ColorInspector.generateAccessiblePalette(
-///     from: .blue,
-///     targetLevel: .AAA
-/// )
-///
-/// // Create theme
-/// let theme = ColorKit.ColorInspector.generateAccessibleTheme(
-///     from: .blue,
-///     name: "Ocean"
-/// )
+/// Convert a fixed color without substituting fallback components on failure:
+/// <!-- swift-example: introductory-components -->
+/// ```swift
+/// let color = Color(.sRGB, red: 0, green: 1, blue: 0)
+/// let conversions = color.componentConversionResults()
+/// switch conversions.srgba {
+/// case .success(let components):
+///     print("Green: \(components.green), alpha: \(components.alpha)")
+/// case .failure(let issue):
+///     print("sRGBA unavailable: \(issue)")
+/// }
+/// // Each representation has its own outcome; inspect conversions.lab or conversions.hex separately.
 /// ```
 public enum ColorKit {
     /// The current version of ColorKit.

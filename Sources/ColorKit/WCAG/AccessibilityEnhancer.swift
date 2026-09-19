@@ -34,7 +34,7 @@ import SwiftUI
 /// let strategy = AdjustmentStrategy.preserveHue
 /// print(strategy.description) // "Prefers preserving hue..."
 /// ```
-public enum AdjustmentStrategy: String, CaseIterable, Identifiable {
+public enum AdjustmentStrategy: String, CaseIterable, Identifiable, Sendable {
     /// Prefers preserving hue while adjusting saturation and lightness.
     ///
     /// This strategy is best when maintaining brand colors is important.
@@ -119,6 +119,8 @@ public class AccessibilityEnhancer {
     /// This structure defines how the enhancer should approach color adjustments,
     /// including the target accessibility level and preferred adjustment strategies.
     ///
+    /// Transfer these settings between tasks and construct the processor where it is used.
+    ///
     /// Example:
     /// ```swift
     /// let config = AccessibilityEnhancer.Configuration(
@@ -128,7 +130,7 @@ public class AccessibilityEnhancer {
     ///     preferDarker: true
     /// )
     /// ```
-    public struct Configuration {
+    public struct Configuration: Sendable {
         /// The WCAG contrast level to achieve.
         public let targetLevel: WCAGContrastLevel
 

@@ -14,15 +14,37 @@ SPEC.loader.exec_module(DOCS)
 
 
 class DocumentationContract(unittest.TestCase):
-    def extract(self, text, expected=frozenset({"sample"})):
+    def extract(self, text, expected=frozenset({"sample"}), suffix=".md"):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "example.md"
+            path = Path(directory) / ("example" + suffix)
             path.write_text(text)
             return DOCS.extract_examples(path, expected)
 
     def test_extracts_actual_code_and_original_line_number(self):
         self.assertEqual(self.extract("Title\n<!-- swift-example: sample -->\n```swift\nlet color = Color.red\n```"),
                          {"sample": (4, "let color = Color.red")})
+
+    def test_swift_documentation_keeps_code_and_source_lines(self):
+        text = ("import SwiftUI\n"
+                "/// <!-- swift-example: sample -->\n"
+                "/// ```swift\n"
+                "/// let color = Color.red\n"
+                "/// // Keep this comment.\n"
+                "/// ```\n"
+                "let implementation = 1\n")
+        self.assertEqual(self.extract(text, suffix=".swift"),
+                         {"sample": (4, "let color = Color.red\n// Keep this comment.")})
+        with self.assertRaises(ValueError):
+            self.extract(text.replace("/// <!-- swift-example: sample -->", "// <!-- swift-example: sample -->"),
+                         suffix=".swift")
+        with self.assertRaises(ValueError):
+            self.extract(text.replace("/// ```\n", ""), suffix=".swift")
+
+    def test_introduction_has_compiler_and_behavior_coverage(self):
+        relative = "Sources/ColorKit/ColorKit.swift"
+        self.assertEqual(DOCS.EXAMPLES[relative], {"introductory-contrast", "introductory-components"})
+        self.assertEqual(DOCS.EXAMPLES[relative], set(DOCS.INTRODUCTORY_CHECKS))
+        DOCS.extract_examples(DOCS.ROOT / relative, DOCS.EXAMPLES[relative])
 
     def test_missing_duplicate_unknown_empty_and_unclosed_examples_fail(self):
         valid = "<!-- swift-example: sample -->\n```swift\nlet value = 1\n```\n"

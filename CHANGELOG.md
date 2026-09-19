@@ -5,7 +5,11 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Make gradient color spaces and directions enumerable in documented declaration order, and make accessibility enhancement and palette-generation configurations safely transferable with checked `Sendable` conformances.
 - Add `Color.blendResult(with:mode:amount:)` with explicit success and typed failures for invalid amounts, independent operand conversion issues, and nonfinite results. Preserve base alpha and finite extended-sRGB output without consulting caches. Existing blending methods remain unchanged.
+
+### Changed
+- Introduce explicit contrast and component-conversion outcomes in the library overview, and compile and verify those source-documentation examples.
 
 ## [3.1.1] - 2026-09-18
 
