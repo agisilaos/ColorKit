@@ -15,6 +15,19 @@ final class ColorCacheIntegrationTests: XCTestCase {
         super.tearDown()
     }
 
+    func testBlendResultsIgnoreAndDoNotPopulateLegacyCache() throws {
+        let base = try fixedTestColor(components: [0.5, 0.5, 0.5, 1])
+        let blend = try fixedTestColor(components: [0.5, 0.5, 0.5, 1])
+        let result = try base.blendResult(with: blend, mode: .multiply).get()
+        XCTAssertEqual(try result.componentConversionResults().srgba.get().red, 0.25)
+        XCTAssertNil(ColorCache.shared.getCachedBlendedColor(color1: base, with: blend, blendMode: "multiply"))
+        let inserted = Color(.sRGB, red: 1, green: 0, blue: 0)
+        ColorCache.shared.cacheBlendedColor(color1: base, with: blend, blendMode: "multiply", result: inserted)
+        XCTAssertEqual(try base.blendResult(with: blend, mode: .multiply).get().componentConversionResults().srgba.get().red, 0.25)
+        try assertCacheColorEqual(base.multiply(with: blend), inserted)
+        try assertCacheColorEqual(ColorCache.shared.getCachedBlendedColor(color1: base, with: blend, blendMode: "multiply"), inserted)
+    }
+
     func testComponentResultsIgnoreAndDoNotReplaceLegacyCacheEntries() throws {
         let color = try fixedTestColor(components: [1, 0, 0, 1])
         ColorCache.shared.cacheHSLComponents(for: color, hue: 0.4, saturation: 0.2, lightness: 0.3)
