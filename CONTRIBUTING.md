@@ -22,7 +22,7 @@ The library requires Swift tools 6.0, iOS 14, and macOS 12. Examples may have hi
 
 ### Checked examples
 
-`scripts/check_documentation.py` compiles actual Swift fences marked with `<!-- swift-example: example-id -->`. Add each marker to the script's explicit inventory; removing a required marker must not silently reduce coverage.
+`scripts/check_documentation.py` compiles actual Swift fences marked with `<!-- swift-example: example-id -->`, including the introductory `///` documentation in `ColorKit.swift`. Add each marker to the script's explicit inventory; removing a required marker must not silently reduce coverage.
 
 The READMEs contain checked quick starts and catalog examples. The bilingual [usage guides](docs/Usage.md) contain the conversion and workflow recipes. Keep snippets self-contained and translations semantically aligned.
 

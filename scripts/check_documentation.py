@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile public Markdown examples and verify selected conversion and enhancement results."""
+"""Compile public documentation examples and verify selected results."""
 
 import argparse
 from pathlib import Path
@@ -14,6 +14,7 @@ DOCC = "Sources/ColorKit/Documentation.docc/"
 README_EXAMPLES = {"accessible-palette", "enhancement", "catalog", "previews", "comparison", "budget",
                    "hsl", "cmyk", "lab", "component-results", "blend-result"}
 EXAMPLES = {
+    "Sources/ColorKit/ColorKit.swift": {"introductory-contrast", "introductory-components"},
     "README.md": {"contrast", "catalog"},
     "README.es-ES.md": {"contrast", "catalog"},
     "docs/recipes/unavailable-results.md": {"unavailable-results"},
@@ -85,6 +86,19 @@ checkExample(abs(lab.L - 53.24) < 0.01 && abs(lab.a - 80.09) < 0.01
 }
 
 
+INTRODUCTORY_CHECKS = {
+    "introductory-contrast": """
+guard case .available(let measurement) = contrast else { failExample("Fixed black/white must be measurable") }
+checkExample(abs(measurement.ratio - 21) < 1e-9, "Black on white must measure 21:1")
+""",
+    "introductory-components": """
+guard case .success(let rgb) = conversions.srgba else { failExample("Fixed green must resolve") }
+checkExample(rgb.red == 0 && rgb.green == 1 && rgb.blue == 0 && rgb.alpha == 1,
+    "Fixed green must retain its components")
+""",
+}
+
+
 RECIPE_CHECKS = {
     "unavailable-results": """
 guard case .success(let lab) = conversions.lab,
@@ -139,6 +153,9 @@ checkExample(inputText("Foreground", issues: []) == "Foreground: No issues repor
 def extract_examples(path, expected):
     """Fail closed on missing, duplicated, unknown, or malformed marked fences."""
     lines = path.read_text().splitlines()
+    if path.suffix == ".swift":
+        # Preserve source line numbers while exposing Markdown inside documentation comments.
+        lines = [re.sub(r"^\s*/// ?", "", line) if line.lstrip().startswith("///") else "" for line in lines]
     examples = {}
     for index, line in enumerate(lines):
         match = MARKER.fullmatch(line)
@@ -207,6 +224,8 @@ def check(derived_data):
             checks = ""
             if path.name in ("Usage.md", "Usage.es-ES.md"):
                 checks = README_CHECKS.get(name, "")
+            elif path == ROOT / "Sources/ColorKit/ColorKit.swift":
+                checks = INTRODUCTORY_CHECKS.get(name, "")
             elif path.parent == ROOT / "docs/recipes":
                 checks = RECIPE_CHECKS.get(name, "")
             if checks:
@@ -232,7 +251,7 @@ def check(derived_data):
         run(*compiler, "-profile-generate", "-parse-as-library", "-I", modules, *runtime_files, entry,
             modules / "ColorKit.o", "-o", executable)
         run("env", f"LLVM_PROFILE_FILE={scratch / 'examples.profraw'}", executable)
-        print(f"Verified results of {len(runtime_files)} actual usage-guide and recipe examples.", flush=True)
+        print(f"Verified results of {len(runtime_files)} actual public examples.", flush=True)
         emitter = scratch / "emit-theme"
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",
