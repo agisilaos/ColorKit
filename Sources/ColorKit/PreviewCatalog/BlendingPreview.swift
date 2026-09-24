@@ -20,12 +20,10 @@ public struct BlendingPreview: View {
 
     // MARK: - State
 
-    @State private var foregroundColor = Color.blue
-    @State private var backgroundColor = Color.red
+    @State private var baseColor = CGColor(srgbRed: 0, green: 0, blue: 1, alpha: 1)
+    @State private var blendColor = CGColor(srgbRed: 1, green: 0, blue: 0, alpha: 1)
     @State private var selectedBlendMode = BlendMode.normal
     @State private var blendAmount: CGFloat = 1.0
-    @State private var showPerformanceMetrics = false
-    @State private var renderTime: TimeInterval = 0
 
     // MARK: - Properties
 
@@ -51,22 +49,10 @@ public struct BlendingPreview: View {
 
                 // Preview
                 previewSection
-
-                // Performance Metrics
-                if showPerformanceMetrics {
-                    performanceSection
-                }
             }
             .padding()
         }
         .navigationTitle("Color Blending")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button(action: togglePerformanceMetrics) {
-                    Label("Performance", systemImage: "chart.bar")
-                }
-            }
-        }
     }
 
     // MARK: - View Components
@@ -76,8 +62,8 @@ public struct BlendingPreview: View {
             Text("Colors")
                 .font(.headline)
 
-            ColorPicker("Foreground Color", selection: $foregroundColor)
-            ColorPicker("Background Color", selection: $backgroundColor)
+            ColorPicker("Base color", selection: $baseColor, supportsOpacity: true)
+            ColorPicker("Blend color", selection: $blendColor, supportsOpacity: true)
         }
     }
 
@@ -110,6 +96,8 @@ public struct BlendingPreview: View {
                 Text("0%")
                     .foregroundColor(.secondary)
                 Slider(value: $blendAmount, in: 0...1)
+                    .accessibilityLabel("Blend amount")
+                    .accessibilityValue("\(Int(blendAmount * 100)) percent")
                 Text("100%")
                     .foregroundColor(.secondary)
             }
@@ -121,67 +109,12 @@ public struct BlendingPreview: View {
     }
 
     private var previewSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Preview")
-                .font(.headline)
-
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(backgroundColor)
-
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(foregroundColor.blended(with: backgroundColor, mode: selectedBlendMode, amount: blendAmount))
-            }
-            .frame(height: 200)
-            .onAppear(perform: measureRenderTime)
-            .onChange(of: selectedBlendMode) { _ in measureRenderTime() }
-            .onChange(of: foregroundColor) { _ in measureRenderTime() }
-            .onChange(of: backgroundColor) { _ in measureRenderTime() }
-            .onChange(of: blendAmount) { _ in measureRenderTime() }
-        }
-    }
-
-    private var performanceSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Performance")
-                .font(.headline)
-
-            HStack {
-                Text("Render Time:")
-                    .foregroundColor(.secondary)
-
-                Text(String(format: "%.3f ms", renderTime * 1_000))
-                    .font(.system(.body, design: .monospaced))
-
-                Spacer()
-
-                Image(systemName: renderTime < 0.016 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundColor(renderTime < 0.016 ? .green : .yellow)
-            }
-            .padding()
-            .background(Color.secondary.opacity(0.1))
-            .cornerRadius(8)
-        }
-    }
-
-    // MARK: - Actions
-    private func togglePerformanceMetrics() {
-        withAnimation {
-            showPerformanceMetrics.toggle()
-            if showPerformanceMetrics {
-                measureRenderTime()
-            }
-        }
-    }
-
-    private func measureRenderTime() {
-        let start = CFAbsoluteTimeGetCurrent()
-
-        // Force a redraw of the preview
-        DispatchQueue.main.async {
-            let end = CFAbsoluteTimeGetCurrent()
-            renderTime = end - start
-        }
+        BlendingResultPreview(outcome: BlendingPreviewOutcome(
+            base: Color(baseColor),
+            blend: Color(blendColor),
+            mode: selectedBlendMode,
+            amount: blendAmount
+        ))
     }
 }
 
@@ -194,15 +127,21 @@ private struct BlendModeButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(String(describing: mode))
-                .font(.subheadline)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.2))
-                .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(8)
+            HStack(spacing: 6) {
+                Image(systemName: "checkmark")
+                    .opacity(isSelected ? 1 : 0)
+                    .accessibilityHidden(true)
+                Text(String(describing: mode))
+            }
+            .font(.subheadline)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.2))
+            .foregroundColor(isSelected ? .white : .primary)
+            .cornerRadius(8)
         }
         .buttonStyle(.borderless)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

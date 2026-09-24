@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Correct legacy normal-blending documentation: blend alpha weights the RGB effect while base alpha is preserved; this is not source-over compositing. Blend mathematics and legacy APIs are unchanged.
 - Enforce the documented translucent-input decline before reading cached WCAG contrast. Caller-injected ratios no longer make translucent pairs report passing compliance; opaque cache hits and direct cache storage/retrieval remain unchanged.
 
 ### Added
@@ -12,6 +13,7 @@ All notable changes to ColorKit will be documented in this file.
 - Add `Color.blendResult(with:mode:amount:)` with explicit success and typed failures for invalid amounts, independent operand conversion issues, and nonfinite results. Preserve base alpha and finite extended-sRGB output without consulting caches. Existing blending methods remain unchanged.
 
 ### Changed
+- Make the blending preview use fixed Base/Blend picker selections and explicit blend outcomes. Show success (including unchanged results) or readable per-input failures, clear stale output, and display transparency over a neutral checkerboard. Add an accessible selected-mode indicator and remove the misleading Render Time panel. These are intentional preview presentation changes.
 - Introduce explicit contrast and component-conversion outcomes in the library overview, and compile and verify those source-documentation examples.
 
 ## [3.1.1] - 2026-09-18

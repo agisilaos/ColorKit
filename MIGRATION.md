@@ -14,6 +14,17 @@ extended-sRGB output, and bypasses the publicly writable legacy cache. Existing
 See the [blending contract](Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending)
 and [caller example](docs/Usage.md#blend-with-explicit-outcomes).
 
+### Blending preview
+
+`BlendingPreview()` keeps its public initializer, but its presentation changes
+intentionally. The first picker is now **Base color**, the second **Blend color**;
+operand order is unchanged. Fixed sRGB defaults and Core Graphics picker selections
+replace context-dependent named defaults. Results appear over a neutral transparency
+checkerboard with an explicit success status, or are replaced by readable failure
+messages. The result is no longer drawn over the second operand. The misleading
+Render Time panel is removed, and selected modes have a checkmark and accessibility
+selection trait. Legacy blend calculations and APIs are unchanged.
+
 ## ColorKit 3.1.0
 
 ### Component conversion results
