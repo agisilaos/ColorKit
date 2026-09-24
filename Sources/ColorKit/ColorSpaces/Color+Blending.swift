@@ -24,14 +24,14 @@ import SwiftUI
 /// software like Adobe Photoshop, Sketch, and Figma. It supports:
 ///
 /// - 12 standard blending modes (Normal, Multiply, Screen, etc.)
-/// - Variable opacity blending with amount parameter
+/// - Variable blend strength with the amount parameter
 /// - Performance optimization through caching
 /// - Alpha channel awareness
 ///
 /// Key features:
 /// - Professional-grade blending algorithms
 /// - Cached results for better performance
-/// - Full alpha channel support
+/// - Blend alpha scales the effect; base alpha is preserved
 /// - Photoshop-style blend modes
 ///
 /// Example usage:
@@ -42,7 +42,7 @@ import SwiftUI
 /// // Simple blending
 /// let overlaid = background.overlay(with: foreground)
 ///
-/// // Partial opacity blend
+/// // Partial strength blend
 /// let subtle = background.multiply(with: foreground, amount: 0.5)
 ///
 /// // Complex effects
@@ -54,12 +54,22 @@ import SwiftUI
 public extension Color {
     /// Blends this color with another color using a specific blending mode.
     ///
-    /// This method provides the foundation for all blending operations in ColorKit.
+    /// This legacy method underlies the color-returning convenience methods.
+    /// The receiver is the base; the argument is the blend operand. The mode operates
+    /// on nonlinear sRGB channels, with its effect weighted by the clamped amount
+    /// and blend alpha. Newly computed results preserve base alpha; this is not
+    /// source-over compositing.
+    ///
+    /// Nonpositive amounts return the receiver immediately. Other finite amounts
+    /// are clamped to 0–1, and unavailable inputs return the receiver. Full-strength
+    /// calls may return a legacy cached value. Use ``blendResult(with:mode:amount:)``
+    /// to distinguish a computed result from an unavailable operation.
+    ///
     /// It handles:
     /// - Proper color component extraction
     /// - Alpha channel calculations
     /// - Result caching for performance
-    /// - Amount/opacity control
+    /// - Blend strength control
     ///
     /// Example:
     /// ```swift
@@ -83,7 +93,7 @@ public extension Color {
     /// - Parameters:
     ///   - color: The color to blend with this color
     ///   - mode: The ``BlendMode`` determining how colors are combined
-    ///   - amount: The opacity of the blend, from 0.0 (no effect) to 1.0 (full effect)
+    ///   - amount: The blend strength, from 0.0 (no effect) to 1.0 (full effect)
     /// - Returns: The resulting blended color
     func blended(with color: Color, mode: BlendMode, amount: CGFloat = 1.0) -> Color {
         // If amount is 0, return the original color (no blending)
@@ -136,29 +146,30 @@ public extension Color {
         return resultColor
     }
 
-    /// Performs normal blending (standard alpha composition).
+    /// Moves the base RGB channels toward the blend RGB channels.
     ///
-    /// Normal blending simply places the blend color over the base color,
-    /// taking into account the blend color's opacity and the amount parameter.
+    /// The effect is weighted by blend amount and blend opacity. Newly computed
+    /// results preserve base opacity; this is not source-over alpha compositing.
+    /// Uses the legacy clamping, fallback, and caching behavior of ``blended(with:mode:amount:)``.
     ///
     /// Example:
     /// ```swift
-    /// let background = Color.blue
-    /// let foreground = Color.red.opacity(0.5)
+    /// let base = Color(.sRGB, red: 0, green: 0, blue: 1)
+    /// let blend = Color(.sRGB, red: 1, green: 0, blue: 0, opacity: 0.5)
     ///
     /// // Full strength blend
-    /// let result1 = background.normal(with: foreground)
+    /// let result1 = base.normal(with: blend)
     ///
     /// // Partial blend
-    /// let result2 = background.normal(
-    ///     with: foreground,
+    /// let result2 = base.normal(
+    ///     with: blend,
     ///     amount: 0.7
     /// )
     /// ```
     ///
     /// - Parameters:
-    ///   - color: The color to blend on top of this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - color: The blend operand applied to the base receiver
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func normal(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .normal, amount: amount)
@@ -183,7 +194,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func multiply(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .multiply, amount: amount)
@@ -209,7 +220,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func screen(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .screen, amount: amount)
@@ -235,7 +246,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func overlay(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .overlay, amount: amount)
@@ -260,7 +271,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func darken(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .darken, amount: amount)
@@ -285,7 +296,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func lighten(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .lighten, amount: amount)
@@ -311,7 +322,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func colorDodge(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .colorDodge, amount: amount)
@@ -337,7 +348,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func colorBurn(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .colorBurn, amount: amount)
@@ -363,7 +374,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func hardLight(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .hardLight, amount: amount)
@@ -389,7 +400,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func softLight(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .softLight, amount: amount)
@@ -415,7 +426,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func difference(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .difference, amount: amount)
@@ -441,7 +452,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - color: The color to blend with this color
-    ///   - amount: The opacity of the blend (0.0 to 1.0)
+    ///   - amount: The blend strength (0.0 to 1.0); blend alpha further scales the effect
     /// - Returns: The blended color
     func exclusion(with color: Color, amount: CGFloat = 1.0) -> Color {
         return blended(with: color, mode: .exclusion, amount: amount)
@@ -455,7 +466,7 @@ public extension Color {
 /// are combined mathematically.
 ///
 /// The available modes are:
-/// - `normal`: Standard alpha composition
+/// - `normal`: Moves base RGB toward blend RGB; the blend operation preserves base alpha
 /// - `multiply`: Darkens by multiplying values
 /// - `screen`: Lightens by multiplying inverse values
 /// - `overlay`: Combines multiply and screen
@@ -495,7 +506,9 @@ public extension Color {
 /// }
 /// ```
 public enum BlendMode {
-    /// Normal blending (standard alpha composition).
+    /// Uses the blend RGB channels as the mode target.
+    /// Blend operations weight this target by amount and blend alpha, preserving base alpha.
+    /// This is not source-over alpha compositing.
     case normal
 
     /// Multiply blending (darkens by multiplying values).
