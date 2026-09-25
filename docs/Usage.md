@@ -34,7 +34,8 @@ Both operands must be fixed, even for zero amount. Amount must be finite in `0..
 ```swift
 let base = Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75)
 let blend = Color(.sRGB, red: 0.5, green: 0.5, blue: 0.5)
-let result = base.blendResult(with: blend, mode: .multiply)
+let mode: ColorBlendMode = .multiply
+let result = base.blendResult(with: blend, mode: mode)
 var previewColor: Color?
 var blendError: ColorBlendError?
 switch result {

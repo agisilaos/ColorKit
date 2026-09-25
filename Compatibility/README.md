@@ -56,6 +56,11 @@ ordinary nonisolated public client on both platforms at the minimum deployment
 targets. This checks the new blend operation before it has a release baseline;
 it is not claimed to compile against earlier releases.
 
+`scripts/fixtures/color_blend_mode.swift` imports both SwiftUI and ColorKit in full
+to check explicit alias declarations, collections, exhaustive switches, and typed
+and inferred method references. The blend-result fixture also checks identity with
+the original `BlendMode` spelling. Both fixtures run on macOS and iOS Simulator.
+
 ## Builds and diagnostics
 
 Every run archives each pinned release, then builds the release and candidate

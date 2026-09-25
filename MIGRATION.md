@@ -28,6 +28,14 @@ extended-sRGB output, and bypasses the publicly writable legacy cache. Existing
 See the [blending contract](Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending)
 and [caller example](docs/Usage.md#blend-with-explicit-outcomes).
 
+### Explicit blend-mode types
+
+`ColorBlendMode` is an additive alias for ColorKit's existing `BlendMode`, recommended
+when naming the type in client code. Existing signatures, cases, and behavior remain
+unchanged, with no deprecation or required migration. See the
+[blend-mode naming guidance](Sources/ColorKit/Documentation.docc/Utilities-article.md#color-blending)
+for importing both SwiftUI and ColorKit.
+
 ### Blending preview
 
 `BlendingPreview()` keeps its public initializer, but its presentation changes
