@@ -9,6 +9,7 @@ All notable changes to ColorKit will be documented in this file.
 - Enforce the documented translucent-input decline before reading cached WCAG contrast. Caller-injected ratios no longer make translucent pairs report passing compliance; opaque cache hits and direct cache storage/retrieval remain unchanged.
 
 ### Added
+- Add caller-owned randomness through `generatePalette(from:using:)` and `generateAssessedPalette(from:against:using:)` for same-environment replay. Preserve random defaults, candidate search, and independent assessment; output is not guaranteed identical across versions or environments.
 - Add `ColorBlendMode` as an unambiguous alias for explicit client types when importing SwiftUI and ColorKit. Existing `BlendMode`, method signatures, and blend behavior remain unchanged.
 - Make gradient color spaces and directions enumerable in documented declaration order, and make `AdjustmentStrategy`, accessibility enhancement configurations, and palette-generation configurations safely transferable with checked `Sendable` conformances.
 - Add `Color.blendResult(with:mode:amount:)` with explicit success and typed failures for invalid amounts, independent operand conversion issues, and nonfinite results. Preserve base alpha and finite extended-sRGB output without consulting caches. Existing blending methods remain unchanged.

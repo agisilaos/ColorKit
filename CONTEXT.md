@@ -194,6 +194,10 @@ The theme selected by the theme manager. A view subtree may use a different them
 **Theme override**:
 A theme applied to a view subtree in place of an inherited theme. It does not change the manager's current theme.
 
+**Palette replay**:
+Repeated palette generation from the same deterministic random sequence and initial state, fixed color inputs, and configuration within the same library version, execution environment, and appearance (including for fallback colors). It reproduces ordered color components and assessment outcomes under ordinary cache use, without establishing accessibility or promising identical output across environments or versions.
+_Avoid_: Accessible palette guarantee, seed-only identity, cross-version determinism
+
 **Palette share payload**:
 A snapshot of a palette in the export format selected for one sharing session. A later sharing session has its own snapshot, even when the palette and format are unchanged.
 

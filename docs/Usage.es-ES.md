@@ -202,6 +202,8 @@ struct ContentView: View {
 
 Las evaluaciones conservan cada resultado y no certifican el contraste entre entradas de la paleta. Consulta [paletas evaluadas](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#assessed-palettes) para las garantías y diferencias heredadas.
 
+Para pruebas y vistas previas repetibles, proporciona un generador aleatorio propio con `using: &random`; consulta el [ejemplo completo y sus límites de entorno](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#replaying-a-palette). Las llamadas existentes mantienen sus valores aleatorios predeterminados.
+
 Para evaluar tus propios pares explícitos, ejecuta el [informe de pares de contraste](../Examples/ContrastPairReport/README.md) independiente para macOS.
 
 ## Comparar colores

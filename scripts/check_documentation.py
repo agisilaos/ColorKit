@@ -24,7 +24,7 @@ EXAMPLES = {
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
     DOCC + "Theming-article.md": {"dynamic-theme"},
     DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette",
-                                         "palette-configuration", "compliance-tools"},
+                                         "palette-configuration", "palette-replay", "compliance-tools"},
     DOCC + "Utilities-article.md": {"similarity", "comparison", "cache", "palette-export",
                                      "inspection", "gradients", "blending"},
     "PERFORMANCE_IMPROVEMENTS.md": {"cache", "benchmark"},
@@ -150,6 +150,28 @@ checkExample(inputText("Foreground", issues: []) == "Foreground: No issues repor
 }
 
 
+PALETTE_REPLAY_CHECKS = r"""
+func components(_ entries: [ColorAccessibilityResult]) -> [[UInt64]] {
+    entries.map { entry in
+        guard case .success(let rgba) = entry.color.componentConversionResults().srgba else {
+            failExample("Expected fixed replay components")
+        }
+        return [rgba.red, rgba.green, rgba.blue, rgba.alpha].map(\.bitPattern)
+    }
+}
+checkExample(!results.isEmpty && random.state != 42, "Exercise random search")
+checkExample(components(results) == components(repeated), "Replay ordered components")
+checkExample(results.map(\.status) == repeated.map(\.status), "Replay assessment outcomes")
+checkExample(results.map(\.contrastRatio) == repeated.map(\.contrastRatio), "Replay measurements")
+checkExample(random.state == replay.state && random.state == unavailableRandom.state,
+    "Assessment background must not change random consumption")
+checkExample(components(results) == components(unavailable), "Retain unavailable candidates")
+checkExample(unavailable.allSatisfy { $0.status == .unavailable && $0.contrastRatio == nil },
+    "Translucent background must remain unavailable")
+print(components(results), results.map { $0.contrastRatio?.bitPattern }, random.state)
+"""
+
+
 def extract_examples(path, expected):
     """Fail closed on missing, duplicated, unknown, or malformed marked fences."""
     lines = path.read_text().splitlines()
@@ -217,6 +239,7 @@ def check(derived_data):
         files = []
         runtime_files = []
         runtime_calls = []
+        replay_runtime = None
         for index, (path, name, line, code) in enumerate(sources):
             source = scratch / f"example_{index}.swift"
             source.write_text(example_source(path, index, line, code))
@@ -228,10 +251,14 @@ def check(derived_data):
                 checks = INTRODUCTORY_CHECKS.get(name, "")
             elif path.parent == ROOT / "docs/recipes":
                 checks = RECIPE_CHECKS.get(name, "")
+            elif name == "palette-replay":
+                checks = PALETTE_REPLAY_CHECKS
             if checks:
                 runtime = scratch / f"runtime_{index}.swift"
                 runtime.write_text(example_source(path, index, line, code, checks))
                 runtime_files.append(runtime)
+                if name == "palette-replay":
+                    replay_runtime = (runtime, f"example_{index}()")
                 runtime_calls.append(f'print("Checking {path.name}: {name}"); example_{index}()')
         run(*compiler, "-typecheck", "-I", modules, *files)
         print(f"Compiled {len(files)} public examples (including both README languages).", flush=True)
@@ -252,6 +279,17 @@ def check(derived_data):
             modules / "ColorKit.o", "-o", executable)
         run("env", f"LLVM_PROFILE_FILE={scratch / 'examples.profraw'}", executable)
         print(f"Verified results of {len(runtime_files)} actual public examples.", flush=True)
+        # Run the actual published replay example twice, in independent processes.
+        replay_source, replay_call = replay_runtime
+        entry.write_text(entry.read_text().replace("\n".join(runtime_calls), replay_call))
+        run(*compiler, "-profile-generate", "-parse-as-library", "-I", modules,
+            replay_source, entry, modules / "ColorKit.o", "-o", executable)
+        command = ["env", f"LLVM_PROFILE_FILE={scratch / 'replay.profraw'}", str(executable)]
+        first = subprocess.check_output(command, text=True)
+        second = subprocess.check_output(command, text=True)
+        if first != second:
+            raise ValueError("Palette replay differs across process launches")
+        print("Verified palette replay across two process launches.", flush=True)
         emitter = scratch / "emit-theme"
         run(*compiler, "-parse-as-library",
             ROOT / "Sources/ColorKit/PreviewCatalog/ThemeCodeGenerator.swift",

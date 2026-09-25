@@ -202,6 +202,8 @@ struct ContentView: View {
 
 Assessments retain every outcome and do not certify contrast between palette entries. See [assessed palettes](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#assessed-palettes) for guarantees and legacy differences.
 
+For repeatable tests and previews, supply caller-owned randomness with `using: &random`; see the [complete replay example and its environment limits](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#replaying-a-palette). Existing calls retain random defaults.
+
 To assess your own explicit pairs, run the standalone macOS [contrast pair report](../Examples/ContrastPairReport/README.md).
 
 ## Compare colors

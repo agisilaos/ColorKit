@@ -138,7 +138,8 @@ def check(root, storage, fixture_base):
             modules = build(root, storage / "candidate" / name, env, platform_logs / "candidate-build.log")
             compile_clients(root, [root / "scripts/fixtures/blend_result.swift",
                                    root / "scripts/fixtures/dx_conformances.swift",
-                                   root / "scripts/fixtures/color_blend_mode.swift"], modules, env,
+                                   root / "scripts/fixtures/color_blend_mode.swift",
+                                   root / "scripts/fixtures/palette_randomness.swift"], modules, env,
                             platform_logs / "public-additions-client.log")
             candidate = platform_logs / "candidate-api.json"
             dump_api(modules, env, candidate, platform_logs / "candidate-api.log")
