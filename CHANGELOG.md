@@ -16,6 +16,9 @@ All notable changes to ColorKit will be documented in this file.
 - Make the blending preview use fixed Base/Blend picker selections and explicit blend outcomes. Show success (including unchanged results) or readable per-input failures, clear stale output, and display transparency over a neutral checkerboard. Add an accessible selected-mode indicator and remove the misleading Render Time panel. These are intentional preview presentation changes.
 - Introduce explicit contrast and component-conversion outcomes in the library overview, and compile and verify those source-documentation examples.
 
+### Tooling
+- Allow the Release benchmark package to build from checkouts whose directory is not named `ColorKit`.
+
 ## [3.1.1] - 2026-09-18
 
 ### Changed

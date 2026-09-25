@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "ColorKitBenchmarks",
     platforms: [.macOS(.v12)],
-    dependencies: [.package(path: "..")],
+    dependencies: [.package(name: "ColorKit", path: "..")],
     targets: [
         .executableTarget(name: "ColorKitBenchmarks", dependencies: [.product(name: "ColorKit", package: "ColorKit")]),
         .testTarget(name: "ColorKitBenchmarksTests", dependencies: ["ColorKitBenchmarks"])
