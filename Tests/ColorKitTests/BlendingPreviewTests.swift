@@ -152,7 +152,20 @@ final class BlendingPreviewTests: XCTestCase {
                 .background(scheme == .dark ? Color.black : Color.white)
                 .onAppear { appeared.fulfill() }
                 .id(name))
-            await fulfillment(of: [appeared], timeout: 3)
+            // Realize the replacement root before waiting for its appearance callback.
+            // Otherwise first-use picker layout competes with the readiness deadline.
+            #if os(macOS)
+            controller.view.layoutSubtreeIfNeeded()
+            #else
+            window.layoutIfNeeded()
+            controller.view.setNeedsLayout()
+            controller.view.layoutIfNeeded()
+            #endif
+            let readiness = await XCTWaiter.fulfillment(of: [appeared], timeout: 3)
+            guard readiness == .completed else {
+                XCTFail("Preview did not appear: \(name), \(scheme), \(size) (\(readiness))")
+                return
+            }
             #if os(macOS)
             controller.view.layoutSubtreeIfNeeded()
             let bitmap = try XCTUnwrap(controller.view.bitmapImageRepForCachingDisplay(in: controller.view.bounds))
