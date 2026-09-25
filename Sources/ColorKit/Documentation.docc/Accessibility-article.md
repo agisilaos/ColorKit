@@ -75,6 +75,74 @@ ThemeManager.shared.switchToTheme(named: theme.name)
 Registering a generated theme does not certify every role combination. See
 <doc:Theming-article> for theme ownership and <doc:Utilities-article> for palette export.
 
+### Replaying a Palette
+
+Use `generatePalette(from:using:)` or `generateAssessedPalette(from:against:using:)`
+with your own deterministic `RandomNumberGenerator` for tests, previews, and debugging.
+Existing calls keep their random defaults. The generator advances directly, including
+for rejected candidates; reuse continues its sequence, while resetting replays it.
+Assessment consumes no randomness and retains below-target and unavailable entries.
+
+Replay requires identical fixed inputs, configuration, generator implementation and
+initial state, ColorKit version, platform, OS/framework versions, Swift toolchain/build
+settings, and appearance, including for named fallback colors. It works across process
+launches under those conditions, but **does not promise identical output across library
+versions or environments**. Exact draw counts are implementation details. Ordinary cache
+warming or clearing does not affect replay; caller-inserted contrast values can change
+candidate selection. Dynamic inputs remain appearance-dependent and can be unavailable
+for assessment; capture fixed colors with platform APIs when replay is required.
+
+This app-owned SplitMix64 example is for repeatable samples, not security. Its seed is
+separate from the palette's seed color; ColorKit does not provide a seed API.
+
+<!-- swift-example: palette-replay -->
+```swift
+struct PreviewRandomNumberGenerator: RandomNumberGenerator {
+    var state: UInt64
+
+    init(seed: UInt64) { state = seed }
+
+    mutating func next() -> UInt64 {
+        state &+= 0x9E37_79B9_7F4A_7C15
+        var value = state
+        value = (value ^ (value >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        value = (value ^ (value >> 27)) &* 0x94D0_49BB_1331_11EB
+        return value ^ (value >> 31)
+    }
+}
+
+let generator = AccessiblePaletteGenerator()
+let brand = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.7)
+let background = Color(.sRGB, red: 1, green: 1, blue: 1)
+var random = PreviewRandomNumberGenerator(seed: 42)
+let results = generator.generateAssessedPalette(
+    from: brand, against: background, using: &random
+)
+for result in results {
+    switch result.status {
+    case .meetsTarget: print("Measured pass")
+    case .bestEffort: print("Below target")
+    case .unavailable: print("Measurement unavailable")
+    case .invalidConfiguration: break // Not produced by ordinary palette assessment.
+    }
+}
+
+// Start from the original state to replay; reusing `random` would continue it.
+var replay = PreviewRandomNumberGenerator(seed: 42)
+let repeated = generator.generateAssessedPalette(
+    from: brand, against: background, using: &replay
+)
+
+var unavailableRandom = PreviewRandomNumberGenerator(seed: 42)
+let unavailable = generator.generateAssessedPalette(
+    from: brand,
+    against: Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 0.5),
+    using: &unavailableRandom
+)
+// Same candidates, unavailable contrast: the background is translucent.
+// Reproducibility does not establish accessibility or guarantee a full palette.
+```
+
 ### Verifiable Results
 
 Color-returning helpers remain available for compatibility. When correctness depends

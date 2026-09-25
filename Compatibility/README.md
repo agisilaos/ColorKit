@@ -61,6 +61,10 @@ to check explicit alias declarations, collections, exhaustive switches, and type
 and inferred method references. The blend-result fixture also checks identity with
 the original `BlendMode` spelling. Both fixtures run on macOS and iOS Simulator.
 
+`scripts/fixtures/palette_randomness.swift` checks the caller-owned randomness overloads
+alongside typed, inferred, and unbound references to the existing palette methods on
+both platforms. It validates the candidate API, not a new release baseline.
+
 ## Builds and diagnostics
 
 Every run archives each pinned release, then builds the release and candidate
@@ -92,7 +96,8 @@ Only concrete gaps receive additional assertions.
 | WCAG measurements, compositing, unavailable outcomes | `ColorContrastResultTests`, `ColorAccessibilityResultTests`, `WCAGContrastOpacityTests` |
 | Inclusive enhancement budgets, invalid/unavailable results, fallback search, stable ties | `EnhancementDistanceBudgetTests` |
 | Variant order and distinctness, nonpositive counts, legacy budget independence | `EnhancementDistanceBudgetTests`, with an explicit released strategy order |
-| Assessed palettes preserve their original palette | `ColorAccessibilityResultTests` |
+| Assessed palettes preserve their original palette | `ColorAccessibilityResultTests`, `PaletteReplayTests` |
+| Palette replay, random-state consumption, fallbacks, ordinary cache independence | `PaletteReplayTests`, serialized `ColorCacheIntegrationTests` |
 | Deprecated arbitrary-view simulation remains a no-op | `ColorVisionSimulationTests.testLegacyArbitraryViewModifierLeavesRenderedContentUnchanged` |
 | Theme selection and registry behavior | `ThemeTests`, serialized `ThemeManagerIntegrationTests` |
 

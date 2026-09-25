@@ -180,6 +180,36 @@ public struct AccessiblePaletteGenerator {
     /// - Parameter seedColor: The color to base the palette on
     /// - Returns: An array of candidates without per-entry or pairwise compliance guarantees.
     public func generatePalette(from seedColor: Color) -> [Color] {
+        var random = SystemRandomNumberGenerator()
+        return generatePalette(from: seedColor, using: &random)
+    }
+
+    /// Generates palette candidates using the caller's random-number generator.
+    ///
+    /// Replay requires the same deterministic generator and initial state, fixed inputs,
+    /// configuration, ColorKit version, platform, OS/framework versions, Swift toolchain,
+    /// build settings, and appearance (including for named fallback colors). Under these
+    /// conditions, replay also works across process launches. Identical output is not
+    /// promised across environments or library versions.
+    ///
+    /// The generator advances directly, including for rejected candidates. Reusing it
+    /// continues its sequence; restore its initial state to replay. Requests needing no
+    /// random candidates consume no randomness. Exact draw counts are implementation details.
+    /// Ordinary cache warming or clearing does not affect replay; caller-inserted contrast
+    /// cache values can affect selection and are outside that guarantee.
+    ///
+    /// Input resolution, ordering, retries, fallbacks, and partial palettes follow
+    /// ``generatePalette(from:)``. Dynamic inputs remain appearance-dependent. Reproducibility
+    /// does not establish accessibility; assess candidates in their intended context.
+    ///
+    /// - Parameters:
+    ///   - seedColor: The color to base the palette on; prefer fixed sRGB for replay.
+    ///   - random: The caller-owned generator, advanced during candidate generation.
+    /// - Returns: Ordered candidates without per-entry or pairwise compliance guarantees.
+    public func generatePalette<R: RandomNumberGenerator>(
+        from seedColor: Color,
+        using random: inout R
+    ) -> [Color] {
         var palette: [Color] = []
 
         // Add seed color to the palette
@@ -199,7 +229,7 @@ public struct AccessiblePaletteGenerator {
             attempts += 1
 
             // Generate a new color that contrasts well with the seed color
-            if let newColor = generateContrastingColor(for: seedColor) {
+            if let newColor = generateContrastingColor(for: seedColor, using: &random) {
                 // Ensure the new color is distinct from existing colors
                 if !palette.contains(where: { areColorsSimilar($0, newColor) }) {
                     palette.append(newColor)
@@ -241,7 +271,36 @@ public struct AccessiblePaletteGenerator {
         from seedColor: Color,
         against backgroundColor: Color
     ) -> [ColorAccessibilityResult] {
-        generatePalette(from: seedColor).map {
+        var random = SystemRandomNumberGenerator()
+        return generateAssessedPalette(from: seedColor, against: backgroundColor, using: &random)
+    }
+
+    /// Generates candidates using the caller's randomness, then assesses every entry.
+    ///
+    /// Replay and state advancement follow ``generatePalette(from:using:)``: use the same
+    /// deterministic generator and initial state, fixed inputs, configuration, library
+    /// version, platform, OS/framework versions, toolchain, build settings, and appearance.
+    /// Ordinary cache warming or clearing does not affect replay; caller-inserted contrast
+    /// cache values can affect generation. Identical output is not promised across
+    /// environments or library versions.
+    ///
+    /// Assessment consumes no randomness and preserves candidate order, including passing,
+    /// best-effort, and unavailable results. It neither adjusts nor filters colors. Dynamic
+    /// inputs and other unmeasurable pairs retain unavailable assessments. Equivalent
+    /// generation requests leave the random generator in the same state regardless of
+    /// whether assessment is requested or which assessment background is supplied.
+    ///
+    /// - Parameters:
+    ///   - seedColor: The color to base the palette on; prefer fixed sRGB for replay.
+    ///   - backgroundColor: The explicit background against which every entry is assessed.
+    ///   - random: The caller-owned generator, advanced only during candidate generation.
+    /// - Returns: One independent accessibility result per generated candidate.
+    public func generateAssessedPalette<R: RandomNumberGenerator>(
+        from seedColor: Color,
+        against backgroundColor: Color,
+        using random: inout R
+    ) -> [ColorAccessibilityResult] {
+        generatePalette(from: seedColor, using: &random).map {
             $0.accessibilityResult(
                 against: backgroundColor,
                 targetLevel: configuration.targetLevel
@@ -332,15 +391,17 @@ public struct AccessiblePaletteGenerator {
     /// 2. Adjusting lightness for contrast
     /// 3. Increasing saturation for vibrancy
     /// 4. Verifying the contrast ratio
-    private func generateContrastingColor(for color: Color) -> Color? {
+    private func generateContrastingColor<R: RandomNumberGenerator>(
+        for color: Color,
+        using random: inout R
+    ) -> Color? {
         // Get the HSL components of the color
         guard let hsl = color.hslComponents() else {
             return nil
         }
 
-        // Create a contrasting color by shifting the hue and adjusting lightness
-        // Use a more deterministic approach instead of small adjustments
-        let hueShift = Double.random(in: 0.2...0.8) // More randomness
+        // Shift hue using the supplied sequence; retain the existing lightness heuristic.
+        let hueShift = Double.random(in: 0.2...0.8, using: &random)
         let newHue = (hsl.hue + hueShift).truncatingRemainder(dividingBy: 1.0)
 
         // Make lightness adjustment more dramatic
@@ -426,7 +487,8 @@ public struct AccessiblePaletteGenerator {
         }
 
         // If no suitable accent found, generate one
-        if let accent = generateContrastingColor(for: background) {
+        var random = SystemRandomNumberGenerator()
+        if let accent = generateContrastingColor(for: background, using: &random) {
             return accent
         }
 

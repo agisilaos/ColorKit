@@ -127,11 +127,33 @@ final class ColorCacheIntegrationTests: XCTestCase {
         ColorCache.shared.cacheContrastRatio(for: seed, with: white, ratio: 19)
         XCTAssertEqual(try XCTUnwrap(ColorCache.shared.getCachedLuminance(for: seed)), 0.875)
         XCTAssertEqual(try XCTUnwrap(ColorCache.shared.getCachedContrastRatio(for: seed, with: white)), 19)
-        let assessed = generator.generateAssessedPalette(from: seed, against: white)
+        var random = PaletteTestRandomNumberGenerator(state: 42)
+        let assessed = generator.generateAssessedPalette(from: seed, against: white, using: &random)
         XCTAssertFalse(assessed.isEmpty)
         for result in assessed {
             XCTAssertEqual(result.contrastRatio, result.color.contrastResult(with: white).ratio)
         }
+    }
+
+    func testPaletteReplayIsIndependentOfOrdinaryCacheState() throws {
+        let seed = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.7)
+        let white = Color(.sRGB, red: 1, green: 1, blue: 1)
+        let generator = AccessiblePaletteGenerator()
+        var coldRandom = PaletteTestRandomNumberGenerator(state: 42)
+        let cold = generator.generateAssessedPalette(from: seed, against: white, using: &coldRandom)
+        XCTAssertNotNil(ColorCache.shared.getCachedHSLComponents(for: seed))
+        var warmRandom = PaletteTestRandomNumberGenerator(state: 42)
+        let warm = generator.generateAssessedPalette(from: seed, against: white, using: &warmRandom)
+        XCTAssertEqual(try paletteComponents(cold.map(\.color)), try paletteComponents(warm.map(\.color)))
+        XCTAssertEqual(cold.map(\.status), warm.map(\.status))
+        XCTAssertEqual(cold.map(\.contrastRatio), warm.map(\.contrastRatio))
+        XCTAssertEqual(coldRandom, warmRandom)
+
+        ColorCache.shared.clearCache()
+        var clearedRandom = PaletteTestRandomNumberGenerator(state: 42)
+        let cleared = generator.generatePalette(from: seed, using: &clearedRandom)
+        XCTAssertEqual(try paletteComponents(cleared), try paletteComponents(cold.map(\.color)))
+        XCTAssertEqual(clearedRandom, coldRandom)
     }
 
     func testBlendResultsIgnoreAndDoNotPopulateLegacyCache() throws {
