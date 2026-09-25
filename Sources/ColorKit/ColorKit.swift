@@ -51,7 +51,7 @@ public enum ColorKit {
     /// - MAJOR version for incompatible API changes
     /// - MINOR version for added functionality in a backward compatible manner
     /// - PATCH version for backward compatible bug fixes
-    public static let version = "3.1.1"
+    public static let version = "3.2.0"
 
     /// WCAG Compliance Checker namespace.
     ///

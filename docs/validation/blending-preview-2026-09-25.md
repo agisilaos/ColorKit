@@ -77,10 +77,18 @@ branch, not a spoken VoiceOver test or an actual picker-generated failure.
   The iOS transition screenshots/tests are narrower evidence and do not replace
   an accessibility-tree or VoiceOver transition check.
 
-Complete these items against the accepted
-[preview validation plan](../design/explicit-blending-outcomes.md#validation-plan)
-before declaring the release-wide gate PASS. No production changes were made
-merely to accommodate an unverified automation or capture limitation.
+These items remain open against the accepted
+[preview validation plan](../design/explicit-blending-outcomes.md#validation-plan).
+No production changes were made merely to accommodate an unverified automation
+or capture limitation.
+
+## Release decision
+
+After the second integrated assessment, the maintainer authorized publishing
+ColorKit 3.2.0 with these disclosed manual-validation gaps. This is a release
+override for the outstanding evidence, not a claim that the checks passed or
+that the observed macOS stripes are confirmed to be capture-only. The final
+automated release preflight is still required before tagging.
 
 ## Local artifacts
 

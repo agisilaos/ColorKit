@@ -1,6 +1,6 @@
 # Reproducible palette generation
 
-Status: accepted. Release placement remains undecided; this is not a prerequisite for 3.2. Review baseline: `25e386a`.
+Status: implemented and included in ColorKit 3.2.0. Review baseline: `25e386a`.
 
 ## Purpose and API
 

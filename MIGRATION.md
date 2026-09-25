@@ -1,6 +1,10 @@
 # Migration Guide
 
-## Unreleased
+## ColorKit 3.2.0
+
+The new blend outcomes, blend-mode alias, option/concurrency conformances, and
+caller-controlled palette randomness are additive; existing calls need no migration.
+The cache-opacity correction and intentional preview changes are described below.
 
 ### Cached contrast and translucent inputs
 

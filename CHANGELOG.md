@@ -4,6 +4,8 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-09-25
+
 ### Fixed
 - Correct legacy normal-blending documentation: blend alpha weights the RGB effect while base alpha is preserved; this is not source-over compositing. Blend mathematics and legacy APIs are unchanged.
 - Enforce the documented translucent-input decline before reading cached WCAG contrast. Caller-injected ratios no longer make translucent pairs report passing compliance; opaque cache hits and direct cache storage/retrieval remain unchanged.
