@@ -1,5 +1,9 @@
 ## Agent skills
 
+### Project focus
+
+Read [docs/NORTH_STAR.md](docs/NORTH_STAR.md) before proposing or expanding work. Apply its scope, simplicity, accessibility, and migration guardrails.
+
 ### Branch naming
 
 Branch names must start with `feature/`, `fix/`, `refactor/`, or `chore/`.

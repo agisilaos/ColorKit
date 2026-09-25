@@ -2,6 +2,8 @@
 
 Keep changes focused, preserve shipped contracts, and provide evidence for behavior changes. Use [GitHub Issues](https://github.com/agisilaos/ColorKit/issues) to discuss bugs or proposed features.
 
+Before proposing work, apply the [north star and scope rules](docs/NORTH_STAR.md): justify the developer need, choose the smallest solution, and keep adoption stable.
+
 ## Set up
 
 1. Fork and clone the repository.
