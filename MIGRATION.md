@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Cached contrast and translucent inputs
+
+`wcagContrastRatio(with:)` now checks opacity before reading a cached ratio.
+If either input is translucent, it returns the documented sentinel `1`, and
+`wcagCompliance(with:)` reports no passing levels, even when a caller has inserted
+a higher ratio into `ColorCache.shared`. This restores the documented opacity
+rule; callers can no longer use cache injection to bypass it.
+
+Opaque cache hits and direct cache storage/retrieval are unchanged. A stored
+translucent entry remains retrievable, but it does not establish WCAG compliance.
+To measure a translucent foreground, use `contrastResult(with:)` with an explicit
+opaque background so the foreground is composited before measurement. See
+[translucent contrast measurement](#translucent-contrast-measurement).
+
 ### Explicit blending outcomes
 
 `blendResult(with:mode:amount:)` is additive; existing calls need no migration.
