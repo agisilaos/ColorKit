@@ -173,6 +173,8 @@ Both inputs must resolve to fixed RGB/grayscale components, including at zero am
 
 Amount defaults to one and must be finite in `0...1`. `.invalidAmount` takes precedence; otherwise `.unavailableInputs(base:blend:)` retains each operand's first conversion issue independently. Nonfinite calculations or output representation produce `.nonfiniteResult`. Zero contribution skips mode arithmetic after both operands resolve. The operation neither reads nor writes the legacy cache.
 
+Use ``ColorBlendMode`` for explicit declarations, collections, and typed method references. It is an alias of ColorKit's existing ``BlendMode``, with the same cases and type identity. With both `import SwiftUI` and `import ColorKit`, bare `BlendMode` remains ambiguous; the alias does not change lookup of that spelling. `ColorKit.BlendMode` also fails because the public `ColorKit` enum shadows the module name. Existing callers can retain the original spelling using `import enum ColorKit.BlendMode`. Inferred calls such as `mode: .multiply` need no changes, and nothing is deprecated.
+
 The following legacy methods remain available and unchanged: unresolved operands return the receiver, amounts are clamped, and full-strength results use the existing cache.
 
 <!-- swift-example: blending -->
@@ -182,6 +184,10 @@ let overlay = Color(.sRGB, red: 0.8, green: 0.3, blue: 0.2)
 let blended = base.blended(with: overlay, mode: .overlay, amount: 0.5)
 let multiply = base.blended(with: overlay, mode: .multiply)
 let screen = base.blended(with: overlay, mode: .screen)
+let selectedMode: ColorBlendMode = .multiply
+let modes: [ColorBlendMode] = [selectedMode, .screen]
+let operation: (Color, ColorBlendMode, CGFloat) -> Color = base.blended(with:mode:amount:)
+let effects = modes.map { operation(overlay, $0, 0.5) }
 ```
 
 ## Interface Overview
@@ -210,5 +216,6 @@ let screen = base.blended(with: overlay, mode: .screen)
 ### Blending
 - ``ColorBlendError``
 - `Color.blended(with:mode:amount:)`
+- ``ColorBlendMode``
 - ``BlendMode``
 - `Color.interpolated(with:amount:in:)`

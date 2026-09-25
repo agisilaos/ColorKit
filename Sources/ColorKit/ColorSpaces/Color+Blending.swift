@@ -459,9 +459,15 @@ public extension Color {
     }
 }
 
+/// An unambiguous name for ColorKit's color blending modes.
+///
+/// Use this spelling for explicit client types when importing both SwiftUI and ColorKit.
+/// It aliases ``BlendMode``; existing cases, signatures, and behavior are unchanged.
+public typealias ColorBlendMode = BlendMode
+
 /// Defines the available color blending modes in ColorKit.
 ///
-/// `BlendMode` provides a comprehensive set of blending operations similar to
+/// `ColorBlendMode` provides a comprehensive set of blending operations similar to
 /// those found in professional design software. Each mode defines how colors
 /// are combined mathematically.
 ///
@@ -492,9 +498,9 @@ public extension Color {
 ///
 /// // Creating effects
 /// let effects = [
-///     BlendMode.multiply,
-///     BlendMode.screen,
-///     BlendMode.overlay
+///     ColorBlendMode.multiply,
+///     ColorBlendMode.screen,
+///     ColorBlendMode.overlay
 /// ]
 ///
 /// effects.forEach { mode in
@@ -551,7 +557,7 @@ public enum BlendMode {
     ///
     /// Example:
     /// ```swift
-    /// let mode = BlendMode.overlay
+    /// let mode = ColorBlendMode.overlay
     /// let base = (r: 0.5, g: 0.2, b: 0.8)
     /// let blend = (r: 0.3, g: 0.9, b: 0.1)
     ///

@@ -28,3 +28,11 @@ func blendResultClient(_ base: Color, _ blend: Color) -> Result<Color, ColorBlen
 }
 
 private func requireBlendError<Value: Error & Equatable & Sendable>(_ value: Value) {}
+
+// A selective SwiftUI import keeps the original spelling available for identity checks.
+func blendModeIdentity(_ original: BlendMode, _ alias: ColorBlendMode) {
+    let _: ColorBlendMode = original
+    let _: BlendMode = alias
+    let _: [ColorBlendMode] = [original]
+    let _: BlendMode.Type = ColorBlendMode.self
+}
