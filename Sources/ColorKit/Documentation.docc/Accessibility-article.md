@@ -28,6 +28,9 @@ case .unavailable(let issues):
 }
 ```
 
+To explain each input's issues without guessing a repair, use the
+[unavailable-result recipe](https://github.com/agisilaos/ColorKit/blob/main/docs/recipes/unavailable-results.md).
+
 ### Assessed Palettes
 
 Assessment retains every outcome without imposing an enhancement budget or

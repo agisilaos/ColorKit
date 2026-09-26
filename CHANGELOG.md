@@ -4,6 +4,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Correct unavailable endpoint-assessment guidance and link the existing component/contrast explanation recipe from the usage guides, DocC, and contrast-pair report.
+
 ## [3.2.0] - 2026-09-25
 
 ### Fixed
