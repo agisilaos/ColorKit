@@ -47,8 +47,37 @@ jobs:
       - name: Compile Public Examples and Verify Conversion Results
         run: python3 scripts/check_documentation.py --derived-data "$RUNNER_TEMP/ColorKitDocumentation"
 
-  test:
-    name: Build and Test
+  compatibility:
+    name: Release Client Compatibility
+    runs-on: macos-26
+    if: github.event.pull_request.draft == false
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Release Client Compatibility
+        env:
+          COMPATIBILITY_BASE: ${{ github.event.pull_request.base.sha }}
+        run: python3 scripts/check_compatibility.py --fixture-base "$COMPATIBILITY_BASE"
+
+      - name: Upload Compatibility Diagnostics
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: compatibility-diagnostics
+          include-hidden-files: true
+          path: .build/compatibility/run-*/
+          retention-days: 14
+
+  package-tests:
+    name: Tooling and Package Tests
     runs-on: macos-26
     if: github.event.pull_request.draft == false
     env:
@@ -60,27 +89,33 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Show Xcode and Available Simulators
-        run: |
-          xcodebuild -version
-          xcrun simctl list devices available
 
       - name: Test Tooling Contracts
         run: python3 -m unittest discover -s scripts/tests
-
-      - name: Check Release Client Compatibility
-        env:
-          COMPATIBILITY_BASE: ${{ github.event.pull_request.base.sha }}
-        run: python3 scripts/check_compatibility.py --fixture-base "$COMPATIBILITY_BASE"
 
       - name: Test Benchmark Correctness in Release Mode
         run: swift test --package-path Benchmarks -c release
 
       - name: Test Standalone Contrast Pair Report
         run: swift test --package-path Examples/ContrastPairReport
+
+  test:
+    name: Build and Test
+    runs-on: macos-26
+    if: github.event.pull_request.draft == false
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Show Xcode and Available Simulators
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available
 
       - name: Build and Test Canonical Matrix
         run: scripts/run_tests.sh --results-dir TestResults
@@ -91,7 +126,5 @@ jobs:
         with:
           name: test-results
           include-hidden-files: true
-          path: |
-            TestResults/
-            .build/compatibility/run-*/
+          path: TestResults/
           retention-days: 14

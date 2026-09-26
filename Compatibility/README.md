@@ -8,7 +8,8 @@ actual deployment requirements, so raising those requirements can fail the old c
 The checker also compares the complete public ColorKit API, including deprecated
 declarations. Runtime behavior is checked by `scripts/run_tests.sh`.
 
-CI runs both commands in the existing **Build and Test** job for every non-draft PR.
+CI runs the checker in **Release Client Compatibility**, independently of the
+behavioral matrix in **Build and Test**, for every non-draft PR. Both jobs must pass.
 Release preflight (`scripts/check_release.sh <version>`) requires both to pass after
 its metadata and Git checks. An unavailable compiler, missing baseline, empty API
 inventory, failed compilation, or API diagnostic makes the check fail.
@@ -76,7 +77,9 @@ Temporary release sources and builds are removed when the check finishes.
 
 Build products and logs default to `.build/compatibility`; override with `--storage`.
 Each invocation retains the environment, command output, and both API inventories
-under a unique `run-*` directory. CI uploads that directory with its test artifacts.
+under a unique `run-*` directory. CI uploads that directory as the
+`compatibility-diagnostics` artifact, including when the check fails, and retains it
+for 14 days. Test logs and result bundles remain in the separate `test-results` artifact.
 If a toolchain upgrade cannot build an original release, the check fails.
 
 The checker currently has no diagnostic exceptions. A future exception requires

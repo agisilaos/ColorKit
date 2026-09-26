@@ -60,6 +60,12 @@ python3 scripts/check_documentation.py --derived-data .build/documentation
 
 CI configuration lives in [.github/workflows/ci.yml](.github/workflows/ci.yml). For local iteration, start with the relevant subset; before review, disclose which checks ran and any gaps.
 
+CI runs five independent jobs: **SwiftLint**, **Documentation**, **Release Client
+Compatibility**, **Tooling and Package Tests**, and **Build and Test**. All five
+must pass. Tooling contracts, Release benchmark correctness, and standalone-example
+tests run together in **Tooling and Package Tests**, so the canonical iOS/macOS
+matrix in **Build and Test** can start immediately.
+
 ### Platform tests and diagnostics
 
 The zero-argument test runner performs iOS and macOS tests with parallel testing enabled, followed by serialized shared-state suites on each platform. The pinned iOS destination is iPhone 17 with iOS 26.5.
