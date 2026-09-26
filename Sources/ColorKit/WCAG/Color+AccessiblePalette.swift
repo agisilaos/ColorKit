@@ -62,7 +62,7 @@ public extension Color {
     /// // Generate a palette with custom settings
     /// let palette = brandColor.generateAccessiblePalette(
     ///     targetLevel: .AAA,      // Requested target, not a guarantee
-    ///     paletteSize: 7,         // 7 colors
+    ///     paletteSize: 7,         // Request 7 colors
     ///     includeBlackAndWhite: true
     /// )
     ///
@@ -76,7 +76,7 @@ public extension Color {
     ///
     /// - Parameters:
     ///   - targetLevel: The WCAG level to target (default: .AA)
-    ///   - paletteSize: The number of colors to generate (default: 5)
+    ///   - paletteSize: The requested size (default: 5); see ``AccessiblePaletteGenerator/Configuration/paletteSize``.
     ///   - includeBlackAndWhite: Whether to include black and white (default: true)
     /// - Returns: An array of candidates without per-entry or pairwise compliance guarantees.
     func generateAccessiblePalette(

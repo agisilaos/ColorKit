@@ -26,6 +26,9 @@ ratios; display uses two decimals and the current locale. Unavailable rows repor
 both input issue lists without inventing a ratio. This is not a whole-app
 accessibility compliance assessment.
 
+For client-owned explanations of contrast and component-conversion issues, see the
+[unavailable-result recipe](../../docs/recipes/unavailable-results.md).
+
 Validated on Apple Silicon macOS 26.6.2 with Swift 6.3.2: executable build,
 six tests (including rounding boundaries for all four targets), strict lint,
 and manual inspection of populated/empty windows and scrolling. No iOS host,

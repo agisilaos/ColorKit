@@ -67,6 +67,7 @@ case .failure(let issue): print("Hex unavailable:", issue)
 ```
 
 See [component contracts](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results) for gamut, alpha, units, and failure rules.
+To explain failures while retaining successful conversions, use the [unavailable-result recipe](recipes/unavailable-results.md).
 
 ### HSL
 
@@ -187,9 +188,9 @@ case .meetsTarget:
 case .bestEffort:
     print("Best available endpoint is below the requested target")
 case .unavailable:
-    print("Resolve the colors in an explicit appearance before assessment")
+    print("Contrast could not be measured against this background")
 case .invalidConfiguration:
-    print("Supply a finite perceptual-distance budget from 0 through 100")
+    break // Not produced by endpoint assessment; no distance budget applies.
 }
 
 // Use the demo view to experiment with palette generation
@@ -201,6 +202,7 @@ struct ContentView: View {
 ```
 
 Assessments retain every outcome and do not certify contrast between palette entries. See [assessed palettes](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#assessed-palettes) for guarantees and legacy differences.
+An unavailable result alone does not identify a remedy. The [unavailable-result recipe](recipes/unavailable-results.md) shows how to explain per-input contrast issues without guessing a repair.
 
 For repeatable tests and previews, supply caller-owned randomness with `using: &random`; see the [complete replay example and its environment limits](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#replaying-a-palette). Existing calls retain random defaults.
 
