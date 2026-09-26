@@ -94,17 +94,17 @@ public struct BlendingPreview: View {
 
             HStack {
                 Text("0%")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                 Slider(value: $blendAmount, in: 0...1)
                     .accessibilityLabel("Blend amount")
                     .accessibilityValue("\(Int(blendAmount * 100)) percent")
                 Text("100%")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
             }
 
             Text("\(Int(blendAmount * 100))%")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
         }
     }
 
@@ -120,28 +120,30 @@ public struct BlendingPreview: View {
 
 // MARK: - Supporting Views
 
-private struct BlendModeButton: View {
+struct BlendModeButton: View {
     let mode: BlendMode
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: "checkmark")
-                    .opacity(isSelected ? 1 : 0)
-                    .accessibilityHidden(true)
-                Text(String(describing: mode))
-            }
-            .font(.subheadline)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.accentColor : Color.secondary.opacity(0.2))
-            .foregroundColor(isSelected ? .white : .primary)
-            .cornerRadius(8)
-        }
+        Button(action: action) { label }
         .buttonStyle(.borderless)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    var label: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "checkmark")
+                .opacity(isSelected ? 1 : 0)
+                .accessibilityHidden(true)
+            Text(String(describing: mode))
+        }
+        .font(.subheadline)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background((isSelected ? Color.accentColor : Color.secondary).opacity(0.2))
+        .foregroundColor(.primary)
+        .cornerRadius(8)
     }
 }
 

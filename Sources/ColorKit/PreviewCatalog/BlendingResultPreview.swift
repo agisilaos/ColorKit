@@ -86,7 +86,7 @@ struct BlendingResultPreview: View {
 
             Text("Blend amount and blend opacity control the effect. The result keeps the base color's opacity.")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
