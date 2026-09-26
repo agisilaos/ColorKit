@@ -174,7 +174,7 @@ public enum ColorKit {
         /// - Parameters:
         ///   - seedColor: The color to base the palette on
         ///   - targetLevel: The WCAG level to target (default: .AA)
-        ///   - paletteSize: The number of colors to generate (default: 5)
+        ///   - paletteSize: The requested size (default: 5); see ``AccessiblePaletteGenerator/Configuration/paletteSize``.
         ///   - includeBlackAndWhite: Whether to include black and white (default: true)
         /// - Returns: An array of colors that form an accessible palette
         public static func generateAccessiblePalette(

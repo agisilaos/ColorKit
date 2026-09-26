@@ -63,7 +63,7 @@ public extension Color {
     /// Export a palette generated from this color
     /// - Parameters:
     ///   - targetLevel: The WCAG level to target
-    ///   - paletteSize: The number of colors to generate
+    ///   - paletteSize: The requested size; see ``AccessiblePaletteGenerator/Configuration/paletteSize``.
     ///   - includeBlackAndWhite: Whether to include black and white
     ///   - format: The format to export to
     ///   - paletteName: The name of the palette

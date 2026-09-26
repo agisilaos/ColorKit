@@ -60,6 +60,11 @@ a palette. Candidate generation targets contrast against the seed, but included
 and fallback colors may not pass. Assessment preserves generation order and keeps
 below-target outcomes visible.
 
+`paletteSize` is a requested count, normalized to at least two. Search and fallback
+exhaustion can return fewer entries. With the default `includeBlackAndWhite: true`,
+requesting two returns three entries: the seed, black, and white. Use the returned
+array's count for the actual size.
+
 <!-- swift-example: palette-configuration -->
 ```swift
 let seed = Color(.sRGB, red: 0.2, green: 0.4, blue: 0.8)
