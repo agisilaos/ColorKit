@@ -1,5 +1,90 @@
 # Benchmark correctness and performance baseline
 
+## Assessed-palette investigation — 2026-09-30
+
+Status: measured; see the investigation evidence below. Production implementation
+is unchanged.
+Assessed baseline: `43a4f45c3fa50c882bc23e02b313e4225b51833f` (latest fetched
+`origin/main`). Isolated branch: `chore/assessed-palette-performance`.
+
+The agreed use case is interactive regeneration after changing a base color.
+There is no assumed latency target, invocation rate, or demonstrated slowdown.
+The agreed question is: “How much does one complete assessed-palette
+request cost, and what explains variation between requests?” The decisions below
+define workload selection, RNG/cache preparation, repetitions, stopping conditions,
+and success criteria. Production optimization, public API additions, async wrappers,
+and cache machinery are outside scope.
+
+Agreed reference workloads: requested palette sizes 5 and 8, AA, and
+`includeBlackAndWhite: true`, crossed with three fixed opaque sRGB pairs:
+red `(1, 0, 0)` against white; brand blue `(0.2, 0.4, 0.7)` against white;
+and the same blue against black. These six cases represent selected interactive
+requests, not a population-weighted application workload. Count-limit and
+unavailable cases belong in untimed correctness checks.
+
+Agreed randomness and cache preparation: use the public documentation's app-owned
+SplitMix64 generator with seeds 0, 42, and 2026, reporting each separately. Restore
+its initial state outside timing before every request. Empty-cache preparation
+clears `ColorCache.shared` and resets randomness. Primed-cache preparation clears
+the cache, executes the identical seeded request untimed, then resets randomness
+again before measurement. Priming describes preparation, not guaranteed hits.
+Compare ordered components, assessments, and final random state outside timing
+to establish equal workloads. Replay remains limited to the same library version,
+execution environment, configuration, and appearance documented in the public
+guide; no cross-version identical-output promise is added.
+
+Agreed measurement boundary: elapsed monotonic time for one complete public
+`generateAssessedPalette` request, including candidate generation, retries and
+fallbacks, every assessment, the harness input barrier, and complete-result
+consumption. RNG reset, cache preparation, warm-up, correctness checks, sample
+storage, and reporting stay outside timing. Record untimed RNG draw counts,
+returned counts, and assessment outcomes as diagnostic evidence for workload
+differences; draw counts are revision-specific observations, not public contracts.
+This measures neither CPU time nor rendering or iOS latency.
+
+Agreed sampling and stopping: retain the harness defaults of three independent
+runs, ten samples per case per run, one hundred individually timed requests per
+sample, and ten untimed warm-up requests. Retain all samples and their order;
+reverse scenario/cache order on alternate runs. Report the median and range of
+the thirty sample means per workload/seed/cache combination, with control overhead
+shown separately and not subtracted. These summaries do not establish
+individual-request tail latency. Stop at the fixed run count, or on a correctness
+or execution failure while preserving incomplete evidence; do not remove outliers
+or extend sampling to obtain a preferred result.
+
+Practical success is a reproducible, contract-checked account of elapsed request
+cost and variation, or a precise explanation of unresolved measurement limits.
+There is no speed threshold and no required optimization. A recommendation to
+leave production implementation unchanged is a valid outcome.
+
+Agreed minimal harness changes: replace the stochastic palette reference with the eighteen workload/seed combinations; add
+an untimed RNG-reset hook for identical priming and measured requests; select
+palette scenarios without running unrelated operations; retain untimed output
+and RNG diagnostics alongside timing evidence. Preserve the existing timing loop,
+control, process isolation, and environment recording. Update stale benchmark
+guidance and repeat Release compiler verification. No production changes.
+
+Before inspecting production implementation, the public documentation route was
+recorded: README → Usage → Assess a generated palette → Accessibility article,
+Assessed Palettes and Replaying a Palette. It supplies a deterministic generator
+example, reset/continuation guidance, environment/version limits, outcome
+interpretation, ordering, and palette-count limits. Focused client verification
+and measurements are recorded in the
+[investigation evidence](../validation/assessed-palette-performance-2026-09-30.md).
+The reviewer has prior implementation knowledge; this is not a blind consumer attempt.
+
+Inspection of the assessed baseline confirmed `palette-red-five` used the
+stochastic overload and its benchmark guide said public RNG control was
+unavailable, despite the documented replay overloads. This measurement/documentation
+gap is corrected by this investigation. It was not evidence of a runtime defect.
+The deterministic policy above supersedes the original stochastic fixture policy
+below.
+
+No overlapping investigation surfaced in the open GitHub issues/PRs checked on
+2026-09-30; the only open PR was #82 (parallel compatibility CI). Unpublished
+local work was not ruled out. Preparation and the public route are also retained
+locally under `.build/palette-investigation/public-route.md`.
+
 Status: reduced milestone implemented. This note supersedes the broader workload
 and acceptance-framework proposals discussed earlier. See [the runner guide](../../Benchmarks/README.md)
 for the chosen fixtures, repetition counts, timing boundaries, and reproduction commands.
@@ -68,11 +153,13 @@ deferred.
 The [runner guide](../../Benchmarks/README.md) records the compact fixture inventory
 and exact settings, checked against existing correctness expectations.
 
-Implementation inspection found that the public palette generator uses internal,
-unseeded random hue shifts. Its seed color and configuration are fixed, but its
+At the original baseline, implementation inspection found that the public palette
+generator used internal, unseeded random hue shifts. Its seed color and configuration are fixed, but its
 candidate search is stochastic. Retain the representative five-color request and
 disclose that variability, including priming with different candidates, rather
-than modifying the library to control its RNG. Validate palette invariants instead
+than modifying the library to control its RNG. ColorKit 3.2 subsequently added
+caller-owned randomness; the 2026-09-30 investigation above supersedes this
+stochastic fixture policy with deterministic replay through those public overloads. Validate palette invariants instead
 of exact generated colors; do not interpret this case as a deterministic cache-hit
 or version comparison.
 

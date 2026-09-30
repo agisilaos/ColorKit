@@ -64,3 +64,37 @@ The test matrix's local logs and result bundles are under
 `.build/test-results/run.ZUlj9O/`. These checks preserve the ColorKit 3.0.0 public
 contract; they do not replace the separate committed-branch review or publication
 steps.
+
+## Palette replay harness — 2026-09-30
+
+The assessed-palette investigation uses production revision
+`43a4f45c3fa50c882bc23e02b313e4225b51833f` plus the captured harness changes.
+Measured Release executable SHA-256:
+`6f3115837199467fad25ee44eae0e146ad0ab2b8363c181fc90bab80bd5f0157`.
+The final raw artifact's hash matches the inspected executable. Environment and
+full results are in the [investigation note](../docs/validation/assessed-palette-performance-2026-09-30.md).
+
+Repeated the disassembly command above, piped the output through `xcrun swift-demangle`,
+and checked `xcrun llvm-objdump --macho --indirect-symbols` to identify clock stubs.
+Local full output and selected function excerpts are retained under
+`.build/palette-investigation/`. The request loops keep preparation before the first
+clock and input barrier/operation dispatch/full-result sink between clock reads:
+
+| Result | Input barrier | Operation dispatch | Sink | Request loop back edge |
+| --- | --- | --- | --- | --- |
+| Assessed palette array | `0x1000b7db8` | `0x1000b7dcc` | `0x1000b7de8` | `0x1000b7e20` |
+| Enhancement | `0x1000b872c` | `0x1000b8744` | `0x1000b876c` | `0x1000b87a8` |
+| Full comparison | `0x1000b9134` | `0x1000b9144` | `0x1000b9164` | `0x1000b919c` |
+| HSL/LAB optional triple (merged loop) | `0x1000b9a88` | `0x1000b9a98` | `0x1000b9aac` | `0x1000b9adc` |
+| Aggregate component results | `0x1000ba348` | `0x1000ba358` | `0x1000ba370` | `0x1000ba3ac` |
+
+For the palette loop, preparation dispatch is at `0x1000b7d64`; clock reads use
+`DispatchTime.now`/`uptimeNanoseconds` stubs at `0x1000c69f0`/`0x1000c69e4`.
+The operation closure at `0x1000bc308` calls the public RNG-bearing assessed request
+at `0x1000bc384`. All assessments remain in that complete public request.
+The conversion closures retain HSL/LAB targets through a merged trampoline; the
+comparison closure calls full `comparisonResult` at `0x1000c44d8`; enhancement
+retains its processor method dispatch at `0x1000c53f4`. The enhancer metadata
+(`0x10010cf68`) slot at offset `0x68` contains `0x100003ee0`, the
+`enhanceColorResult` target. Addresses apply only to this
+hash/toolchain. No underscored annotations were added to the public library.

@@ -191,32 +191,6 @@ func scenarios() -> [Scenario] {
         }
     }
 
-    let generator = AccessiblePaletteGenerator(configuration: .init(
-        targetLevel: .AA, paletteSize: 5, includeBlackAndWhite: true
-    ))
-    cases.append(Scenario(
-        description: ScenarioDescription(
-            id: "palette-red-five",
-            purpose: "Generate and assess one five-color palette (stochastic candidate search)",
-            inputs: "sRGB RGBA seed (1, 0, 0, 1), background (1, 1, 1, 1)",
-            settings: "AA, paletteSize 5, includeBlackAndWhite true; internal unseeded random hue shifts; candidate work varies; priming uses a different generated palette",
-            expected: "Five entries, seed first; each assessment matches its color against white; entries need not all pass AA",
-            unit: "palette",
-            modes: [.empty, .primed]
-        ),
-        input: (red, white),
-        operation: { generator.generateAssessedPalette(from: $0.0, against: $0.1) },
-        validate: { values in
-            try requireFixture(values.count == 5 && values.first?.color == red, "Incorrect palette size or seed")
-            for value in values {
-                let assessment = value.color.accessibilityResult(against: white)
-                try requireFixture(
-                    value.contrastRatio != nil && value.contrastRatio == assessment.contrastRatio
-                        && value.status == assessment.status && value.targetLevel == .AA,
-                    "Incorrect palette assessment"
-                )
-            }
-        }
-    ))
+    cases.append(contentsOf: paletteScenarios())
     return cases
 }
