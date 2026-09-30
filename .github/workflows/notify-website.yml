@@ -1,0 +1,25 @@
+name: Notify Website
+
+# Asks colorkit.dev to open a draft PR documenting each published release.
+# Needs the WEBSITE_DISPATCH_TOKEN secret: a fine-grained token limited to
+# agisilaos/colorkit-website with "Contents: Read and write" permission.
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  dispatch:
+    name: Dispatch release to colorkit-website
+    if: ${{ !github.event.release.prerelease }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Repository Dispatch
+        env:
+          GH_TOKEN: ${{ secrets.WEBSITE_DISPATCH_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh api repos/agisilaos/colorkit-website/dispatches \
+            -f event_type=colorkit-release \
+            -f "client_payload[tag]=$TAG"

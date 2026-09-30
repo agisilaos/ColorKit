@@ -8,6 +8,9 @@ All notable changes to ColorKit will be documented in this file.
 - Correct unavailable endpoint-assessment guidance and link the existing component/contrast explanation recipe from the usage guides, DocC, and contrast-pair report.
 - Clarify requested palette sizes, including partial output and the three initial entries retained when requesting two with black and white enabled. Generation behavior is unchanged.
 
+### Tooling
+- Notify colorkit.dev when a release is published, so the website opens a draft PR documenting it.
+
 ## [3.2.0] - 2026-09-25
 
 ### Fixed
