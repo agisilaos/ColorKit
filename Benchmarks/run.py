@@ -57,12 +57,25 @@ def summarize(records):
     return "\n".join(lines)
 
 
+def validate_replay(records):
+    """Require identical untimed palette evidence across processes and cache modes."""
+    diagnostics = {}
+    for record in records:
+        evidence = record.get("diagnostics")
+        if evidence is not None:
+            name = record["scenario"]["id"]
+            if name in diagnostics and diagnostics[name] != evidence:
+                raise RuntimeError(f"Replay diagnostics differ between runs/cache modes: {name}")
+            diagnostics[name] = evidence
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=pathlib.Path, required=True, help="new directory for raw.json and summary.md")
     parser.add_argument("--runs", type=positive_int, default=3, help="independent processes per scenario/cache pair (default: 3)")
     parser.add_argument("--samples", type=positive_int, default=10, help="samples per process (default: 10; max: 1000)")
     parser.add_argument("--iterations", type=positive_int, default=100, help="requests per sample (default: 100; max: 100000)")
+    parser.add_argument("--scenario-prefix", help="run only scenario IDs with this prefix")
     args = parser.parse_args()
     if platform.system() != "Darwin":
         parser.error("the baseline requires macOS")
@@ -75,11 +88,22 @@ def main():
     subprocess.run(["swift", "build", "--package-path", str(PACKAGE), "-c", "release"], cwd=ROOT, check=True)
     binary = pathlib.Path(command("swift", "build", "--package-path", str(PACKAGE), "-c", "release", "--show-bin-path")) / "ColorKitBenchmarks"
     descriptions = json.loads(command(str(binary), "--list"))
+    if args.scenario_prefix:
+        descriptions = [s for s in descriptions if s["id"].startswith(args.scenario_prefix)]
+        if not descriptions:
+            parser.error("scenario prefix matches no scenarios")
     pairs = [(s["id"], mode) for s in descriptions for mode in s["modes"]]
     metadata = {
         "timestampUTC": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "revision": command("git", "rev-parse", "HEAD"),
+        "invocation": sys.argv,
+        "harnessSources": {
+            str(path.relative_to(ROOT)): path.read_text()
+            for path in sorted([*PACKAGE.glob("Sources/**/*.swift"), PACKAGE / "run.py", PACKAGE / "Package.swift"])
+        },
         "trackedChanges": command("git", "diff", "HEAD", "--stat"),
+        "trackedPatch": command("git", "diff", "HEAD"),
+        "scenarioPrefix": args.scenario_prefix,
         "untrackedFiles": command("git", "ls-files", "--others", "--exclude-standard"),
         "binarySHA256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "configuration": "release",
@@ -115,6 +139,7 @@ def main():
             record["run"] = run + 1
             records.append(record)
             save()
+            validate_replay(records)
     artifact["complete"] = True
     save()
     summary = summarize(records)

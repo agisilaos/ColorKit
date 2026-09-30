@@ -6,6 +6,7 @@ enum Runner {
         let scenario: ScenarioDescription
         let cacheMode: CacheMode
         let samples: [Sample]
+        let diagnostics: PaletteDiagnostics?
     }
 
     static func main() throws {
@@ -29,7 +30,8 @@ enum Runner {
                 data = try encoder.encode(Result(
                     scenario: scenario.description,
                     cacheMode: mode,
-                    samples: scenario.run(mode, samples, iterations)
+                    samples: scenario.run(mode, samples, iterations),
+                    diagnostics: scenario.diagnostics()
                 ))
             #endif
         }

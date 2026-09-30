@@ -58,50 +58,57 @@ struct Scenario {
     let description: ScenarioDescription
     let validate: (CacheMode) throws -> Void
     let run: (CacheMode, Int, Int) throws -> [Sample]
+    let diagnostics: () throws -> PaletteDiagnostics?
 
     init<Input, Output>(
         description: ScenarioDescription,
         input: Input,
         operation: @escaping (Input) -> Output,
+        prepareOperation: @escaping () -> Void = {},
+        diagnostics: @escaping () throws -> PaletteDiagnostics? = { nil },
         validate: @escaping (Output) throws -> Void
     ) {
         self.description = description
+        self.diagnostics = diagnostics
+        let perform = {
+            prepareOperation()
+            return operation(opaqueInput(input))
+        }
+        let prepare = { (mode: CacheMode) in
+            mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: { consume(perform()) })
+            prepareOperation()
+        }
         self.validate = { mode in
             guard description.modes.contains(mode) else { throw BenchmarkError.invalidArguments }
             ColorCache.shared.clearCache()
             defer { ColorCache.shared.clearCache() }
-            mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: { consume(operation(input)) })
-            try validate(operation(input))
+            prepare(mode)
+            try validate(operation(opaqueInput(input)))
         }
         self.run = { mode, samples, iterations in
             guard description.modes.contains(mode), (1 ... 1_000).contains(samples),
                   (1 ... 100_000).contains(iterations) else { throw BenchmarkError.invalidArguments }
             ColorCache.shared.clearCache()
             defer { ColorCache.shared.clearCache() }
-            let reference = operation(input)
+            let reference = perform()
             try validate(reference)
             // Untimed warm-up; each timed request still receives its own cache preparation.
             for _ in 0 ..< 10 {
-                consume(operation(opaqueInput(input)))
-            }
-            let prepare = {
-                mode.prepare(clear: { ColorCache.shared.clearCache() }, prime: {
-                    consume(operation(opaqueInput(input)))
-                })
+                consume(perform())
             }
             var measurements: [Sample] = []
             for index in 0 ..< samples {
                 let request: () throws -> UInt64 = {
                     try measureRequests(
                         iterations: iterations,
-                        prepare: prepare,
+                        prepare: { prepare(mode) },
                         request: { operation(opaqueInput(input)) }
                     )
                 }
                 let control: () throws -> UInt64 = {
                     try measureRequests(
                         iterations: iterations,
-                        prepare: prepare,
+                        prepare: { prepare(mode) },
                         request: {
                             // Same input barrier and full result type, with a precomputed result.
                             consume(opaqueInput(input))
@@ -124,7 +131,8 @@ struct Scenario {
                     controlNanoseconds: controlTime
                 ))
             }
-            try validate(operation(input))
+            prepare(mode)
+            try validate(operation(opaqueInput(input)))
             return measurements
         }
     }

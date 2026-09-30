@@ -49,13 +49,43 @@ struct ScenarioTests {
     @Test("Every named fixture validates in all supported cache modes")
     func fixtures() throws {
         let cases = scenarios()
-        #expect(cases.count == 16)
+        #expect(cases.count == 33)
         #expect(Set(cases.map(\.description.id)).count == cases.count)
         for scenario in cases {
             for mode in scenario.description.modes {
                 try scenario.validate(mode)
             }
         }
+    }
+
+    @Test("State is reset for priming and every measured or validated request")
+    func operationPreparation() throws {
+        var state = 0
+        var observed: [Int] = []
+        let scenario = Scenario(
+            description: ScenarioDescription(
+                id: "reset",
+                purpose: "Verify request preparation",
+                inputs: "1",
+                settings: "reset",
+                expected: "1",
+                unit: "request",
+                modes: [.empty, .primed]
+            ),
+            input: 1,
+            operation: { value in
+                state += value
+                observed.append(state)
+                return state
+            },
+            prepareOperation: { state = 0 },
+            validate: { try requireFixture($0 == 1, "State was not reset") }
+        )
+        for mode in [CacheMode.empty, .primed] {
+            try scenario.validate(mode)
+            _ = try scenario.run(mode, 2, 100)
+        }
+        #expect(!observed.isEmpty && observed.allSatisfy { $0 == 1 })
     }
 
     @Test("Invalid counts and unsupported cache modes are rejected")
