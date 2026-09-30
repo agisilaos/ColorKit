@@ -28,6 +28,9 @@ case .unavailable(let issues):
 }
 ```
 
+To explain each input's issues without guessing a repair, use the
+[unavailable-result recipe](https://github.com/agisilaos/ColorKit/blob/main/docs/recipes/unavailable-results.md).
+
 ### Assessed Palettes
 
 Assessment retains every outcome without imposing an enhancement budget or
@@ -56,6 +59,11 @@ Configure `targetLevel`, `paletteSize`, and `includeBlackAndWhite` when generati
 a palette. Candidate generation targets contrast against the seed, but included
 and fallback colors may not pass. Assessment preserves generation order and keeps
 below-target outcomes visible.
+
+`paletteSize` is a requested count, normalized to at least two. Search and fallback
+exhaustion can return fewer entries. With the default `includeBlackAndWhite: true`,
+requesting two returns three entries: the seed, black, and white. Use the returned
+array's count for the actual size.
 
 <!-- swift-example: palette-configuration -->
 ```swift

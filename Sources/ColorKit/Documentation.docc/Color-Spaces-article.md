@@ -69,6 +69,9 @@ remain unchanged and are not deprecated. Successful component conversion does no
 establish WCAG contrast or perceptual similarity. Legacy color initializers can clamp
 their inputs and are not general inverses of extended coordinates.
 
+For client-owned explanations that preserve successful conversions, see the
+[unavailable-result recipe](https://github.com/agisilaos/ColorKit/blob/main/docs/recipes/unavailable-results.md).
+
 ### RGB
 
 The RGB color space is the most common color space used in digital displays. It represents colors using red, green, and blue components.

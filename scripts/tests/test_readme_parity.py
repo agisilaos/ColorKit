@@ -73,6 +73,15 @@ class ReadmeParityTests(unittest.TestCase):
         spanish = "[Contrato](contract.md)"
         self.assertEqual(PARITY.compare(english, spanish), ["link/image destinations differ"])
 
+    def test_translated_recipe_links_preserve_destination_checks(self):
+        english = "[Recipe](recipes/unavailable-results.md)"
+        spanish = "[Receta](recipes/unavailable-results.es-ES.md)"
+        self.assertEqual(PARITY.compare(english, spanish), [])
+        for destination in ("recipes/other.es-ES.md", "recipes/unavailable-results.es-ES.md#missing"):
+            with self.subTest(destination=destination):
+                self.assertEqual(PARITY.compare(english, f"[Receta]({destination})"),
+                                 ["link/image destinations differ"])
+
     def test_reports_executable_example_drift(self):
         english = '<!-- swift-example: sample -->\n```swift\nlet value = oldAPI()\n```'
         spanish = '<!-- swift-example: sample -->\n```swift\nlet value = newAPI()\n```'

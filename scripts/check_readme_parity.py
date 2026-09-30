@@ -23,6 +23,8 @@ def normalize_link(target):
         return "<counterpart-readme>"
     if re.fullmatch(r"(?:docs/)?Usage(?:\.es-ES)?\.md", target):
         return "<counterpart-usage>"
+    if re.fullmatch(r"recipes/unavailable-results(?:\.es-ES)?\.md", target):
+        return "<unavailable-results-recipe>"
     return target
 
 

@@ -67,6 +67,7 @@ case .failure(let issue): print("Hex no disponible:", issue)
 ```
 
 Consulta los [contratos de componentes](../Sources/ColorKit/Documentation.docc/Color-Spaces-article.md#component-conversion-results) para las reglas de gama, alfa, unidades y errores.
+Para explicar los fallos sin descartar las conversiones válidas, usa la [receta de resultados no disponibles](recipes/unavailable-results.es-ES.md).
 
 ### HSL
 
@@ -187,9 +188,9 @@ case .meetsTarget:
 case .bestEffort:
     print("El mejor extremo disponible no alcanza el objetivo")
 case .unavailable:
-    print("Resuelve los colores con una apariencia explícita antes de evaluarlos")
+    print("No se pudo medir el contraste con este fondo")
 case .invalidConfiguration:
-    print("Proporciona un límite de distancia perceptual finito entre 0 y 100")
+    break // No se produce al evaluar extremos; no se aplica un límite de distancia.
 }
 
 // Usar la vista de demostración para experimentar con la generación de paletas
@@ -201,6 +202,7 @@ struct ContentView: View {
 ```
 
 Las evaluaciones conservan cada resultado y no certifican el contraste entre entradas de la paleta. Consulta [paletas evaluadas](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#assessed-palettes) para las garantías y diferencias heredadas.
+Un resultado no disponible por sí solo no indica una solución. La [receta de resultados no disponibles](recipes/unavailable-results.es-ES.md) muestra cómo explicar los problemas de contraste de cada entrada sin suponer una reparación.
 
 Para pruebas y vistas previas repetibles, proporciona un generador aleatorio propio con `using: &random`; consulta el [ejemplo completo y sus límites de entorno](../Sources/ColorKit/Documentation.docc/Accessibility-article.md#replaying-a-palette). Las llamadas existentes mantienen sus valores aleatorios predeterminados.
 

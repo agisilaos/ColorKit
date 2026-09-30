@@ -64,7 +64,7 @@ public struct AccessiblePaletteGenerator {
     /// ```swift
     /// let config = AccessiblePaletteGenerator.Configuration(
     ///     targetLevel: .AAA,        // Highest accessibility level
-    ///     paletteSize: 7,           // 7 colors in the palette
+    ///     paletteSize: 7,           // Request 7 colors
     ///     includeBlackAndWhite: true // Include black and white
     /// )
     /// ```
@@ -83,10 +83,12 @@ public struct AccessiblePaletteGenerator {
         /// - AAA: 7:1 for normal text
         public let targetLevel: WCAGContrastLevel
 
-        /// The number of colors to generate in the palette.
+        /// The requested number of palette entries, normalized to at least two.
         ///
-        /// The generator will attempt to create this many distinct colors
-        /// that meet the contrast requirements. Minimum value is 2.
+        /// Search and fallback exhaustion can return fewer entries. With
+        /// `includeBlackAndWhite`, the seed, black, and white are retained even
+        /// when this value is two, so the result has three entries.
+        /// Use the returned array's count for the actual size.
         public let paletteSize: Int
 
         /// Whether to include black and white in the palette.
@@ -108,7 +110,7 @@ public struct AccessiblePaletteGenerator {
         ///
         /// - Parameters:
         ///   - targetLevel: The WCAG level to target (default: .AA)
-        ///   - paletteSize: The number of colors to generate (default: 5)
+        ///   - paletteSize: The requested palette size (default: 5); see ``paletteSize``.
         ///   - includeBlackAndWhite: Whether to include black and white (default: true)
         public init(
             targetLevel: WCAGContrastLevel = .AA,
