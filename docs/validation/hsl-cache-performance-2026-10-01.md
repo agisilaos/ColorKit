@@ -11,8 +11,9 @@ latency budget establishes that accepting those regressions is worthwhile.
 Does HSL caching explain any of the benefit from the earlier all-cache bypass,
 and would removing HSL reuse trade palette cost for repeated-conversion cost?
 
-The user approved the [HSL-only protocol](../design/cache-ownership-investigation.md#next-question-hsl-only-reuse)
-before execution. This experiment compares current production behavior with a
+The protocol below was approved before execution. The
+[ownership investigation](../design/cache-ownership-investigation.md#hsl-only-reuse)
+records the resulting decision. This experiment compares current production behavior with a
 temporary candidate; it does not authorize a production change or API removal.
 
 ## Variants and measurement
@@ -167,11 +168,10 @@ python3 compare.py preflight
 python3 compare.py sample
 ```
 
-For a fresh reproduction, extract `source.tar` into new `baseline` and `hsl-direct`
-directories, apply `harness.patch` to both and `candidate.patch` only to
-`hsl-direct` using `patch -p1`. Copy the comparison/compiler scripts and source
-manifest beside them, then run the commands above. Existing evidence must not be
-overwritten. Repeat compiler inspection for newly built executables.
+For a fresh reproduction, follow the
+[evidence setup instructions](evidence/cache-2026-10-01/README.md#reconstruct-the-compared-sources),
+then run the commands above. Use a separate run directory to preserve the original
+artifacts, and repeat compiler inspection for newly built executables.
 
 Measured executable SHA-256:
 

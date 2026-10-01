@@ -11,8 +11,9 @@ all caches or silently bypassing shipped caller-inserted values in 3.x.
 Does automatic caching earn its total cost in two complete assessed-palette
 requests, compared with the same calculations performed directly?
 
-The user approved the protocol in the
-[ownership investigation](../design/cache-ownership-investigation.md). The
+The protocol below was approved before execution; the
+[ownership investigation](../design/cache-ownership-investigation.md) records the
+resulting decision. The
 workloads are `palette-blue-white-5-seed-42` and
 `palette-blue-white-8-seed-42`: fixed opaque sRGB blue `(0.2, 0.4, 0.7)` against
 white, AA, black/white inclusion, SplitMix64 seed 42 reset outside every request.
@@ -160,12 +161,11 @@ python3 compare.py preflight
 python3 compare.py sample
 ```
 
-To reproduce without overwriting evidence, extract `source.tar` into fresh
-`baseline` and `direct` directories and apply `candidate.patch` to `direct` with
-`patch -p1`. Copy `compare.py` and `source-manifest.json` beside them and run the
-commands above with the matched toolchain. The source archive avoids depending
-on an evolving checkout; the comparison driver records new binary hashes and
-environment. Compiler inspection must be repeated for the rebuilt binaries.
+For a fresh reproduction, follow the
+[evidence setup instructions](evidence/cache-2026-10-01/README.md#reconstruct-the-compared-sources),
+then run the commands above with the matched toolchain. Use a separate run directory
+to preserve the original artifacts. The driver records new binary hashes and
+environment; compiler inspection must be repeated for the rebuilt binaries.
 
 Measured executable SHA-256:
 
@@ -179,15 +179,10 @@ application need was established and public insertion/population is shipped
 behavior. The reason to investigate further is now concrete: total caching cost
 exceeded saved computation in these two palette workloads, even when primed.
 
-For 3.x, a potentially compatible follow-up would isolate the internally writable
-HSL store before considering a policy change. Its public clear method and
-downstream behavior still need protection, and conversion-heavy callers may have
-different reuse economics. Do not infer that such a change will reproduce the
-all-cache bypass benefit. No follow-up experiment is approved by these results.
-
-The subsequently approved [HSL-only comparison](hsl-cache-performance-2026-10-01.md)
-is now complete; it supports retaining HSL reuse. The paragraph above records the
-decision boundary after this first comparison.
+The subsequent [HSL-only comparison](hsl-cache-performance-2026-10-01.md)
+is complete. It isolated the internally writable HSL store and found both benefits
+and regressions, supporting retention of HSL reuse. The all-cache bypass benefit
+must not be attributed to HSL alone.
 
 For a deliberate major release, direct computation should remain a first-class
 alternative to selective internal or request-local reuse. Public insertion can
