@@ -149,7 +149,7 @@ public struct ColorDebuggerPreview: View {
                 Text("Contrast Analysis")
                     .font(.headline)
 
-                let contrastRatio = calculateContrastRatio(between: selectedColor, and: comparisonColor)
+                let contrastRatio = selectedColor.wcagContrastRatio(with: comparisonColor)
                 Text("Contrast Ratio: \(String(format: "%.2f", contrastRatio)):1")
                     .font(.system(.body, design: .monospaced))
 
@@ -235,12 +235,6 @@ public struct ColorDebuggerPreview: View {
                     )
             }
         }
-    }
-
-    // MARK: - Helper Functions
-
-    private func calculateContrastRatio(between color1: Color, and color2: Color) -> Double {
-        return color1.wcagContrastRatio(with: color2)
     }
 }
 
