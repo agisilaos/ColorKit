@@ -50,11 +50,25 @@ aggregate API's additional substitutions; use optional conversions when availabi
 
 ### Color Cache
 
-``ColorCache`` automatically caches eligible repeated operations using thread-safe,
-count-limited `NSCache` stores. Exact keys retain the original supported RGB or
+``ColorCache`` automatically caches eligible repeated operations using thread-safe
+`NSCache` stores with advisory count limits. Ordinary use requires no configuration.
+Exact keys retain the original supported RGB or
 grayscale space, components including alpha, and operation parameters. Inputs
-without a supported fixed identity bypass caching. Eviction or a miss must not
-change numerical results; a primed cache does not guarantee a hit or a speedup.
+without a supported fixed identity bypass caching. Under ordinary automatic reuse,
+eviction or a miss must not change numerical results; a primed cache does not
+guarantee a hit or a speedup.
+
+Public insertion of luminance, contrast, blended colors, or interpolated colors
+writes to the same stores used by legacy operations. Accepted entries can influence
+those operations while present, subject to their input requirements. Automatic
+writes can also be observed through public getters. Insertion is neither a durable
+override nor an authoritative measurement.
+
+Strict APIs such as `contrastResult(with:)`, `comparisonResult(with:)`,
+`componentConversionResults()`, and `blendResult(with:mode:amount:)` compute
+independently of these stores. Generation may use cache-influenced candidates:
+`generateAssessedPalette` independently assesses each generated color, but cache
+insertion can influence which colors it generates.
 
 <!-- swift-example: cache -->
 ```swift
@@ -68,6 +82,13 @@ Individual stores can also be cleared with `clearLABCache()`, `clearHSLCache()`,
 `clearLuminanceCache()`, `clearContrastCache()`, `clearBlendedColorCache()`, and
 `clearInterpolatedColorCache()`. Explicit contrast-cache access is available through
 `getCachedContrastRatio(for:with:)` and `cacheContrastRatio(for:with:ratio:)`.
+
+Clearing does not wait for ongoing operations, which can insert results afterward.
+Global clearing visits stores sequentially rather than providing an atomic reset
+across concurrent operations. Concurrent cache access is supported; simultaneous
+misses can still compute the same result more than once. Retention and a strict
+memory budget are not guaranteed, and ordinary use requires no manual clearing.
+
 See the [Release benchmark runner](https://github.com/agisilaos/ColorKit/blob/main/Benchmarks/README.md)
 for reproducible measurements and cache preparation, and the
 [cache identity design](https://github.com/agisilaos/ColorKit/blob/main/docs/design/cache-identity.md)
