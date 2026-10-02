@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 import XCTest
 
-@testable import ColorKit
+import ColorKit
 
 // Run this suite without parallel testing: the singleton has no reset or removal API.
 @MainActor
@@ -160,6 +160,53 @@ final class ThemeManagerIntegrationTests: XCTestCase {
         await fulfillment(of: [supplied], timeout: 3)
     }
 
+    func testGlobalColorLookupIgnoresLocalOverrideAndRequiresFreshLookup() async throws {
+        let manager = ThemeManager.shared
+        let originalTheme = manager.currentTheme
+        defer { manager.switchTo(theme: originalTheme) }
+        let light = try XCTUnwrap(manager.availableThemes.first { $0.name == "Default Light" })
+        let dark = try XCTUnwrap(manager.availableThemes.first { $0.name == "Default Dark" })
+        let local = ColorTheme(
+            name: UUID().uuidString,
+            primary: .blue,
+            secondary: .purple,
+            accent: .green,
+            background: .white,
+            text: .red
+        )
+        XCTAssertTrue(manager.switchTo(theme: light))
+        let saved = Color.themed(.text)
+        let initial = expectation(description: "Local environment and global light lookup")
+        let switched = expectation(description: "Local environment and fresh global dark lookup")
+        var observedColors: [Color] = []
+        let host = ThemeTestHost(rootView:
+            GlobalThemeLookupProbe { environmentColor, globalColor in
+                XCTAssertEqual(environmentColor, local.text.base)
+                guard !observedColors.contains(globalColor) else { return }
+                observedColors.append(globalColor)
+                if globalColor == light.text.base {
+                    initial.fulfill()
+                } else if globalColor == dark.text.base {
+                    switched.fulfill()
+                } else {
+                    XCTFail("Expected a shared-manager text color")
+                }
+            }
+            .applyTheme(local)
+            .withThemeManager(manager)
+        )
+        defer { host.close() }
+        await fulfillment(of: [initial], timeout: 3)
+
+        XCTAssertTrue(manager.switchTo(theme: dark))
+        await fulfillment(of: [switched], timeout: 3)
+        XCTAssertEqual(saved, light.text.base)
+        XCTAssertEqual(Color.themed(.text), dark.text.base)
+        XCTAssertFalse(manager.switchToTheme(named: local.name))
+        XCTAssertEqual(manager.currentTheme, dark)
+        XCTAssertEqual(Color.themed(.text), dark.text.base)
+    }
+
     private func makeTheme(name: String = UUID().uuidString, primary: Color = .blue) -> ColorTheme {
         ColorTheme(
             name: name,
@@ -169,5 +216,22 @@ final class ThemeManagerIntegrationTests: XCTestCase {
             background: .white,
             text: .black
         )
+    }
+}
+
+@MainActor
+private struct GlobalThemeLookupProbe: View {
+    let record: (Color, Color) -> Void
+    @Environment(\.colorTheme)
+    private var theme
+    // Explicit observation triggers fresh lookups even while the local theme stays fixed.
+    @ObservedObject private var manager = ThemeManager.shared
+
+    var body: some View {
+        Text(theme.name)
+            .onAppear { record(theme.text.base, Color.themed(.text)) }
+            .onChange(of: manager.currentTheme) { _ in
+                record(theme.text.base, Color.themed(.text))
+            }
     }
 }
