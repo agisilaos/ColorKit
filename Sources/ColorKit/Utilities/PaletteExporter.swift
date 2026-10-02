@@ -73,11 +73,16 @@ public struct PaletteExporter {
     }
 
     /// Export a color palette to a specific format
+    ///
+    /// SVG preserves names as XML text and returns `nil` for characters XML 1.0
+    /// cannot represent. CSS lowercases entry names, replaces spaces with hyphens,
+    /// and escapes identifier punctuation. Duplicate CSS names use the last entry.
+    /// Empty CSS entry names return `nil`; null characters become U+FFFD in CSS.
     /// - Parameters:
     ///   - palette: The array of colors to export
     ///   - format: The format to export to
     ///   - paletteName: The name of the palette
-    /// - Returns: Data representing the exported palette
+    /// - Returns: Data representing the exported palette, or `nil` if serialization fails
     public static func export(
         palette: [PaletteEntry],
         to format: PaletteExportFormat,
@@ -142,12 +147,13 @@ public struct PaletteExporter {
     ///   - paletteName: The name of the palette
     /// - Returns: CSS data representing the palette
     private static func exportToCSS(palette: [PaletteEntry], paletteName: String) -> Data? {
-        var css = "/* \(paletteName) Color Palette */\n"
+        let commentName = paletteName.replacingOccurrences(of: "*/", with: "* /")
+        var css = "/* \(commentName) Color Palette */\n"
         css += ":root {\n"
 
         for entry in palette {
             let hexString = entry.color.hexString() ?? "#000000"
-            let cssVarName = entry.name.lowercased().replacingOccurrences(of: " ", with: "-")
+            guard let cssVarName = cssIdentifierSuffix(entry.name) else { return nil }
             css += "  --\(cssVarName): \(hexString);\n"
         }
 
@@ -156,12 +162,31 @@ public struct PaletteExporter {
         return css.data(using: .utf8)
     }
 
+    // The caller supplies the leading "--", so digits and hyphens are valid here.
+    private static func cssIdentifierSuffix(_ name: String) -> String? {
+        guard !name.isEmpty else { return nil }
+        let normalized = name.lowercased().replacingOccurrences(of: " ", with: "-")
+        return normalized.unicodeScalars.map { scalar in
+            switch scalar.value {
+            case 0:
+                return "\u{FFFD}"
+            case 45, 48...57, 95, 97...122, 0x80...0x10FFFF:
+                return String(scalar)
+            default:
+                // A terminating space prevents a following hex digit joining the escape.
+                return "\\" + String(scalar.value, radix: 16) + " "
+            }
+        }
+        .joined()
+    }
+
     /// Export a color palette to SVG format
     /// - Parameters:
     ///   - palette: The array of colors to export
     ///   - paletteName: The name of the palette
     /// - Returns: SVG data representing the palette
     private static func exportToSVG(palette: [PaletteEntry], paletteName: String) -> Data? {
+        guard let title = xmlText(paletteName) else { return nil }
         let width = 800
         let height = 400
         let swatchWidth = width / max(palette.count, 1)
@@ -169,17 +194,18 @@ public struct PaletteExporter {
 
         var svg = """
         <svg width="\(width)" height="\(height)" viewBox="0 0 \(width) \(height)" xmlns="http://www.w3.org/2000/svg">
-          <title>\(paletteName)</title>
+          <title>\(title)</title>
 
         """
 
         for (index, entry) in palette.enumerated() {
+            guard let name = xmlText(entry.name) else { return nil }
             let x = index * swatchWidth
             let hexString = entry.color.hexString() ?? "#000000"
 
             svg += """
               <rect x="\(x)" y="0" width="\(swatchWidth)" height="\(swatchHeight)" fill="\(hexString)" />
-              <text x="\(x + swatchWidth / 2)" y="\(swatchHeight - 20)" font-family="Arial" font-size="14" fill="white" text-anchor="middle" stroke="black" stroke-width="0.5">\(entry.name)</text>
+              <text x="\(x + swatchWidth / 2)" y="\(swatchHeight - 20)" font-family="Arial" font-size="14" fill="white" text-anchor="middle" stroke="black" stroke-width="0.5">\(name)</text>
               <text x="\(x + swatchWidth / 2)" y="\(swatchHeight - 40)" font-family="Arial" font-size="12" fill="white" text-anchor="middle" stroke="black" stroke-width="0.5">\(hexString)</text>
 
             """
@@ -188,6 +214,23 @@ public struct PaletteExporter {
         svg += "</svg>"
 
         return svg.data(using: .utf8)
+    }
+
+    private static func xmlText(_ text: String) -> String? {
+        var escaped = ""
+        for scalar in text.unicodeScalars {
+            switch scalar.value {
+            case 38: escaped += "&amp;"
+            case 60: escaped += "&lt;"
+            case 62: escaped += "&gt;"
+            case 13: escaped += "&#13;" // Preserve carriage returns through XML line-end normalization.
+            case 9, 10, 0x20...0xD7FF, 0xE000...0xFFFD, 0x10000...0x10FFFF:
+                escaped.unicodeScalars.append(scalar)
+            default:
+                return nil // XML 1.0 forbids these characters even in character references.
+            }
+        }
+        return escaped
     }
 
     /// Export a color palette to Adobe ASE format
