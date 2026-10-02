@@ -78,11 +78,13 @@ public class ThemeManager: ObservableObject {
     /// ```
     public static let shared = ThemeManager()
 
-    /// The currently active theme.
+    /// The manager's selected theme, independent of view-local overrides.
     ///
     /// This property is marked with `@Published` to enable automatic SwiftUI
     /// view updates when the theme changes. Observe this property to react
     /// to theme changes in your views.
+    /// Use `withThemeManager(_:)` to supply this selection to a view hierarchy's
+    /// `colorTheme` environment, where descendants can override it with `applyTheme(_:)`.
     ///
     /// Example:
     /// ```swift

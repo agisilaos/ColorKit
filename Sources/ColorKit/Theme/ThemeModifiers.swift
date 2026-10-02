@@ -22,9 +22,8 @@ import SwiftUI
 
 /// A modifier that applies themed text styling based on a predefined type.
 ///
-/// This modifier provides consistent text styling across your application by
-/// using colors from the current theme. It supports different text types for
-/// various levels of emphasis and hierarchy.
+/// Reads text colors from the view's `colorTheme` environment, including local
+/// overrides. The text type selects the level of emphasis.
 ///
 /// Example usage:
 /// ```swift
@@ -114,9 +113,8 @@ public struct ThemedTextModifier: ViewModifier {
 
 /// A modifier that applies themed button styling based on a predefined type.
 ///
-/// This modifier provides consistent button styling across your application by
-/// using colors from the current theme. It supports different button types for
-/// various levels of emphasis and interaction.
+/// Reads button background colors from the view's `colorTheme` environment,
+/// including local overrides. The button type selects the color role.
 ///
 /// Example usage:
 /// ```swift
@@ -278,9 +276,8 @@ public enum BackgroundElevation {
 
 /// A modifier that applies a themed background based on an elevation level.
 ///
-/// This modifier provides consistent background styling across your application
-/// by using colors from the current theme. It supports different elevation
-/// levels to create visual hierarchy.
+/// Reads background colors from the view's `colorTheme` environment, including
+/// local overrides. The elevation selects the background variant.
 ///
 /// Example usage:
 /// ```swift
@@ -347,9 +344,8 @@ public struct ThemedBackgroundModifier: ViewModifier {
 public extension View {
     /// Applies themed text styling to a view.
     ///
-    /// This convenience modifier applies themed text colors based on the
-    /// specified text type. It uses colors from the current theme to ensure
-    /// consistent text styling across your application.
+    /// Uses the specified text type from the view's `colorTheme` environment,
+    /// following the nearest theme provider, including local overrides.
     ///
     /// Example:
     /// ```swift
@@ -368,9 +364,8 @@ public extension View {
 
     /// Applies themed button styling to a view.
     ///
-    /// This convenience modifier applies themed button styling based on the
-    /// specified button type. It uses colors from the current theme to ensure
-    /// consistent button appearance across your application.
+    /// Uses the specified button type from the view's `colorTheme` environment,
+    /// following the nearest theme provider, including local overrides.
     ///
     /// Example:
     /// ```swift
@@ -393,9 +388,8 @@ public extension View {
 
     /// Applies a themed background to a view.
     ///
-    /// This convenience modifier applies a themed background color based on
-    /// the specified elevation level. It uses colors from the current theme
-    /// to create visual hierarchy through background variations.
+    /// Uses the specified elevation from the view's `colorTheme` environment,
+    /// following the nearest theme provider, including local overrides.
     ///
     /// Example:
     /// ```swift

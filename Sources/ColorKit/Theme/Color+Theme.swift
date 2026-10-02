@@ -41,14 +41,19 @@ public enum ThemeColorRole: Sendable {
 
 // Extension to add semantic color access
 public extension Color {
-    /// Returns a themed color based on the current theme
+    /// Returns a color from `ThemeManager.shared.currentTheme` at the time of the call.
+    ///
+    /// This lookup does not read the view's `colorTheme` environment or respect
+    /// `applyTheme(_:)` overrides. It does not observe later theme selections;
+    /// call it again to obtain a color from the new selection.
+    ///
+    /// For view styling that follows the nearest theme provider, use
+    /// `themedColor(_:)` or read `@Environment(\.colorTheme)` in a descendant view
+    /// and pass a theme color to `fill(_:)` or another style modifier.
     /// - Parameter role: The semantic color role
-    /// - Returns: The appropriate color from the current theme
+    /// - Returns: The role's color from the shared manager's selected theme
     @MainActor
     static func themed(_ role: ThemeColorRole) -> Color {
-        // This is a convenience method that will be used in views
-        // The actual implementation will use the environment
-        // This is just a fallback for static contexts
         let theme = ThemeManager.shared.currentTheme
 
         switch role {
@@ -94,9 +99,12 @@ public extension Color {
 
 // View extension to get themed colors from environment
 public extension View {
-    /// Gets a themed color from the environment
+    /// Applies a foreground color from the view's `colorTheme` environment.
+    ///
+    /// Follows the nearest `applyTheme(_:)` or `withThemeManager(_:)` provider,
+    /// including subsequent changes to the inherited theme.
     /// - Parameter role: The semantic color role
-    /// - Returns: The appropriate color from the current theme in the environment
+    /// - Returns: A view styled with the role's color from the environment theme
     func themedColor(_ role: ThemeColorRole) -> some View {
         modifier(ThemedColorModifier(role: role))
     }

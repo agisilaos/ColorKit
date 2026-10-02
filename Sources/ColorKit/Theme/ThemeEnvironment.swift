@@ -37,7 +37,11 @@ private struct ThemeManagerKey: EnvironmentKey {
 
 // Extension to add theme to the environment
 public extension EnvironmentValues {
-    /// The current color theme
+    /// The theme supplied by the nearest provider in this view's environment.
+    ///
+    /// `applyTheme(_:)` supplies a local value; `withThemeManager(_:)` observes
+    /// a manager's selection. Without either provider, this is a default theme
+    /// independent of `ThemeManager.shared.currentTheme`.
     var colorTheme: ColorTheme {
         get { self[ThemeKey.self] }
         set { self[ThemeKey.self] = newValue }
@@ -53,6 +57,10 @@ public extension EnvironmentValues {
 // View extension for applying themes
 public extension View {
     /// Applies a specific color theme to this view and its descendants
+    ///
+    /// Overrides the inherited `colorTheme` without changing the manager's
+    /// selection. Environment-based styling follows this value; `Color.themed(_:)`
+    /// continues to read the shared manager.
     /// - Parameter theme: The theme to apply
     /// - Returns: A view with the theme applied
     func applyTheme(_ theme: ColorTheme) -> some View {
