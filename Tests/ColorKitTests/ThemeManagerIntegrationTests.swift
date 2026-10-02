@@ -207,6 +207,55 @@ final class ThemeManagerIntegrationTests: XCTestCase {
         XCTAssertEqual(Color.themed(.text), dark.text.base)
     }
 
+    func testEveryColorRoleUsesItsVariantFromTheSelectedThemeSource() throws {
+        guard #available(iOS 16.0, macOS 13.0, *) else {
+            throw XCTSkip("ImageRenderer requires iOS 16 or macOS 13")
+        }
+        let manager = ThemeManager.shared
+        let originalTheme = manager.currentTheme
+        defer { manager.switchTo(theme: originalTheme) }
+        let colors = (1...18).map { Color(.sRGB, red: Double($0) / 20, green: 0.25, blue: 0.5) }
+        let localColors = Array(colors.reversed())
+        let global = makeRoleTheme(colors: colors)
+        let local = makeRoleTheme(colors: localColors)
+        XCTAssertTrue(manager.register(theme: global))
+        XCTAssertTrue(manager.switchTo(theme: global))
+
+        let roles: [ThemeColorRole] = [
+            .primary, .primaryLight, .primaryDark,
+            .secondary, .secondaryLight, .secondaryDark,
+            .accent, .accentLight, .accentDark,
+            .background, .backgroundElevated, .backgroundLowered,
+            .text, .textSecondary, .textTertiary,
+            .success, .warning, .error
+        ]
+        for (index, role) in roles.enumerated() {
+            XCTAssertEqual(Color.themed(role), colors[index], "Global role: \(role)")
+            let actual = Rectangle()
+                .themedColor(role)
+                .applyTheme(local)
+                .withThemeManager(manager)
+            let expected = Rectangle().fill(localColors[index])
+            XCTAssertEqual(
+                try renderedPixel(of: actual),
+                try renderedPixel(of: expected),
+                "Local role: \(role)"
+            )
+        }
+    }
+
+    private func makeRoleTheme(colors: [Color]) -> ColorTheme {
+        ColorTheme(
+            name: UUID().uuidString,
+            primary: ThemeColorSet(base: colors[0], light: colors[1], dark: colors[2]),
+            secondary: ThemeColorSet(base: colors[3], light: colors[4], dark: colors[5]),
+            accent: ThemeColorSet(base: colors[6], light: colors[7], dark: colors[8]),
+            background: ThemeColorSet(base: colors[9], light: colors[10], dark: colors[11]),
+            text: ThemeColorSet(base: colors[12], light: colors[13], dark: colors[14]),
+            status: StatusColorSet(success: colors[15], warning: colors[16], error: colors[17])
+        )
+    }
+
     private func makeTheme(name: String = UUID().uuidString, primary: Color = .blue) -> ColorTheme {
         ColorTheme(
             name: name,

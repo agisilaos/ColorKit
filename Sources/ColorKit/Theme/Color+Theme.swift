@@ -54,46 +54,7 @@ public extension Color {
     /// - Returns: The role's color from the shared manager's selected theme
     @MainActor
     static func themed(_ role: ThemeColorRole) -> Color {
-        let theme = ThemeManager.shared.currentTheme
-
-        switch role {
-        case .primary:
-            return theme.primary.base
-        case .primaryLight:
-            return theme.primary.light
-        case .primaryDark:
-            return theme.primary.dark
-        case .secondary:
-            return theme.secondary.base
-        case .secondaryLight:
-            return theme.secondary.light
-        case .secondaryDark:
-            return theme.secondary.dark
-        case .accent:
-            return theme.accent.base
-        case .accentLight:
-            return theme.accent.light
-        case .accentDark:
-            return theme.accent.dark
-        case .background:
-            return theme.background.base
-        case .backgroundElevated:
-            return theme.background.light
-        case .backgroundLowered:
-            return theme.background.dark
-        case .text:
-            return theme.text.base
-        case .textSecondary:
-            return theme.text.light
-        case .textTertiary:
-            return theme.text.dark
-        case .success:
-            return theme.status.success
-        case .warning:
-            return theme.status.warning
-        case .error:
-            return theme.status.error
-        }
+        color(for: role, in: ThemeManager.shared.currentTheme)
     }
 }
 
@@ -117,47 +78,47 @@ struct ThemedColorModifier: ViewModifier {
     private var theme
 
     func body(content: Content) -> some View {
-        content.foregroundColor(colorForRole(role))
+        content.foregroundColor(color(for: role, in: theme))
     }
+}
 
-    private func colorForRole(_ role: ThemeColorRole) -> Color {
-        switch role {
-        case .primary:
-            return theme.primary.base
-        case .primaryLight:
-            return theme.primary.light
-        case .primaryDark:
-            return theme.primary.dark
-        case .secondary:
-            return theme.secondary.base
-        case .secondaryLight:
-            return theme.secondary.light
-        case .secondaryDark:
-            return theme.secondary.dark
-        case .accent:
-            return theme.accent.base
-        case .accentLight:
-            return theme.accent.light
-        case .accentDark:
-            return theme.accent.dark
-        case .background:
-            return theme.background.base
-        case .backgroundElevated:
-            return theme.background.light
-        case .backgroundLowered:
-            return theme.background.dark
-        case .text:
-            return theme.text.base
-        case .textSecondary:
-            return theme.text.light
-        case .textTertiary:
-            return theme.text.dark
-        case .success:
-            return theme.status.success
-        case .warning:
-            return theme.status.warning
-        case .error:
-            return theme.status.error
-        }
+private func color(for role: ThemeColorRole, in theme: ColorTheme) -> Color {
+    switch role {
+    case .primary:
+        return theme.primary.base
+    case .primaryLight:
+        return theme.primary.light
+    case .primaryDark:
+        return theme.primary.dark
+    case .secondary:
+        return theme.secondary.base
+    case .secondaryLight:
+        return theme.secondary.light
+    case .secondaryDark:
+        return theme.secondary.dark
+    case .accent:
+        return theme.accent.base
+    case .accentLight:
+        return theme.accent.light
+    case .accentDark:
+        return theme.accent.dark
+    case .background:
+        return theme.background.base
+    case .backgroundElevated:
+        return theme.background.light
+    case .backgroundLowered:
+        return theme.background.dark
+    case .text:
+        return theme.text.base
+    case .textSecondary:
+        return theme.text.light
+    case .textTertiary:
+        return theme.text.dark
+    case .success:
+        return theme.status.success
+    case .warning:
+        return theme.status.warning
+    case .error:
+        return theme.status.error
     }
 }
