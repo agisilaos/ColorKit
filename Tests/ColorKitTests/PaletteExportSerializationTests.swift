@@ -60,18 +60,42 @@ final class PaletteExportSerializationTests: XCTestCase {
     @MainActor
     func testCSSParsesNamesAndPreservesCascade() async throws {
         let cssNames = names + ["nul\u{0}name", "control\u{1}F\u{7F}"]
-        let webView = WKWebView()
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 400, height: 300))
+        // Keep WebKit visible and active on CI's cloned simulators.
+        #if os(macOS)
+        let controller = NSViewController()
+        controller.view = webView
+        let window = NSWindow(contentViewController: controller)
+        window.isReleasedWhenClosed = false
+        window.orderFront(nil)
+        defer { window.close() }
+        #else
+        let controller = UIViewController()
+        controller.view = webView
+        let window = UIWindow(frame: webView.frame)
+        window.rootViewController = controller
+        window.makeKeyAndVisible()
+        defer {
+            window.isHidden = true
+            window.rootViewController = nil
+        }
+        #endif
+        defer { webView.stopLoading() }
         let loaded = expectation(description: "Local document loaded")
         let navigation = LoadedDocument(loaded)
         webView.navigationDelegate = navigation
         webView.loadHTMLString("<!doctype html><html><head></head><body></body></html>", baseURL: nil)
         await fulfillment(of: [loaded], timeout: 15)
+        // XCTest records a timeout but continues execution. Do not evaluate on an unloaded page.
+        try XCTUnwrap(navigation.result, "WebKit did not finish navigation").get()
 
         for title in ["Ordinary Palette", "色🎨 & <title>", "*/ body { color: red; } /*", "*/ /* */"] {
             let data = try XCTUnwrap(PaletteExporter.export(palette: palette(cssNames), to: .css, paletteName: title))
             let css = try XCTUnwrap(String(data: data, encoding: .utf8))
             // Pass the exported file as text, avoiding an unrelated HTML/style-tag serialization layer.
-            let result = try await webView.callAsyncJavaScript("""
+            let evaluated = expectation(description: "CSS stylesheet parsed")
+            var evaluation: Result<Any, Error>?
+            webView.callAsyncJavaScript("""
                 const style = document.createElement('style');
                 style.textContent = css;
                 document.head.append(style);
@@ -84,7 +108,12 @@ final class PaletteExportSerializationTests: XCTestCase {
                 """,
                 arguments: ["css": css],
                 in: nil,
-                contentWorld: .page)
+                in: .page) { result in
+                evaluation = result
+                evaluated.fulfill()
+            }
+            await fulfillment(of: [evaluated], timeout: 15)
+            let result = try XCTUnwrap(evaluation, "WebKit did not finish CSS evaluation").get()
             let parsed = try XCTUnwrap(result as? [String: Any])
             XCTAssertEqual(parsed["selectors"] as? [String], [":root"], title)
             var expected: [String: String] = [:]
@@ -171,8 +200,25 @@ private final class SVGDocument: NSObject, XMLParserDelegate {
 @MainActor
 private final class LoadedDocument: NSObject, WKNavigationDelegate {
     let loaded: XCTestExpectation
+    private(set) var result: Result<Void, Error>?
 
     init(_ loaded: XCTestExpectation) { self.loaded = loaded }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { loaded.fulfill() }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        finish(.success(()))
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        finish(.failure(error))
+    }
+
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        finish(.failure(error))
+    }
+
+    private func finish(_ result: Result<Void, Error>) {
+        guard self.result == nil else { return }
+        self.result = result
+        loaded.fulfill()
+    }
 }
