@@ -22,7 +22,7 @@ EXAMPLES = {
     "docs/Usage.md": README_EXAMPLES,
     "docs/Usage.es-ES.md": README_EXAMPLES,
     DOCC + "Color-Spaces-article.md": {"rgb", "hsl", "lab", "component-results"},
-    DOCC + "Theming-article.md": {"dynamic-theme"},
+    DOCC + "Theming-article.md": {"dynamic-theme", "theme-selection", "global-theme-lookup"},
     DOCC + "Accessibility-article.md": {"contrast", "enhancement", "assessed-palette",
                                          "palette-configuration", "palette-replay", "compliance-tools"},
     DOCC + "Utilities-article.md": {"similarity", "comparison", "cache", "palette-export",
@@ -251,6 +251,17 @@ def check(derived_data):
                 checks = INTRODUCTORY_CHECKS.get(name, "")
             elif path.parent == ROOT / "docs/recipes":
                 checks = RECIPE_CHECKS.get(name, "")
+            elif name == "global-theme-lookup":
+                checks = """
+let manager = ThemeManager.shared
+guard let light = manager.availableThemes.first(where: { $0.name == "Default Light" }),
+      let dark = manager.availableThemes.first(where: { $0.name == "Default Dark" }) else {
+    failExample("Expected the manager's registered default themes")
+}
+checkExample(colors.saved == light.text.base, "Stored global lookup retains its selected theme")
+checkExample(colors.fresh == dark.text.base, "A fresh global lookup reads the new selection")
+checkExample(colors.saved != colors.fresh, "Exercise distinct theme colors")
+"""
             elif name == "palette-replay":
                 checks = PALETTE_REPLAY_CHECKS
             if checks:

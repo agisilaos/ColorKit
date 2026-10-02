@@ -27,43 +27,137 @@ ThemeManager.shared.register(theme: oceanTheme)
 
 ### Applying Themes
 
-Apply themes to your views using modifiers:
+For SwiftUI styling that follows theme switches and local overrides, use the
+view's `colorTheme` environment. Supply the manager's selection at the root with
+`withThemeManager(_:)`, then use theme modifiers or read the environment in a
+descendant view.
 
+| Expression | Theme source | After a manager switch |
+| --- | --- | --- |
+| `.themedColor`, `.themedText`, `.themedButton`, `.themedBackground` | The view's `colorTheme` environment | Follows the managed theme unless a nearer local override applies |
+| `@Environment(\.colorTheme)` and `theme.accent.base` | The reading view's environment | Same as the modifiers |
+| `Color.themed(.accent)` | `ThemeManager.shared.currentTheme` when called | A new call reads the new selection; an already returned color keeps its selected value |
+
+`Color.themed(_:)` does not read the environment and does not establish observation.
+Use it when you explicitly want a color from the shared manager. Adding
+`.applyTheme(...)` around a view does not change that lookup.
+
+#### Global selection and a local override
+
+This example uses the existing default themes for the app-wide selection and
+Ocean for one subtree. The local theme does not need registration.
+
+<!-- swift-example: theme-selection -->
 ```swift
-// Apply theme to view hierarchy
-ContentView()
-    .withThemeManager(ThemeManager.shared)
+import SwiftUI
+import ColorKit
 
-// Use themed colors in views
-Text("Themed Text")
-    .themedText(.primary)
+@MainActor
+struct ThemeSelectionExample: View {
+    @State private var selectionMessage = ""
+    private let oceanTheme = ColorTheme(
+        name: "Ocean",
+        primary: .blue,
+        secondary: .purple,
+        accent: Color(red: 0, green: 0.45, blue: 0.5),
+        background: .white,
+        text: Color(red: 0.1, green: 0.15, blue: 0.3)
+    )
 
-Button("Primary Button") {}
-    .themedButton(.primary)
+    var body: some View {
+        VStack {
+            ThemeSample()
+            ThemeSample()
+                .applyTheme(oceanTheme)
 
-Rectangle()
-    .fill(Color.themed(.accent))
-```
+            Button("Select Default Light") { select("Default Light") }
+            Button("Select Default Dark") { select("Default Dark") }
+            Text(selectionMessage)
+        }
+        .withThemeManager(ThemeManager.shared)
+    }
 
-`withThemeManager(_:)` observes the supplied manager. Views that read
-`@Environment(\.colorTheme)` receive later selections even when the enclosing
-view does not observe the manager. The modifier also supplies the manager through
-`@Environment(\.themeManager)` and `@EnvironmentObject`.
-
-Apply a local override inside the managed hierarchy to keep that subtree's theme
-independent of the manager's selection:
-
-```swift
-VStack {
-    ContentView()
-    PreviewView()
-        .applyTheme(oceanTheme)
+    private func select(_ name: String) {
+        if ThemeManager.shared.switchToTheme(named: name) {
+            selectionMessage = "Selected \(name)"
+        } else {
+            selectionMessage = "Theme not registered; selection unchanged."
+        }
+    }
 }
-.withThemeManager(ThemeManager.shared)
+
+struct ThemeSample: View {
+    @Environment(\.colorTheme) private var theme
+
+    var body: some View {
+        VStack {
+            Text(theme.name).themedText(.primary)
+            Text("Accent foreground").themedColor(.accent)
+            Rectangle()
+                .fill(theme.accent.base)
+                .frame(width: 80, height: 20)
+                .accessibilityLabel("Theme accent")
+        }
+        .themedBackground(.base)
+    }
+}
 ```
 
-The nearest theme provider to a descendant wins. The preview keeps `oceanTheme`
-when the manager switches, and the override does not change the manager itself.
+1. Select **Default Light**: the first sample reads Default Light; the second
+   reads Ocean. `Color.themed(.text)` called at this point returns Default Light's
+   text color, even from inside the Ocean subtree.
+2. Select **Default Dark**: the first sample updates to Default Dark; the second
+   keeps Ocean. A new `Color.themed(.text)` call returns Default Dark's text color.
+3. Select an unregistered name: `switchToTheme(named:)` returns `false` and the
+   selection stays unchanged. Registration alone does not select a theme.
+
+The nearest provider to an environment-reading descendant wins. Read
+`@Environment(\.colorTheme)` in a child such as `ThemeSample`: a modifier on a
+view's returned content does not change the environment read by that enclosing
+view itself. Without a provider, `colorTheme` uses an independent default theme;
+it does not follow the shared manager automatically.
+
+`withThemeManager(_:)` observes the supplied manager, so the enclosing view does
+not need to observe it. The modifier also supplies the manager through
+`@Environment(\.themeManager)` and `@EnvironmentObject`. Reading that manager's
+`currentTheme` still gives the manager's selection, even within a local override.
+
+#### Reading the shared manager directly
+
+Use a fresh call for a fresh selection. This main-actor example temporarily
+changes the shared selection and restores it when the function returns:
+
+<!-- swift-example: global-theme-lookup -->
+```swift
+import SwiftUI
+import ColorKit
+
+@MainActor
+func compareGlobalSelections() -> (saved: Color, fresh: Color) {
+    let manager = ThemeManager.shared
+    let originalTheme = manager.currentTheme
+    defer { manager.switchTo(theme: originalTheme) }
+
+    manager.switchToTheme(named: "Default Light")
+    let saved = Color.themed(.text)
+
+    manager.switchToTheme(named: "Default Dark")
+    let fresh = Color.themed(.text)
+    // saved still comes from Default Light; fresh comes from Default Dark.
+    return (saved, fresh)
+}
+
+let colors = compareGlobalSelections()
+```
+
+A stored result does not track future manager selections. Calling `Color.themed`
+inside `body` also does not make the view observe the manager. For reactive view
+styling, use the environment path above; for a view deliberately tied to the
+shared selection, explicitly observe the manager with `@ObservedObject` and read
+its `currentTheme`.
+
+A returned color can still be appearance-dependent; it simply does not reselect
+its theme.
 
 ### Actor Isolation and Observation
 
@@ -146,6 +240,8 @@ Text("Current theme")
 - ``ColorTheme``
 - ``ThemeManager``
 - `View.withThemeManager(_:)`
+- `View.applyTheme(_:)`
+- `EnvironmentValues.colorTheme`
 
 ### Theme Components
 - `View.themedText(_:)`
@@ -153,7 +249,8 @@ Text("Current theme")
 - `View.themedBackground(_:)`
 
 ### Theme Colors
-- `Color.themed(_:)`
+- `View.themedColor(_:)` — environment-based foreground styling
+- `Color.themed(_:)` — shared-manager lookup
 - ``ThemedTextModifier``
 - ``ThemedButtonModifier``
 - ``ThemedBackgroundModifier``

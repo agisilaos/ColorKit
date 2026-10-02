@@ -41,62 +41,31 @@ public enum ThemeColorRole: Sendable {
 
 // Extension to add semantic color access
 public extension Color {
-    /// Returns a themed color based on the current theme
+    /// Returns a color from `ThemeManager.shared.currentTheme` at the time of the call.
+    ///
+    /// This lookup does not read the view's `colorTheme` environment or respect
+    /// `applyTheme(_:)` overrides. It does not observe later theme selections;
+    /// call it again to obtain a color from the new selection.
+    ///
+    /// For view styling that follows the nearest theme provider, use
+    /// `themedColor(_:)` or read `@Environment(\.colorTheme)` in a descendant view
+    /// and pass a theme color to `fill(_:)` or another style modifier.
     /// - Parameter role: The semantic color role
-    /// - Returns: The appropriate color from the current theme
+    /// - Returns: The role's color from the shared manager's selected theme
     @MainActor
     static func themed(_ role: ThemeColorRole) -> Color {
-        // This is a convenience method that will be used in views
-        // The actual implementation will use the environment
-        // This is just a fallback for static contexts
-        let theme = ThemeManager.shared.currentTheme
-
-        switch role {
-        case .primary:
-            return theme.primary.base
-        case .primaryLight:
-            return theme.primary.light
-        case .primaryDark:
-            return theme.primary.dark
-        case .secondary:
-            return theme.secondary.base
-        case .secondaryLight:
-            return theme.secondary.light
-        case .secondaryDark:
-            return theme.secondary.dark
-        case .accent:
-            return theme.accent.base
-        case .accentLight:
-            return theme.accent.light
-        case .accentDark:
-            return theme.accent.dark
-        case .background:
-            return theme.background.base
-        case .backgroundElevated:
-            return theme.background.light
-        case .backgroundLowered:
-            return theme.background.dark
-        case .text:
-            return theme.text.base
-        case .textSecondary:
-            return theme.text.light
-        case .textTertiary:
-            return theme.text.dark
-        case .success:
-            return theme.status.success
-        case .warning:
-            return theme.status.warning
-        case .error:
-            return theme.status.error
-        }
+        color(for: role, in: ThemeManager.shared.currentTheme)
     }
 }
 
 // View extension to get themed colors from environment
 public extension View {
-    /// Gets a themed color from the environment
+    /// Applies a foreground color from the view's `colorTheme` environment.
+    ///
+    /// Follows the nearest `applyTheme(_:)` or `withThemeManager(_:)` provider,
+    /// including subsequent changes to the inherited theme.
     /// - Parameter role: The semantic color role
-    /// - Returns: The appropriate color from the current theme in the environment
+    /// - Returns: A view styled with the role's color from the environment theme
     func themedColor(_ role: ThemeColorRole) -> some View {
         modifier(ThemedColorModifier(role: role))
     }
@@ -109,47 +78,47 @@ struct ThemedColorModifier: ViewModifier {
     private var theme
 
     func body(content: Content) -> some View {
-        content.foregroundColor(colorForRole(role))
+        content.foregroundColor(color(for: role, in: theme))
     }
+}
 
-    private func colorForRole(_ role: ThemeColorRole) -> Color {
-        switch role {
-        case .primary:
-            return theme.primary.base
-        case .primaryLight:
-            return theme.primary.light
-        case .primaryDark:
-            return theme.primary.dark
-        case .secondary:
-            return theme.secondary.base
-        case .secondaryLight:
-            return theme.secondary.light
-        case .secondaryDark:
-            return theme.secondary.dark
-        case .accent:
-            return theme.accent.base
-        case .accentLight:
-            return theme.accent.light
-        case .accentDark:
-            return theme.accent.dark
-        case .background:
-            return theme.background.base
-        case .backgroundElevated:
-            return theme.background.light
-        case .backgroundLowered:
-            return theme.background.dark
-        case .text:
-            return theme.text.base
-        case .textSecondary:
-            return theme.text.light
-        case .textTertiary:
-            return theme.text.dark
-        case .success:
-            return theme.status.success
-        case .warning:
-            return theme.status.warning
-        case .error:
-            return theme.status.error
-        }
+private func color(for role: ThemeColorRole, in theme: ColorTheme) -> Color {
+    switch role {
+    case .primary:
+        return theme.primary.base
+    case .primaryLight:
+        return theme.primary.light
+    case .primaryDark:
+        return theme.primary.dark
+    case .secondary:
+        return theme.secondary.base
+    case .secondaryLight:
+        return theme.secondary.light
+    case .secondaryDark:
+        return theme.secondary.dark
+    case .accent:
+        return theme.accent.base
+    case .accentLight:
+        return theme.accent.light
+    case .accentDark:
+        return theme.accent.dark
+    case .background:
+        return theme.background.base
+    case .backgroundElevated:
+        return theme.background.light
+    case .backgroundLowered:
+        return theme.background.dark
+    case .text:
+        return theme.text.base
+    case .textSecondary:
+        return theme.text.light
+    case .textTertiary:
+        return theme.text.dark
+    case .success:
+        return theme.status.success
+    case .warning:
+        return theme.status.warning
+    case .error:
+        return theme.status.error
     }
 }
