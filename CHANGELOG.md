@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Escape palette and entry names in SVG and CSS exports so punctuation cannot break markup or introduce CSS rules. Preserve Unicode and CSS's existing name normalization and duplicate-name cascade. SVG now returns `nil` for characters forbidden by XML 1.0, and CSS for empty entry names. Export formats, public declarations, color conversion, and cache behavior are unchanged.
 - Correct unavailable endpoint-assessment guidance and link the existing component/contrast explanation recipe from the usage guides, DocC, and contrast-pair report.
 - Clarify requested palette sizes, including partial output and the three initial entries retained when requesting two with black and white enabled. Generation behavior is unchanged.
 
