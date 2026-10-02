@@ -85,8 +85,12 @@ final class PaletteExportSerializationTests: XCTestCase {
         let navigation = LoadedDocument(loaded)
         webView.navigationDelegate = navigation
         webView.loadHTMLString("<!doctype html><html><head></head><body></body></html>", baseURL: nil)
-        await fulfillment(of: [loaded], timeout: 15)
-        // XCTest records a timeout but continues execution. Do not evaluate on an unloaded page.
+        // Cold WebKit startup exceeded 15 seconds on hosted simulators.
+        // Stop even if a late navigation callback arrives after the waiter times out.
+        guard await XCTWaiter.fulfillment(of: [loaded], timeout: 60) == .completed else {
+            XCTFail("WebKit did not finish navigation within 60 seconds")
+            return
+        }
         try XCTUnwrap(navigation.result, "WebKit did not finish navigation").get()
 
         for title in ["Ordinary Palette", "色🎨 & <title>", "*/ body { color: red; } /*", "*/ /* */"] {
