@@ -109,16 +109,33 @@ Create named entries with ``PaletteExporter/createPalette(from:namePrefix:)`` or
 
 <!-- swift-example: palette-export -->
 ```swift
-let palette = PaletteExporter.createPalette(from: [.red, .green, .blue])
-if let data = PaletteExporter.export(palette: palette, to: .json, paletteName: "RGB") {
+let palette = [
+    PaletteExporter.PaletteEntry(name: "Sea & Sky", color: .blue),
+    PaletteExporter.PaletteEntry(name: "Light <accent>", color: .yellow)
+]
+if let data = PaletteExporter.export(palette: palette, to: .svg, paletteName: "Color & Light") {
     print("Exported \(data.count) bytes")
+} else {
+    print("This palette could not be serialized in the selected format")
 }
-let copied = PaletteExporter.copyToClipboard(palette: palette, format: .css, paletteName: "RGB")
-PaletteExportView(palette: palette, paletteName: "RGB")
-Text("Palette").paletteExport(palette: palette, paletteName: "RGB")
+let copied = PaletteExporter.copyToClipboard(palette: palette, format: .css, paletteName: "Color & Light")
+PaletteExportView(palette: palette, paletteName: "Color & Light")
+Text("Palette").paletteExport(palette: palette, paletteName: "Color & Light")
 ```
 
 Export returns optional data; clipboard export returns success as a Boolean.
+SVG escapes palette and entry names as XML text, preserving punctuation and Unicode.
+Characters forbidden by XML 1.0 (such as a null character) make SVG export return
+`nil`. CSS keeps the existing lowercase and space-to-hyphen naming, and escapes
+punctuation in variable names. For example, `Sea & Sky` becomes `--sea-\26 -sky`
+in the file, representing the custom property `--sea-&-sky`. CSS requires nonempty
+entry names; an empty name returns `nil`, and null characters become U+FFFD.
+Duplicate names, including collisions after lowercasing and replacing spaces,
+retain CSS's last-declaration-wins behavior. Choose distinct names when every
+entry needs its own variable. Palette titles remain CSS comments; `*/` becomes
+`* /` so a title cannot end the comment. JSON and SVG retain duplicate entries
+in input order.
+
 Legacy export conversions retain their substitutions: JSON uses appearance-resolved
 RGBA and substitutes `#000000` for unavailable Hex; nonfinite RGBA makes JSON export
 fail. Export does not certify accessibility. `exportAccessiblePalette` generates
