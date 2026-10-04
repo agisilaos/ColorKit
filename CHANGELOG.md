@@ -4,12 +4,22 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+## [3.2.1] - 2026-10-04
+
 ### Fixed
 - Escape palette and entry names in SVG and CSS exports so punctuation cannot break markup or introduce CSS rules. Preserve Unicode and CSS's existing name normalization and duplicate-name cascade. SVG now returns `nil` for characters forbidden by XML 1.0, and CSS for empty entry names. Export formats, public declarations, color conversion, and cache behavior are unchanged.
+- Improve blending preview control and result-label text contrast, with rendered regression coverage.
 - Correct unavailable endpoint-assessment guidance and link the existing component/contrast explanation recipe from the usage guides, DocC, and contrast-pair report.
 - Clarify requested palette sizes, including partial output and the three initial entries retained when requesting two with black and white enabled. Generation behavior is unchanged.
 
+### Changed
+- Clarify global theme lookup versus environment-scoped theme selection and local overrides; share semantic role mapping and protect the existing behavior with integration tests.
+- Lead the DocC landing page with result-bearing color workflows while retaining themes and legacy APIs in the catalog.
+- Clarify automatic cache reuse, caller insertion, eviction, and concurrent clearing. Retain the current cache implementation and preserve the ownership investigation and measurement evidence.
+- Remove unused private palette helpers and an unnecessary debugger forwarding helper without changing public behavior.
+
 ### Tooling
+- Measure reproducible assessed-palette requests with caller-owned randomness in empty and primed cache modes, and retain workload-specific evidence without claiming a production speedup.
 - Notify colorkit.dev when a release is published, so the website opens a draft PR documenting it.
 
 ## [3.2.0] - 2026-09-25

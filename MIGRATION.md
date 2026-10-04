@@ -1,5 +1,16 @@
 # Migration Guide
 
+## ColorKit 3.2.1
+
+Existing declarations and ordinary calls need no source migration. SVG and CSS
+exports now escape palette and entry names instead of allowing punctuation to
+produce malformed documents. Exported bytes can therefore change for those names.
+SVG returns `nil` for characters forbidden by XML 1.0; CSS returns `nil` for empty
+entry names. Handle the existing optional export result, or correct the supplied
+names before retrying. CSS name normalization and duplicate-name cascade behavior
+are preserved; formats, color conversion, and cache behavior are unchanged. See
+the [export guidance](Sources/ColorKit/Documentation.docc/Utilities-article.md#palette-export).
+
 ## ColorKit 3.2.0
 
 The new blend outcomes, blend-mode alias, option/concurrency conformances, and
