@@ -2,6 +2,12 @@
 
 Status: implemented against the accepted design; validation and review are recorded in the pull request.
 
+Unreleased correctness correction: the shared color-dodge and color-burn formulas
+now prioritize their documented base-channel exceptions. Dodge preserves zero
+against a blend channel of one; burn preserves one against zero. This deliberately
+corrects the inherited arithmetic described below for both explicit and legacy
+operations, following the [W3C endpoint definitions](https://www.w3.org/TR/compositing-1/#blendingcolordodge).
+
 ## Caller benefit
 
 A blend editor needs to display and export a successfully computed color, including one whose components are unchanged, while reporting an unavailable operation and disabling export of that result. The existing color-returning method cannot distinguish these outcomes. One additive operation provides that distinction; release remains a separate decision.

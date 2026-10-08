@@ -307,6 +307,7 @@ public extension Color {
     /// Color dodge divides the base color by the inverse of the blend color.
     /// This brightens the base color while preserving blacks. The effect is
     /// similar to photographically "dodging" an image.
+    /// A zero base channel remains zero even when the blend channel is one.
     ///
     /// Example:
     /// ```swift
@@ -333,6 +334,7 @@ public extension Color {
     /// Color burn inverts the base color, divides by the blend color, and inverts
     /// the result. This darkens the base color while preserving whites. The effect
     /// is similar to photographically "burning" an image.
+    /// A base channel of one remains one even when the blend channel is zero.
     ///
     /// Example:
     /// ```swift
@@ -681,7 +683,9 @@ public enum BlendMode {
 
     /// Helper function for color dodge blending
     private func colorDodgeComponent(base: CGFloat, blend: CGFloat) -> CGFloat {
-        if blend >= 1 {
+        if base == 0 {
+            return 0
+        } else if blend >= 1 {
             return 1
         } else if blend <= 0 {
             return base
@@ -692,7 +696,9 @@ public enum BlendMode {
 
     /// Helper function for color burn blending
     private func colorBurnComponent(base: CGFloat, blend: CGFloat) -> CGFloat {
-        if blend <= 0 {
+        if base == 1 {
+            return 1
+        } else if blend <= 0 {
             return 0
         } else if blend >= 1 {
             return base

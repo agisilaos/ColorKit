@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Dodge and burn endpoints
+
+Color dodge now keeps zero base channels at zero even against a white blend
+channel, and color burn keeps base channels of one at one even against black.
+This deliberately corrects the inherited endpoint arithmetic in `blendResult`,
+`blended`, `colorDodge`, and `colorBurn` to match their documented preservation
+rules. Amount weighting, opacity handling, and legacy cache behavior remain;
+call sites need no source migration.
+
 ### Accessibility enhancer samples
 
 Comparison cards and suggested variants now draw their foreground text directly

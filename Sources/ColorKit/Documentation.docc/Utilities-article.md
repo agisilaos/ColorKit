@@ -215,11 +215,15 @@ Use `blendResult(with:mode:amount:)` for explicit success or failure. The receiv
 
 Both inputs must resolve to fixed RGB/grayscale components, including at zero amount or zero blend alpha. Capture the intended appearance explicitly before supplying named/dynamic colors. The operation applies existing mode arithmetic in nonlinear extended sRGB, scales its effect by amount times blend alpha, and preserves base alpha. It does not perform source-over compositing or add gamut clipping. Individual modes retain their own bounds.
 
+Color dodge preserves zero base channels even against blend channels of one;
+color burn preserves base channels of one even against zero blend channels.
+These endpoint rules apply to both explicit results and legacy color-returning methods.
+
 Amount defaults to one and must be finite in `0...1`. `.invalidAmount` takes precedence; otherwise `.unavailableInputs(base:blend:)` retains each operand's first conversion issue independently. Nonfinite calculations or output representation produce `.nonfiniteResult`. Zero contribution skips mode arithmetic after both operands resolve. The operation neither reads nor writes the legacy cache.
 
 Use ``ColorBlendMode`` for explicit declarations, collections, and typed method references. It is an alias of ColorKit's existing ``BlendMode``, with the same cases and type identity. With both `import SwiftUI` and `import ColorKit`, bare `BlendMode` remains ambiguous; the alias does not change lookup of that spelling. `ColorKit.BlendMode` also fails because the public `ColorKit` enum shadows the module name. Existing callers can retain the original spelling using `import enum ColorKit.BlendMode`. Inferred calls such as `mode: .multiply` need no changes, and nothing is deprecated.
 
-The following legacy methods remain available and unchanged: unresolved operands return the receiver, amounts are clamped, and full-strength results use the existing cache.
+The following legacy methods remain available: unresolved operands return the receiver, amounts are clamped, and full-strength results use the existing cache.
 
 <!-- swift-example: blending -->
 ```swift
