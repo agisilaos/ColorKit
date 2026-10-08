@@ -57,7 +57,7 @@ public extension Color {
     /// hexadecimal strings, with or without the leading '#' character.
     ///
     /// The conversion process:
-    /// 1. Sanitizes the input string (removes whitespace and '#')
+    /// 1. Trims surrounding whitespace/newlines and removes '#' characters
     /// 2. Validates the string length (must be 6 or 8 characters)
     /// 3. Parses the hex values into RGB(A) components
     /// 4. Creates a new color with the parsed values
