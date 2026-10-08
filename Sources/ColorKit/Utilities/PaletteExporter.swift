@@ -78,6 +78,7 @@ public struct PaletteExporter {
     /// cannot represent. CSS lowercases entry names, replaces spaces with hyphens,
     /// and escapes identifier punctuation. Duplicate CSS names use the last entry.
     /// Empty CSS entry names return `nil`; null characters become U+FFFD in CSS.
+    /// ASE returns `nil` for entry names exceeding 65,534 UTF-16 code units.
     /// - Parameters:
     ///   - palette: The array of colors to export
     ///   - format: The format to export to
@@ -265,8 +266,9 @@ public struct PaletteExporter {
 
             // Color name length (including null terminator)
             let nameData = entry.name.data(using: .utf16BigEndian) ?? Data()
-            let nameLength = UInt16(nameData.count / 2 + 1).bigEndian
-            withUnsafeBytes(of: nameLength) { data.append(contentsOf: $0) }
+            guard let nameLength = UInt16(exactly: nameData.count / 2 + 1) else { return nil }
+            let encodedNameLength = nameLength.bigEndian
+            withUnsafeBytes(of: encodedNameLength) { data.append(contentsOf: $0) }
 
             // Color name as UTF-16BE with null terminator
             data.append(nameData)

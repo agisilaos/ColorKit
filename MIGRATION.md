@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### ASE name limits
+
+ASE export now returns `nil` when an entry name exceeds 65,534 UTF-16 code units,
+instead of terminating the process. Handle the existing optional result or shorten
+the name; supplementary Unicode characters such as many emoji use two code units.
+Names at the limit remain supported without truncation.
+
 ### Palette layout
 
 SVG and PNG exports now divide the full canvas into fractional-width swatches.

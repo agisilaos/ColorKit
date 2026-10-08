@@ -128,6 +128,8 @@ Text("Palette").paletteExport(palette: palette, paletteName: "Color & Light")
 ```
 
 Export returns optional data; clipboard export returns success as a Boolean.
+ASE returns `nil` when an entry name exceeds 65,534 UTF-16 code units; the format's
+16-bit name length also counts a terminating null. Many emoji use two code units.
 SVG escapes palette and entry names as XML text, preserving punctuation and Unicode.
 Characters forbidden by XML 1.0 (such as a null character) make SVG export return
 `nil`. CSS keeps the existing lowercase and space-to-hyphen naming, and escapes
