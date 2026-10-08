@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Animation start color
+
+Randomizing an animation start color while stopped also updates its visible starting
+color. Changing a future start color during playback does not interrupt that playback.
+
 ### LAB differences
 
 Color Debugger shows normalized LAB distances without adding a coordinate offset,

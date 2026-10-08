@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Update the stopped animation preview immediately when its start color is randomized.
 - Show zero LAB component differences for identical colors in Color Debugger.
 - Display Color Spaces hue values in degrees while retaining normalized slider coordinates.
 - Generate compilable SwiftUI gradient code using fixed sRGB components and opacity instead of color debug descriptions.

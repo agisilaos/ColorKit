@@ -28,9 +28,7 @@ public struct ColorAnimationPreview: View {
 
     // MARK: - State Properties
 
-    @State private var startColor: Color = .blue
-    @State private var endColor: Color = .red
-    @State private var currentColor: Color = .blue
+    @State private var colors = ColorAnimationColors()
     @State private var animationDuration: Double = 1.0
     @State private var isAnimating = false
     @State private var selectedInterpolation: ColorInterpolation = .rgb
@@ -111,7 +109,7 @@ public struct ColorAnimationPreview: View {
                         Text("Randomize Start Color")
                             .frame(maxWidth: .infinity)
                             .padding(8)
-                            .background(startColor)
+                            .background(colors.start)
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     }
@@ -127,7 +125,7 @@ public struct ColorAnimationPreview: View {
                         Text("Randomize End Color")
                             .frame(maxWidth: .infinity)
                             .padding(8)
-                            .background(endColor)
+                            .background(colors.end)
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     }
@@ -146,10 +144,10 @@ public struct ColorAnimationPreview: View {
                 .font(.headline)
 
             RoundedRectangle(cornerRadius: 15)
-                .fill(currentColor)
+                .fill(colors.current)
                 .frame(height: 200)
                 .overlay(
-                    Text(currentColor.hexString() ?? "#000000")
+                    Text(colors.current.hexString() ?? "#000000")
                         .font(.system(.title2, design: .monospaced))
                         .foregroundColor(.white)
                         .shadow(radius: 2)
@@ -239,11 +237,11 @@ public struct ColorAnimationPreview: View {
                 switch selectedInterpolation {
                 case .rgb:
                     // Linear RGB interpolation
-                    currentColor = endColor
+                    colors.current = colors.end
                 case .hsl:
                     // HSL interpolation for more perceptually pleasing transitions
-                    if let endHSL = endColor.hslComponents() {
-                        currentColor = Color(
+                    if let endHSL = colors.end.hslComponents() {
+                        colors.current = Color(
                             hue: endHSL.hue,
                             saturation: endHSL.saturation,
                             lightness: endHSL.lightness
@@ -251,8 +249,8 @@ public struct ColorAnimationPreview: View {
                     }
                 case .lab:
                     // LAB interpolation for perceptually uniform transitions
-                    if let endLAB = endColor.labComponents() {
-                        currentColor = Color(
+                    if let endLAB = colors.end.labComponents() {
+                        colors.current = Color(
                             L: endLAB.L,
                             a: endLAB.a,
                             b: endLAB.b
@@ -262,7 +260,7 @@ public struct ColorAnimationPreview: View {
             }
         } else {
             withAnimation(.easeInOut(duration: animationDuration)) {
-                currentColor = startColor
+                colors.current = colors.start
             }
         }
     }
@@ -279,9 +277,9 @@ public struct ColorAnimationPreview: View {
         )
 
         if target == "start" {
-            startColor = newColor
+            colors.selectStart(newColor, isAnimating: isAnimating)
         } else if target == "end" {
-            endColor = newColor
+            colors.end = newColor
         }
     }
 }
