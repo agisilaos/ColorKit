@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### WCAG demo text size
+
+The demo renders regular-weight text, so its large-text levels apply only at
+18 points or larger. At smaller sizes those rows are marked not applicable, and
+the highest-compliance summary considers normal-text levels only. The preview
+hides duplicate size-independent badges; Compliance Details supplies the sample's
+assessment of the displayed pair, including simulated colors when enabled. If
+simulation is unavailable, no contrast is reported. Existing calls
+and contrast calculations are unchanged; no source migration is required.
+
 ### WCAG preview measurements
 
 `View.wcagCompliance(foreground:background:showDetails:)` and the WCAG demo now
