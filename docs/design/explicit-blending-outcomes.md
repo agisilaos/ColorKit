@@ -8,6 +8,11 @@ against a blend channel of one; burn preserves one against zero. This deliberate
 corrects the inherited arithmetic described below for both explicit and legacy
 operations, following the [W3C endpoint definitions](https://www.w3.org/TR/compositing-1/#blendingcolordodge).
 
+The explicit result API also now selects the finite mode target directly at full
+amount with an opaque blend. This avoids cancellation or intermediate overflow
+in unnecessary interpolation while retaining base alpha. Nonfinite mode targets
+remain unavailable, and partial contribution keeps the existing arithmetic.
+
 ## Caller benefit
 
 A blend editor needs to display and export a successfully computed color, including one whose components are unchanged, while reporting an unavailable operation and disabling export of that result. The existing color-returning method cannot distinguish these outcomes. One additive operation provides that distinction; release remains a separate decision.

@@ -74,7 +74,8 @@ final class BlendingPreviewTests: XCTestCase {
         let space = try XCTUnwrap(CGColorSpace(name: CGColorSpace.extendedSRGB))
         let negative = Color(try XCTUnwrap(CGColor(colorSpace: space, components: [-1e308, 0, 0, 1])))
         let positive = Color(try XCTUnwrap(CGColor(colorSpace: space, components: [1e308, 0, 0, 1])))
-        let outcome = BlendingPreviewOutcome(base: negative, blend: positive, mode: .normal, amount: 1)
+        // Exercise overflowing mode arithmetic; a full-strength normal target is finite.
+        let outcome = BlendingPreviewOutcome(base: negative, blend: positive, mode: .multiply, amount: 1)
         guard case .failure(let messages) = outcome else { return XCTFail("Expected calculation failure") }
         XCTAssertEqual(messages, ["This combination produced color values the preview can't use. Try another blend mode or different colors."])
     }

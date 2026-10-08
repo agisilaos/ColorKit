@@ -221,6 +221,11 @@ These endpoint rules apply to both explicit results and legacy color-returning m
 
 Amount defaults to one and must be finite in `0...1`. `.invalidAmount` takes precedence; otherwise `.unavailableInputs(base:blend:)` retains each operand's first conversion issue independently. Nonfinite calculations or output representation produce `.nonfiniteResult`. Zero contribution skips mode arithmetic after both operands resolve. The operation neither reads nor writes the legacy cache.
 
+At full amount with an opaque blend, the finite mode target supplies the output
+RGB channels directly. This preserves exact endpoints for extreme finite inputs;
+base alpha still supplies output opacity. Translucent blends continue to weight
+the mode effect by their alpha.
+
 Use ``ColorBlendMode`` for explicit declarations, collections, and typed method references. It is an alias of ColorKit's existing ``BlendMode``, with the same cases and type identity. With both `import SwiftUI` and `import ColorKit`, bare `BlendMode` remains ambiguous; the alias does not change lookup of that spelling. `ColorKit.BlendMode` also fails because the public `ColorKit` enum shadows the module name. Existing callers can retain the original spelling using `import enum ColorKit.BlendMode`. Inferred calls such as `mode: .multiply` need no changes, and nothing is deprecated.
 
 The following legacy methods remain available: unresolved operands return the receiver, amounts are clamped, and full-strength results use the existing cache.

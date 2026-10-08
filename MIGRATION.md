@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Full-strength blend endpoints
+
+`blendResult(with:mode:amount:)` now uses a finite mode target directly when the
+amount is one and the blend is opaque. Full-strength normal blends reach the
+blend RGB channels even with extreme finite extended-sRGB inputs, retaining base
+opacity. Previously incorrect channels or interpolation-overflow failures can
+therefore become finite successes; existing calls need no source migration.
+
 ### Dodge and burn endpoints
 
 Color dodge now keeps zero base channels at zero even against a white blend

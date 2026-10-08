@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Preserve the finite mode target at full-strength `blendResult` with an opaque blend, avoiding cancellation or spurious interpolation overflow for extreme extended-sRGB inputs while retaining base opacity.
 - Preserve black base channels in color dodge and white base channels in color burn, including opposite blend endpoints, across explicit and legacy blend methods.
 - Draw accessibility-enhancer comparison and variant text directly over its assessed background. Remove the same-colored inner swatch that hid opaque text and applied translucent foreground opacity twice.
 - Assess the WCAG demo's regular-weight sample using the 18-point large-text boundary. Mark inapplicable large-text levels explicitly, exclude them from the highest-compliance summary, and show one assessment for the displayed color pair and selected text size.

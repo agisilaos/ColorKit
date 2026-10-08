@@ -24,6 +24,8 @@ public extension Color {
     ///
     /// Invalid amount takes precedence over input issues. Otherwise both inputs are diagnosed
     /// independently. A zero contribution returns the resolved base without mode arithmetic.
+    /// Full amount with an opaque blend uses the finite mode target directly, preserving
+    /// exact endpoint channels even when interpolation would cancel or overflow.
     /// This operation neither reads nor writes the legacy blend cache.
     ///
     /// - Parameters:
@@ -61,9 +63,15 @@ public extension Color {
             guard [mixed.r, mixed.g, mixed.b].allSatisfy(\.isFinite) else {
                 return .failure(.nonfiniteResult)
             }
-            red += (mixed.r - base.red) * amount * blend.alpha
-            green += (mixed.g - base.green) * amount * blend.alpha
-            blue += (mixed.b - base.blue) * amount * blend.alpha
+            if amount == 1, blend.alpha == 1 {
+                red = mixed.r
+                green = mixed.g
+                blue = mixed.b
+            } else {
+                red += (mixed.r - base.red) * amount * blend.alpha
+                green += (mixed.g - base.green) * amount * blend.alpha
+                blue += (mixed.b - base.blue) * amount * blend.alpha
+            }
         }
         guard [red, green, blue].allSatisfy(\.isFinite) else { return .failure(.nonfiniteResult) }
         // Construct through Core Graphics to retain finite extended components beyond Float's range.

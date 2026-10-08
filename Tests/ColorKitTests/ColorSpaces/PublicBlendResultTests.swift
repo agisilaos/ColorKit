@@ -40,6 +40,43 @@ final class PublicBlendResultTests: XCTestCase {
         }
     }
 
+    func testFullStrengthReachesFiniteExtendedNormalTargetsExactly() throws {
+        let pairs: [([CGFloat], [CGFloat])] = [
+            ([1e200, -1e200, 0.5, 0.4], [1, 0.25, 0.25, 1]),
+            ([-1e308, 1e308, 0.5, 0.25], [1e308, -1e308, 0.75, 1])
+        ]
+        for (baseComponents, blendComponents) in pairs {
+            let base = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: baseComponents)
+            let blend = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: blendComponents)
+            let expected = try blend.componentConversionResults().srgba.get()
+            let result = try base.blendResult(with: blend, mode: .normal).get().componentConversionResults().srgba.get()
+            XCTAssertEqual(result.red, expected.red)
+            XCTAssertEqual(result.green, expected.green)
+            XCTAssertEqual(result.blue, expected.blue)
+            XCTAssertEqual(result.alpha, try base.componentConversionResults().srgba.get().alpha)
+        }
+    }
+
+    func testFullStrengthUsesFiniteScreenTargetWithoutCancellation() throws {
+        let base = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: [1e200, 0.5, 0.5, 0.4])
+        let white = Color(.sRGB, red: 1, green: 1, blue: 1)
+        let result = try base.blendResult(with: white, mode: .screen).get().componentConversionResults().srgba.get()
+        XCTAssertEqual(result.red, 1)
+        XCTAssertEqual(result.green, 1)
+        XCTAssertEqual(result.blue, 1)
+        XCTAssertEqual(result.alpha, try base.componentConversionResults().srgba.get().alpha)
+    }
+
+    func testFullAmountStillWeightsTranslucentBlend() throws {
+        let base = Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75, opacity: 0.4)
+        let blend = Color(.sRGB, red: 0.75, green: 0.25, blue: 0, opacity: 0.5)
+        let result = try base.blendResult(with: blend, mode: .normal).get().componentConversionResults().srgba.get()
+        XCTAssertEqual(result.red, 0.5, accuracy: 1e-6)
+        XCTAssertEqual(result.green, 0.375, accuracy: 1e-6)
+        XCTAssertEqual(result.blue, 0.375, accuracy: 1e-6)
+        XCTAssertEqual(result.alpha, 0.4, accuracy: 1e-6)
+    }
+
     func testUnchangedSuccessAndZeroContribution() throws {
         let base = Color(.sRGB, red: 0.25, green: 0.5, blue: 0.75, opacity: 0.5)
         let white = Color(.sRGB, red: 1, green: 1, blue: 1)
@@ -112,7 +149,7 @@ final class PublicBlendResultTests: XCTestCase {
         XCTAssertEqual(try transparentResult.componentConversionResults().srgba.get().red, 1e200)
         let negative = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: [-1e308, 0, 0, 1])
         let positive = try fixedTestColor(space: CGColorSpace.extendedSRGB, components: [1e308, 0, 0, 1])
-        XCTAssertEqual(negative.blendResult(with: positive, mode: .normal), .failure(.nonfiniteResult))
+        XCTAssertEqual(negative.blendResult(with: positive, mode: .normal, amount: 0.5), .failure(.nonfiniteResult))
     }
 
     func testExplicitAppearanceCapture() throws {
