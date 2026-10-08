@@ -57,6 +57,8 @@ public extension View {
     ///
     /// This modifier automatically switches between two colors based on the system's
     /// appearance setting, with an optional brightness adjustment for fine-tuning.
+    /// Zero adjustment preserves the selected color unchanged. Nonzero adjustment
+    /// resolves its HSL components and changes lightness while retaining opacity.
     ///
     /// Example:
     /// ```swift
@@ -251,8 +253,11 @@ private extension Color {
     ///                    increase brightness, negative values decrease it.
     /// - Returns: A new `Color` with adjusted brightness.
     func adjustBrightness(by amount: CGFloat) -> Color {
-        guard let hsl = self.hslComponents() else { return self }
+        guard amount != 0 else { return self }
+        guard let hsl = self.hslComponents(),
+              let rgba = AppearanceResolvedSRGBA.resolve(self) else { return self }
         let newLightness = min(1, max(0, hsl.lightness + amount))
         return Color(hue: hsl.hue, saturation: hsl.saturation, lightness: newLightness)
+            .opacity(rgba.alpha)
     }
 }

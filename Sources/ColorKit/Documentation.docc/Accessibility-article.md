@@ -232,6 +232,10 @@ diagnostic tool or an exact representation of every person's perception. See the
 
 Create colors that adapt to light and dark mode:
 
+The default zero brightness adjustment preserves the selected color, including its
+opacity and dynamic appearance. A nonzero adjustment resolves HSL lightness for
+the current appearance and retains the selected color's opacity.
+
 ```swift
 Text("Adaptive Text")
     .adaptiveColor(light: .blue, dark: .orange)

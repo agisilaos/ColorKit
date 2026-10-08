@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Adaptive color opacity
+
+`adaptiveColor(light:dark:brightnessAdjustment:)` now retains the selected color
+unchanged when adjustment is zero, including opacity and appearance-dependent
+rendering. Nonzero adjustments retain opacity while changing HSL lightness.
+Translucent inputs therefore remain translucent; existing calls need no migration.
+
 ### LAB animation
 
 The animation preview captures named destination colors in the current platform
