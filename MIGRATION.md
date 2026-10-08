@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Palette layout
+
+SVG and PNG exports now divide the full canvas into fractional-width swatches.
+Palettes whose sizes do not divide 800 evenly no longer leave an empty right edge,
+and palettes above 800 entries no longer collapse to zero-width swatches. Exported
+geometry and image bytes can change; existing calls need no source migration.
+
 ### Hexadecimal input validation
 
 `Color(hex:)` now returns `nil` when the sanitized input contains invalid hex

@@ -107,6 +107,10 @@ Create named entries with ``PaletteExporter/createPalette(from:namePrefix:)`` or
 | Adobe ASE | Binary RGB swatches for Adobe tools |
 | PNG | A rendered palette image |
 
+SVG and PNG divide the full canvas width among all entries, using fractional
+swatch widths when needed. Large palettes can have swatches narrower than a pixel;
+the fixed-size image and labels do not expand with the palette.
+
 <!-- swift-example: palette-export -->
 ```swift
 let palette = [

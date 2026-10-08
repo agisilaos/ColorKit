@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Fill the full SVG and PNG palette canvas with fractional swatch widths, including palette sizes that do not divide 800 evenly and sizes above 800.
 - Reject malformed hexadecimal color strings instead of converting a valid prefix into an unrelated color. Valid RGB/RGBA strings and existing surrounding-whitespace handling are unchanged.
 - Preserve endpoint opacity and interpolate alpha in HSL and LAB gradients, matching RGB interpolation. Translucent gradient output is no longer forced opaque.
 

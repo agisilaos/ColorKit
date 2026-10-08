@@ -45,6 +45,85 @@ final class PaletteExportSerializationTests: XCTestCase {
         }
     }
 
+    @available(iOS 15.0, *)
+    @MainActor
+    func testSVGSwatchesRenderWithoutTransparentSeams() async throws {
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 800, height: 400))
+        #if os(macOS)
+        let controller = NSViewController()
+        controller.view = webView
+        let window = NSWindow(contentViewController: controller)
+        window.isReleasedWhenClosed = false
+        window.orderFront(nil)
+        defer { window.close() }
+        #else
+        let controller = UIViewController()
+        controller.view = webView
+        let window = UIWindow(frame: webView.frame)
+        window.rootViewController = controller
+        window.makeKeyAndVisible()
+        defer {
+            window.isHidden = true
+            window.rootViewController = nil
+        }
+        #endif
+        defer { webView.stopLoading() }
+        let loaded = expectation(description: "SVG render document loaded")
+        let navigation = LoadedDocument(loaded)
+        webView.navigationDelegate = navigation
+        webView.loadHTMLString("<!doctype html><html><body></body></html>", baseURL: nil)
+        guard await XCTWaiter.fulfillment(of: [loaded], timeout: 60) == .completed else {
+            XCTFail("WebKit did not finish navigation within 60 seconds")
+            return
+        }
+        try XCTUnwrap(navigation.result, "WebKit did not finish navigation").get()
+
+        for count in [3, 7, 401, 801] {
+            let entries = (0..<count).map {
+                PaletteExporter.PaletteEntry(name: "Swatch \($0)", color: Color(.sRGB, red: 1, green: 0, blue: 0))
+            }
+            let data = try XCTUnwrap(PaletteExporter.export(palette: entries, to: .svg, paletteName: "Opaque red"))
+            let svg = try XCTUnwrap(String(data: data, encoding: .utf8))
+            let rendered = expectation(description: "Exported SVG rasterized")
+            var evaluation: Result<Any, Error>?
+            webView.callAsyncJavaScript("""
+                const url = URL.createObjectURL(new Blob([svg], {type: 'image/svg+xml'}));
+                try {
+                    const image = new Image();
+                    await new Promise((resolve, reject) => {
+                        image.onload = resolve;
+                        image.onerror = () => reject(new Error('SVG image failed to load'));
+                        image.src = url;
+                    });
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 800;
+                    canvas.height = 400;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(image, 0, 0);
+                    const pixels = context.getImageData(0, 200, 800, 1).data;
+                    const seams = [];
+                    for (let x = 0; x < 800; x++) {
+                        const rgba = Array.from(pixels.slice(x * 4, x * 4 + 4));
+                        if (rgba.join(',') !== '255,0,0,255') seams.push({x, rgba});
+                    }
+                    return {count: seams.length, first: seams[0] ?? null};
+                } finally {
+                    URL.revokeObjectURL(url);
+                }
+                """,
+                arguments: ["svg": svg],
+                in: nil,
+                in: .page) { result in
+                evaluation = result
+                rendered.fulfill()
+            }
+            await fulfillment(of: [rendered], timeout: 15)
+            let result = try XCTUnwrap(evaluation, "WebKit did not finish SVG rasterization").get()
+            let pixels = try XCTUnwrap(result as? [String: Any])
+            XCTAssertEqual(pixels["count"] as? Int, 0, "Palette count: \(count); \(pixels)")
+        }
+    }
+
     func testSVGRejectsCharactersXMLCannotRepresent() {
         for invalid in ["\u{0}", "\u{1}", "\u{B}", "\u{FFFE}", "\u{FFFF}"] {
             XCTAssertNil(PaletteExporter.export(palette: palette([invalid]), to: .svg, paletteName: "Title"))

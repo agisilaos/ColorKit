@@ -189,7 +189,7 @@ public struct PaletteExporter {
         guard let title = xmlText(paletteName) else { return nil }
         let width = 800
         let height = 400
-        let swatchWidth = width / max(palette.count, 1)
+        let swatchWidth = Double(width) / Double(max(palette.count, 1))
         let swatchHeight = height
 
         var svg = """
@@ -200,11 +200,11 @@ public struct PaletteExporter {
 
         for (index, entry) in palette.enumerated() {
             guard let name = xmlText(entry.name) else { return nil }
-            let x = index * swatchWidth
+            let x = Double(index) * swatchWidth
             let hexString = entry.color.hexString() ?? "#000000"
 
             svg += """
-              <rect x="\(x)" y="0" width="\(swatchWidth)" height="\(swatchHeight)" fill="\(hexString)" />
+              <rect x="\(x)" y="0" width="\(swatchWidth)" height="\(swatchHeight)" fill="\(hexString)" shape-rendering="crispEdges" />
               <text x="\(x + swatchWidth / 2)" y="\(swatchHeight - 20)" font-family="Arial" font-size="14" fill="white" text-anchor="middle" stroke="black" stroke-width="0.5">\(name)</text>
               <text x="\(x + swatchWidth / 2)" y="\(swatchHeight - 40)" font-family="Arial" font-size="12" fill="white" text-anchor="middle" stroke="black" stroke-width="0.5">\(hexString)</text>
 
@@ -307,18 +307,21 @@ public struct PaletteExporter {
         #if canImport(UIKit)
         let width = 800
         let height = 400
-        let swatchWidth = width / max(palette.count, 1)
+        let swatchWidth = CGFloat(width) / CGFloat(max(palette.count, 1))
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: height), true, 2.0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
 
         // Draw each color swatch
         for (index, entry) in palette.enumerated() {
-            let rect = CGRect(x: index * swatchWidth, y: 0, width: swatchWidth, height: height)
+            let rect = CGRect(x: CGFloat(index) * swatchWidth, y: 0, width: swatchWidth, height: CGFloat(height))
 
             let rgba = entry.color.rgbaComponents()
+            context.saveGState()
+            context.setShouldAntialias(false)
             context.setFillColor(red: CGFloat(rgba.red), green: CGFloat(rgba.green), blue: CGFloat(rgba.blue), alpha: CGFloat(rgba.alpha))
             context.fill(rect)
+            context.restoreGState()
 
             // Draw color name and hex value
             let hexString = entry.color.hexString() ?? "#000000"
@@ -339,8 +342,8 @@ public struct PaletteExporter {
             let nameSize = (entry.name as NSString).size(withAttributes: nameAttributes)
             let hexSize = (hexString as NSString).size(withAttributes: hexAttributes)
 
-            let nameX = CGFloat(index * swatchWidth) + CGFloat(swatchWidth - Int(nameSize.width)) / 2
-            let hexX = CGFloat(index * swatchWidth) + CGFloat(swatchWidth - Int(hexSize.width)) / 2
+            let nameX = CGFloat(index) * swatchWidth + (swatchWidth - nameSize.width) / 2
+            let hexX = CGFloat(index) * swatchWidth + (swatchWidth - hexSize.width) / 2
 
             (entry.name as NSString).draw(at: CGPoint(x: nameX, y: CGFloat(height - 40)), withAttributes: nameAttributes)
             (hexString as NSString).draw(at: CGPoint(x: hexX, y: CGFloat(height - 20)), withAttributes: hexAttributes)
@@ -365,18 +368,21 @@ public struct PaletteExporter {
         #elseif canImport(AppKit)
         let width = 800
         let height = 400
-        let swatchWidth = width / max(palette.count, 1)
+        let swatchWidth = CGFloat(width) / CGFloat(max(palette.count, 1))
 
         let image = NSImage(size: NSSize(width: width, height: height))
         image.lockFocus()
 
         // Draw each color swatch
         for (index, entry) in palette.enumerated() {
-            let rect = NSRect(x: index * swatchWidth, y: 0, width: swatchWidth, height: height)
+            let rect = NSRect(x: CGFloat(index) * swatchWidth, y: 0, width: swatchWidth, height: CGFloat(height))
 
             let rgba = entry.color.rgbaComponents()
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current?.shouldAntialias = false
             NSColor(red: CGFloat(rgba.red), green: CGFloat(rgba.green), blue: CGFloat(rgba.blue), alpha: CGFloat(rgba.alpha)).setFill()
             rect.fill()
+            NSGraphicsContext.restoreGraphicsState()
 
             // Draw color name and hex value
             let hexString = entry.color.hexString() ?? "#000000"
@@ -397,8 +403,8 @@ public struct PaletteExporter {
             let nameSize = (entry.name as NSString).size(withAttributes: nameAttributes)
             let hexSize = (hexString as NSString).size(withAttributes: hexAttributes)
 
-            let nameX = CGFloat(index * swatchWidth) + CGFloat(swatchWidth - Int(nameSize.width)) / 2
-            let hexX = CGFloat(index * swatchWidth) + CGFloat(swatchWidth - Int(hexSize.width)) / 2
+            let nameX = CGFloat(index) * swatchWidth + (swatchWidth - nameSize.width) / 2
+            let hexX = CGFloat(index) * swatchWidth + (swatchWidth - hexSize.width) / 2
 
             (entry.name as NSString).draw(at: NSPoint(x: nameX, y: CGFloat(height - 40)), withAttributes: nameAttributes)
             (hexString as NSString).draw(at: NSPoint(x: hexX, y: CGFloat(height - 20)), withAttributes: hexAttributes)
