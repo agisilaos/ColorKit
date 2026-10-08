@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Show zero LAB component differences for identical colors in Color Debugger.
 - Display Color Spaces hue values in degrees while retaining normalized slider coordinates.
 - Generate compilable SwiftUI gradient code using fixed sRGB components and opacity instead of color debug descriptions.
 - Use the current WCAG sRGB transfer breakpoint (0.04045) for luminance and contrast. Floating-point colors near the former breakpoint can receive slightly different measurements and threshold classifications; ordinary 8-bit sRGB colors are unaffected.

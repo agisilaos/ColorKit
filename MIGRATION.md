@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### LAB differences
+
+Color Debugger shows normalized LAB distances without adding a coordinate offset,
+so identical colors now show three zero differences.
+
 ### Hue display units
 
 Color Spaces now labels hue in degrees consistently with its copyable HSL value.

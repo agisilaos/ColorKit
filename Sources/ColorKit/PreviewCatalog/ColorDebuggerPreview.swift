@@ -205,17 +205,24 @@ public struct ColorDebuggerPreview: View {
                         abs(components1.hsl.lightness - components2.hsl.lightness)
                     ])
 
-                    colorDifferenceRow("LAB Δ", components: [
-                        abs(components1.lab.l - components2.lab.l) / 100,
-                        (abs(components1.lab.a - components2.lab.a) / 128 + 1) / 2,
-                        (abs(components1.lab.b - components2.lab.b) / 128 + 1) / 2
-                    ])
+                    colorDifferenceRow("LAB Δ", components: Self.labDifferences(components1.lab, components2.lab))
                 }
             }
             .padding()
             .background(Color.gray.opacity(0.1))
             .cornerRadius(12)
         }
+    }
+
+    static func labDifferences(
+        _ first: (l: Double, a: Double, b: Double),
+        _ second: (l: Double, a: Double, b: Double)
+    ) -> [Double] {
+        [
+            abs(first.l - second.l) / 100,
+            abs(first.a - second.a) / 256,
+            abs(first.b - second.b) / 256
+        ]
     }
 
     private func colorDifferenceRow(_ label: String, components: [Double]) -> some View {
