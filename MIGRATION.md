@@ -82,12 +82,13 @@ selection cannot be converted, it reports that code is unavailable.
 
 ### WCAG transfer breakpoint
 
-Existing calls need no source migration. Relative luminance and contrast now use
+Existing calls need no source migration. Shared WCAG luminance and contrast now use
 the [current WCAG sRGB breakpoint](https://www.w3.org/TR/WCAG21/#dfn-relative-luminance),
 0.04045 instead of 0.03928. Measurements involving floating-point channels between
 those values can change slightly, including pass/fail decisions very near a WCAG
 threshold. Ordinary 8-bit sRGB values do not occupy this interval. Recalculate
-stored assessments when exact threshold decisions matter.
+stored assessments when exact threshold decisions matter. The color inspector's
+legacy calculation is unchanged.
 
 ### ASE name limits
 

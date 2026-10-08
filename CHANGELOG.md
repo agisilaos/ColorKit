@@ -16,7 +16,7 @@ All notable changes to ColorKit will be documented in this file.
 - Show zero LAB component differences for identical colors in Color Debugger.
 - Display Color Spaces hue values in degrees while retaining normalized slider coordinates.
 - Generate compilable SwiftUI gradient code using fixed sRGB components and opacity instead of color debug descriptions.
-- Use the current WCAG sRGB transfer breakpoint (0.04045) for luminance and contrast. Floating-point colors near the former breakpoint can receive slightly different measurements and threshold classifications; ordinary 8-bit sRGB colors are unaffected.
+- Use the current WCAG sRGB transfer breakpoint (0.04045) in the shared WCAG luminance and contrast calculations. Floating-point colors near the former breakpoint can receive slightly different measurements and threshold classifications; ordinary 8-bit sRGB colors and the color inspector's legacy calculation are unchanged.
 - Return `nil` for ASE entry names exceeding the format's 65,534 UTF-16 code-unit limit instead of crashing during serialization.
 - Fill the full SVG and PNG palette canvas with fractional swatch widths, including palette sizes that do not divide 800 evenly and sizes above 800.
 - Reject malformed hexadecimal color strings instead of converting a valid prefix into an unrelated color. Valid RGB/RGBA strings and existing surrounding-whitespace handling are unchanged.
