@@ -201,7 +201,7 @@ enum SRGBColorConversion {
     }
 
     private static func wcagLinearized(_ component: Double) -> Double {
-        component <= 0.03928
+        component <= 0.04045
             ? component / 12.92
             : pow((component + 0.055) / 1.055, 2.4)
     }
