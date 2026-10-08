@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### WCAG preview measurements
+
+`View.wcagCompliance(foreground:background:showDetails:)` and the WCAG demo now
+show the strict contrast result. A translucent foreground is measured over an
+opaque background. Dynamic colors, out-of-gamut colors, and translucent backgrounds
+show “Contrast unavailable” without a ratio or pass/fail badges. Supply fixed colors
+resolved for the intended appearance when measurement is needed. The demo starts
+with fixed sRGB selections; existing initializers and the legacy
+`Color.wcagCompliance(with:)` and `wcagContrastRatio(with:)` contracts are unchanged.
+
 ### Adaptive color opacity
 
 `adaptiveColor(light:dark:brightnessAdjustment:)` now retains the selected color

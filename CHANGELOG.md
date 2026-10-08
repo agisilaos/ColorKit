@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Make WCAG previews report strict composited contrast, or an unavailable measurement without badges. Dynamic colors no longer display measurements from a different appearance; the demo starts with fixed sRGB selections. Legacy compliance calculation methods are unchanged.
 - Preserve the selected color with the default zero `adaptiveColor` brightness adjustment, and retain its opacity for nonzero adjustments.
 - Resolve the animation preview's named destination for LAB mode so its default blue-to-red example runs.
 - Update the stopped animation preview immediately when its start color is randomized.

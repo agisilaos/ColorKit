@@ -1,6 +1,9 @@
 import SwiftUI
 
-/// A view modifier that displays WCAG compliance information for text against its background
+/// A view modifier that displays measured WCAG contrast or an unavailable result.
+///
+/// Uses fixed sRGB inputs and composites a translucent foreground over an opaque
+/// background. Dynamic colors and other unsupported pairs display no ratio or badges.
 public struct WCAGComplianceModifier: ViewModifier {
     private let foregroundColor: Color
     private let backgroundColor: Color
@@ -13,7 +16,7 @@ public struct WCAGComplianceModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        let compliance = foregroundColor.wcagCompliance(with: backgroundColor)
+        let result = foregroundColor.contrastResult(with: backgroundColor)
 
         return VStack(alignment: .leading, spacing: 8) {
             content
@@ -22,14 +25,14 @@ public struct WCAGComplianceModifier: ViewModifier {
                 .background(backgroundColor)
                 .cornerRadius(8)
 
-            if showDetails {
+            if showDetails, let ratio = result.ratio {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Contrast Ratio: \(String(format: "%.2f", compliance.contrastRatio)):1")
+                    Text("Contrast Ratio: \(String(format: "%.2f", ratio)):1")
                         .font(.subheadline)
 
                     HStack {
                         ForEach(WCAGContrastLevel.allCases) { level in
-                            let passes = compliance.contrastRatio >= level.minimumRatio
+                            let passes = ratio >= level.minimumRatio
 
                             HStack(spacing: 4) {
                                 if #available(macOS 11.0, *) {
@@ -48,6 +51,11 @@ public struct WCAGComplianceModifier: ViewModifier {
                     }
                 }
                 .padding(.horizontal)
+            } else if showDetails {
+                Text("Contrast unavailable")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
             }
         }
     }

@@ -270,9 +270,12 @@ opacity and reports whether the result actually meets a level, use
 
 ### Compliance Previews and Suggestions
 
-The legacy `wcagCompliance(with:)` returns a ratio and AA/AAA flags. The matching
-view modifier displays those measurements. These helpers retain legacy opacity
-handling; use the result-bearing contrast interface above when that distinction matters.
+The legacy `Color.wcagCompliance(with:)` returns a ratio and AA/AAA flags with its
+compatibility opacity handling. The `View.wcagCompliance(foreground:background:showDetails:)`
+modifier instead uses `contrastResult(with:)`: it measures fixed sRGB colors, composites
+a translucent foreground over the opaque background, and displays **Contrast unavailable**
+without pass/fail badges for unsupported pairs. Resolve dynamic colors to fixed components
+for the intended appearance before asking the preview to assess them.
 
 <!-- swift-example: compliance-tools -->
 ```swift

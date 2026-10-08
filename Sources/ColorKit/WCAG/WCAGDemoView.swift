@@ -2,8 +2,8 @@ import SwiftUI
 
 /// A demo view that showcases the WCAG compliance checker functionality
 public struct WCAGDemoView: View {
-    @State private var foregroundColor: Color = .blue
-    @State private var backgroundColor: Color = .white
+    @State private var foregroundColor = Color(.sRGB, red: 0, green: 0.478, blue: 1)
+    @State private var backgroundColor = Color(.sRGB, red: 1, green: 1, blue: 1)
     @State private var text: String = "Sample Text"
     @State private var fontSize: Double = 16
     @State private var selectedDeficiency = ColorVisionDeficiency.protanopia
@@ -107,46 +107,50 @@ public struct WCAGDemoView: View {
                     Text("Compliance Details")
                         .font(.headline)
 
-                    let compliance = foregroundColor.wcagCompliance(with: backgroundColor)
-                    let isLargeText = fontSize >= 18 || (fontSize >= 14 && true) // Assuming bold for simplicity
+                    if let ratio = foregroundColor.contrastResult(with: backgroundColor).ratio {
+                        let isLargeText = fontSize >= 18 || (fontSize >= 14 && true) // Assuming bold for simplicity
 
-                    Text("Contrast Ratio: \(String(format: "%.2f", compliance.contrastRatio)):1")
-                        .fontWeight(.medium)
+                        Text("Contrast Ratio: \(String(format: "%.2f", ratio)):1")
+                            .fontWeight(.medium)
 
-                    Divider()
+                        Divider()
 
-                    Text("WCAG 2.1 Compliance:")
-                        .fontWeight(.medium)
+                        Text("WCAG 2.1 Compliance:")
+                            .fontWeight(.medium)
 
-                    ForEach(WCAGContrastLevel.allCases) { level in
-                        let passes = compliance.contrastRatio >= level.minimumRatio
-                        let isRelevant = level == .AALarge || level == .AAALarge ? isLargeText : true
+                        ForEach(WCAGContrastLevel.allCases) { level in
+                            let passes = ratio >= level.minimumRatio
+                            let isRelevant = level == .AALarge || level == .AAALarge ? isLargeText : true
 
-                        HStack {
-                            Image(systemName: passes ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .foregroundColor(passes ? .green : .red)
+                            HStack {
+                                Image(systemName: passes ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundColor(passes ? .green : .red)
 
-                            Text(level.rawValue)
-                                .fontWeight(.medium)
+                                Text(level.rawValue)
+                                    .fontWeight(.medium)
 
-                            Spacer()
+                                Spacer()
 
-                            Text(level.description)
-                                .font(.caption)
-                                .foregroundColor(.gray)
+                                Text(level.description)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            .opacity(isRelevant ? 1.0 : 0.5)
                         }
-                        .opacity(isRelevant ? 1.0 : 0.5)
-                    }
 
-                    Divider()
+                        Divider()
 
-                    if let highestLevel = compliance.highestLevel {
-                        Text("Highest Compliance Level: \(highestLevel.rawValue)")
-                            .fontWeight(.medium)
+                        if let highestLevel = WCAGContrastLevel.allCases.last(where: { ratio >= $0.minimumRatio }) {
+                            Text("Highest Compliance Level: \(highestLevel.rawValue)")
+                                .fontWeight(.medium)
+                        } else {
+                            Text("Does not meet any compliance level")
+                                .fontWeight(.medium)
+                                .foregroundColor(.red)
+                        }
                     } else {
-                        Text("Does not meet any compliance level")
-                            .fontWeight(.medium)
-                            .foregroundColor(.red)
+                        Text("Contrast unavailable")
+                            .foregroundColor(.secondary)
                     }
                 }
                 .padding()
