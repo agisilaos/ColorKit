@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Generate compilable SwiftUI gradient code using fixed sRGB components and opacity instead of color debug descriptions.
 - Use the current WCAG sRGB transfer breakpoint (0.04045) for luminance and contrast. Floating-point colors near the former breakpoint can receive slightly different measurements and threshold classifications; ordinary 8-bit sRGB colors are unaffected.
 - Return `nil` for ASE entry names exceeding the format's 65,534 UTF-16 code-unit limit instead of crashing during serialization.
 - Fill the full SVG and PNG palette canvas with fractional swatch widths, including palette sizes that do not divide 800 evenly and sizes above 800.

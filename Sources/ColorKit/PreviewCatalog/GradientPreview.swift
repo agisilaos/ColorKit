@@ -214,54 +214,9 @@ public struct GradientPreview: View {
     }
 
     private func generateCode() -> String {
-        switch gradientType {
-        case .linear:
-            return """
-            LinearGradient(
-                colors: \(formatColors()),
-                startPoint: \(formatPoint(startPoint)),
-                endPoint: \(formatPoint(endPoint))
-            )
-            """
-        case .radial:
-            return """
-            RadialGradient(
-                colors: \(formatColors()),
-                center: .center,
-                startRadius: 0,
-                endRadius: 200
-            )
-            """
-        case .angular:
-            return """
-            AngularGradient(
-                colors: \(formatColors()),
-                center: .center
-            )
-            """
-        }
-    }
-
-    private func formatColors() -> String {
-        let colorStrings = gradientColors.map { color -> String in
-            "Color(\(color.description))"
-        }
-        return "[\(colorStrings.joined(separator: ", "))]"
-    }
-
-    private func formatPoint(_ point: UnitPoint) -> String {
-        switch point {
-        case .topLeading: return ".topLeading"
-        case .top: return ".top"
-        case .topTrailing: return ".topTrailing"
-        case .leading: return ".leading"
-        case .center: return ".center"
-        case .trailing: return ".trailing"
-        case .bottomLeading: return ".bottomLeading"
-        case .bottom: return ".bottom"
-        case .bottomTrailing: return ".bottomTrailing"
-        default: return ".center"
-        }
+        GradientCodeGenerator.source(
+            colors: gradientColors, type: gradientType, startPoint: startPoint, endPoint: endPoint
+        ) ?? "Code is unavailable for these colors."
     }
 }
 

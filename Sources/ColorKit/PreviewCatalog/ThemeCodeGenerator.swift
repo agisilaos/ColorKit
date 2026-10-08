@@ -19,7 +19,7 @@ enum ThemeCodeGenerator {
         """
     }
 
-    private static func literal(_ color: Color) -> String? {
+    static func literal(_ color: Color) -> String? {
         let fixedColor: Color
         if color.cgColor != nil {
             fixedColor = color

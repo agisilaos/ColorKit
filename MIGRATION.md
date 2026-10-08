@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Gradient preview code
+
+No source migration is required. Gradient Generator now emits fixed sRGB literals
+with opacity, capturing named selections in the current platform appearance. If a
+selection cannot be converted, it reports that code is unavailable.
+
 ### WCAG transfer breakpoint
 
 Existing calls need no source migration. Relative luminance and contrast now use
