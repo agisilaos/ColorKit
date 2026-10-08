@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Hue display units
+
+Color Spaces now labels hue in degrees consistently with its copyable HSL value.
+
 ### Gradient preview code
 
 No source migration is required. Gradient Generator now emits fixed sRGB literals

@@ -97,7 +97,7 @@ public struct ColorSpacePreview: View {
                 ColorComponentRow(label: "Green", value: components.rgb.green)
                 ColorComponentRow(label: "Blue", value: components.rgb.blue)
             case .hsl:
-                ColorComponentRow(label: "Hue", value: components.hsl.hue, suffix: "°")
+                ColorComponentRow.hue(components.hsl.hue)
                 ColorComponentRow(label: "Saturation", value: components.hsl.saturation, isPercentage: true)
                 ColorComponentRow(label: "Lightness", value: components.hsl.lightness, isPercentage: true)
             case .lab:
@@ -143,11 +143,16 @@ private enum ColorSpace: String, CaseIterable {
 
 // MARK: - Supporting Views
 
-private struct ColorComponentRow: View {
+struct ColorComponentRow: View {
     let label: String
     let value: Double
     var suffix: String = ""
     var isPercentage: Bool = false
+    var displayScale: Double = 1
+
+    static func hue(_ turns: Double) -> Self {
+        Self(label: "Hue", value: turns, suffix: "°", displayScale: 360)
+    }
 
     var body: some View {
         HStack {
@@ -163,11 +168,11 @@ private struct ColorComponentRow: View {
         }
     }
 
-    private var formattedValue: String {
+    var formattedValue: String {
         if isPercentage {
             return String(format: "%.0f%%", value * 100)
         }
-        return String(format: "%.2f%@", value, suffix)
+        return String(format: "%.2f%@", value * displayScale, suffix)
     }
 }
 
