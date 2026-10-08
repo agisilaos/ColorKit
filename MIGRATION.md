@@ -1,5 +1,14 @@
 # Migration Guide
 
+## Unreleased
+
+### Hexadecimal input validation
+
+`Color(hex:)` now returns `nil` when the sanitized input contains invalid hex
+digits, embedded whitespace, or a `0x` prefix. Previously some malformed strings
+were accepted after parsing only their valid prefix. Valid six- and eight-digit
+inputs, optional `#`, and surrounding whitespace need no migration.
+
 ## ColorKit 3.2.1
 
 Existing declarations and ordinary calls need no source migration. SVG and CSS

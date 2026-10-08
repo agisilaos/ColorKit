@@ -4,6 +4,9 @@ All notable changes to ColorKit will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- Reject malformed hexadecimal color strings instead of converting a valid prefix into an unrelated color. Valid RGB/RGBA strings and existing surrounding-whitespace handling are unchanged.
+
 ## [3.2.1] - 2026-10-04
 
 ### Fixed

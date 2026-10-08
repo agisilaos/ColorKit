@@ -79,6 +79,7 @@ public extension Color {
     ///
     /// - Parameter hex: A hexadecimal string representation of the color.
     ///                 Supports `#RRGGBB` and `#RRGGBBAA` formats.
+    ///                 Invalid digits or incomplete hexadecimal input return `nil`.
     ///
     init?(hex: String) {
         let r, g, b, a: CGFloat
@@ -86,8 +87,8 @@ public extension Color {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
 
-        var hexNumber: UInt64 = 0
-        guard Scanner(string: hexSanitized).scanHexInt64(&hexNumber) else { return nil }
+        guard hexSanitized.allSatisfy(\.isHexDigit),
+              let hexNumber = UInt64(hexSanitized, radix: 16) else { return nil }
 
         switch hexSanitized.count {
         case 6:
