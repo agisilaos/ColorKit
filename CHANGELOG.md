@@ -5,6 +5,7 @@ All notable changes to ColorKit will be documented in this file.
 ## [Unreleased]
 
 ### Fixed
+- Draw accessibility-enhancer comparison and variant text directly over its assessed background. Remove the same-colored inner swatch that hid opaque text and applied translucent foreground opacity twice.
 - Assess the WCAG demo's regular-weight sample using the 18-point large-text boundary. Mark inapplicable large-text levels explicitly, exclude them from the highest-compliance summary, and show one assessment for the displayed color pair and selected text size.
 - Make WCAG previews report strict composited contrast, or an unavailable measurement without badges. Dynamic colors no longer display measurements from a different appearance; the demo starts with fixed sRGB selections. Legacy compliance calculation methods are unchanged.
 - Preserve the selected color with the default zero `adaptiveColor` brightness adjustment, and retain its opacity for nonzero adjustments.

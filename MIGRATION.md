@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Accessibility enhancer samples
+
+Comparison cards and suggested variants now draw their foreground text directly
+over the selected background. The same-colored inner rectangle is removed so the
+visible pair matches the reported assessment, including a single composition of
+translucent foregrounds. Enhancement selection, result values, and public calls
+are unchanged; no source migration is required.
+
 ### WCAG demo text size
 
 The demo renders regular-weight text, so its large-text levels apply only at

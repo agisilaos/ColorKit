@@ -102,20 +102,13 @@ public struct AccessibilityEnhancerDemoView: View {
                             Text("Original")
                                 .font(.subheadline)
 
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(backgroundColor)
-                                    .frame(width: 120, height: 80)
-                                    .shadow(radius: 2)
-
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(originalColor)
-                                    .frame(width: 100, height: 60)
-
-                                Text("Text")
-                                    .foregroundColor(originalColor)
-                                    .fontWeight(.bold)
-                            }
+                            AccessibilityEnhancerSwatch(
+                                foreground: originalColor,
+                                background: backgroundColor,
+                                width: 120,
+                                height: 80,
+                                text: "Text"
+                            )
 
                             let originalResult = originalColor.accessibilityResult(
                                 against: backgroundColor,
@@ -143,20 +136,13 @@ public struct AccessibilityEnhancerDemoView: View {
                                 strategy: strategy
                             )
 
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(backgroundColor)
-                                    .frame(width: 120, height: 80)
-                                    .shadow(radius: 2)
-
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(enhancedResult.color)
-                                    .frame(width: 100, height: 60)
-
-                                Text("Text")
-                                    .foregroundColor(enhancedResult.color)
-                                    .fontWeight(.bold)
-                            }
+                            AccessibilityEnhancerSwatch(
+                                foreground: enhancedResult.color,
+                                background: backgroundColor,
+                                width: 120,
+                                height: 80,
+                                text: "Text"
+                            )
 
                             Text(ratioText(for: enhancedResult))
                                 .font(.caption)
@@ -207,20 +193,13 @@ public struct AccessibilityEnhancerDemoView: View {
                                     let result = results[index]
 
                                     VStack {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(backgroundColor)
-                                                .frame(width: 100, height: 70)
-                                                .shadow(radius: 2)
-
-                                            RoundedRectangle(cornerRadius: 4)
-                                                .fill(result.color)
-                                                .frame(width: 80, height: 50)
-
-                                            Text("Aa")
-                                                .foregroundColor(result.color)
-                                                .fontWeight(.bold)
-                                        }
+                                        AccessibilityEnhancerSwatch(
+                                            foreground: result.color,
+                                            background: backgroundColor,
+                                            width: 100,
+                                            height: 70,
+                                            text: "Aa"
+                                        )
 
                                         Text(ratioText(for: result))
                                             .font(.caption)
@@ -280,6 +259,28 @@ public struct AccessibilityEnhancerDemoView: View {
             return .secondary
         case .invalidConfiguration:
             return .red
+        }
+    }
+}
+
+/// The foreground/background sample used by comparison cards and suggested variants.
+struct AccessibilityEnhancerSwatch: View {
+    let foreground: Color
+    let background: Color
+    let width: CGFloat
+    let height: CGFloat
+    let text: String
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(background)
+                .frame(width: width, height: height)
+                .shadow(radius: 2)
+
+            Text(text)
+                .foregroundColor(foreground)
+                .fontWeight(.bold)
         }
     }
 }
