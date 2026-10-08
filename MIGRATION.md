@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### LAB animation
+
+The animation preview captures named destination colors in the current platform
+appearance before LAB conversion, so the default LAB demonstration runs. Public
+LAB conversion still requires fixed inputs.
+
 ### Animation start color
 
 Randomizing an animation start color while stopped also updates its visible starting

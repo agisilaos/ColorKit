@@ -249,12 +249,8 @@ public struct ColorAnimationPreview: View {
                     }
                 case .lab:
                     // LAB interpolation for perceptually uniform transitions
-                    if let endLAB = colors.end.labComponents() {
-                        colors.current = Color(
-                            L: endLAB.L,
-                            a: endLAB.a,
-                            b: endLAB.b
-                        )
+                    if let destination = colors.labDestination() {
+                        colors.current = destination
                     }
                 }
             }
