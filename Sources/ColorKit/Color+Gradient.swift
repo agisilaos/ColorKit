@@ -352,6 +352,7 @@ public extension Color {
     /// Interpolates between this color and another color.
     ///
     /// This method performs smooth color interpolation in the specified color space.
+    /// Opacity is interpolated linearly in every color space, including the endpoints.
     /// Results are cached for performance when the same interpolation is requested multiple times.
     ///
     /// Example:
@@ -439,7 +440,9 @@ public extension Color {
     /// Interpolates between this color and another color in HSL space.
     private func interpolateHSL(with color: Color, amount: CGFloat) -> Color {
         guard let hsl1 = self.hslComponents(),
-              let hsl2 = color.hslComponents() else {
+              let hsl2 = color.hslComponents(),
+              let start = AppearanceResolvedSRGBA.resolve(self),
+              let end = AppearanceResolvedSRGBA.resolve(color) else {
             return interpolateRGB(with: color, amount: amount)
         }
 
@@ -460,13 +463,16 @@ public extension Color {
         let s = hsl1.saturation + (hsl2.saturation - hsl1.saturation) * amount
         let l = hsl1.lightness + (hsl2.lightness - hsl1.lightness) * amount
 
-        return Color(hue: h, saturation: s, lightness: l)
+        let alpha = start.alpha + (end.alpha - start.alpha) * amount
+        return Color(hue: h, saturation: s, lightness: l).opacity(alpha)
     }
 
     /// Interpolates between this color and another color in LAB space.
     private func interpolateLAB(with color: Color, amount: CGFloat) -> Color {
         guard let lab1 = self.labComponents(),
-              let lab2 = color.labComponents() else {
+              let lab2 = color.labComponents(),
+              let start = ResolvedSRGBA.resolve(self),
+              let end = ResolvedSRGBA.resolve(color) else {
             return interpolateRGB(with: color, amount: amount)
         }
 
@@ -474,7 +480,8 @@ public extension Color {
         let a = lab1.a + (lab2.a - lab1.a) * amount
         let b = lab1.b + (lab2.b - lab1.b) * amount
 
-        return Color(L: L, a: a, b: b)
+        let alpha = start.alpha + (end.alpha - start.alpha) * amount
+        return Color(L: L, a: a, b: b).opacity(alpha)
     }
 }
 

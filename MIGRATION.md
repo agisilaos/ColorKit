@@ -9,6 +9,13 @@ digits, embedded whitespace, or a `0x` prefix. Previously some malformed strings
 were accepted after parsing only their valid prefix. Valid six- and eight-digit
 inputs, optional `#`, and surrounding whitespace need no migration.
 
+### Gradient opacity
+
+HSL and LAB interpolation now retain endpoint opacity and interpolate alpha
+linearly, matching RGB interpolation. Existing calls need no source migration,
+but gradients made from translucent inputs now remain translucent. If an opaque
+gradient is intended, supply opaque endpoint colors explicitly.
+
 ## ColorKit 3.2.1
 
 Existing declarations and ordinary calls need no source migration. SVG and CSS
